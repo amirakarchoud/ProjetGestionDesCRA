@@ -32,29 +32,8 @@ describe('Collaborateur ',()=>{
 
     });
 
-    it('peut generer son CRA pour le mois :verifier le total absence+activite+ferie==jours ouvre ',()=>{
-        
-    });
-
-    it('peut modifier son propre CRA',()=>{
-        
-    });
-
-    it('peut modifier son CRA avant le 5 du mois suivant',()=>{
-        
-    });
 
 
-    it('test to fail :peut ajouter une activite que pour le mois courant ou 5 jours après le mois precedent',()=>{
-        //et si modif le 5 du mois?
-        const collab=new Collab();
-        const projet=new Project();
-        projet.addCollab(collab);
-
-        expect(()=>{new Activity(collab,projet,false,new Date("2023-05-02"),[])}).toThrow(ForbiddenException);
-        
-        
-    });
 
 
     it('peut ajouter une activite pour le mois courant ou 5 jours après le mois precedent',()=>{
@@ -71,16 +50,6 @@ describe('Collaborateur ',()=>{
     });
 
    
-
-    it('peut ajouter que 2 activites ou absences par jour',()=>{
-        //check l'ensemble de ses activites(array activities) et calcul
-        
-    });
-
-    it('peut reccuperer les jours vides du mois',()=>{
-        //=jours - (activities + absences)
-        
-    });
 
 
 })

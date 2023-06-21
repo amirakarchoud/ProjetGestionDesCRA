@@ -25,12 +25,8 @@ export class Activity {
         }
 
         //step 2: check if its the collab's
-        //step 3:check if it is either this month or less than 5days after
-        const today = new Date();
-        let beforeFiveDays = new Date(); //fel CRA
-        beforeFiveDays.setDate(today.getDate() - 5);
-        console.log(beforeFiveDays.getDate());
-        if (!projet.collabs.includes(collab) || (date.getMonth() != today.getMonth() && beforeFiveDays.getMonth() != date.getMonth()))
+        
+        if (!projet.collabs.includes(collab) )
 
             throw new ForbiddenException();
 
@@ -52,6 +48,10 @@ export class Activity {
 
     public get date(): Date {
         return this._date;
+    }
+
+    public get matin():boolean{
+        return this._matin;
     }
 
 }

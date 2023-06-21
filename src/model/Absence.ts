@@ -10,13 +10,6 @@ export class Absence{
 
 
     constructor(collab: Collab,matin:boolean,date:Date,raison:Raison) {
-        const today=new Date();
-        let beforeFiveDays = new Date(); //fel CRA
-        beforeFiveDays.setDate(today.getDate()-5);
-        console.log(beforeFiveDays.getDate());
-        if ( (date.getMonth()!=today.getMonth() && beforeFiveDays.getMonth() != date.getMonth()))
-
-            throw new ForbiddenException();
 
         this._collab = collab;
         this._matin=matin;
@@ -24,5 +17,13 @@ export class Absence{
         this._raison=raison;
 
 
+    }
+
+    public get matin():boolean{
+        return this._matin;
+    }
+
+    public get date():Date{
+        return this._date;
     }
 }
