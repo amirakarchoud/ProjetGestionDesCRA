@@ -26,4 +26,8 @@ export class Absence{
     public get date():Date{
         return this._date;
     }
+
+    public get raison():Raison{
+        return this._raison;
+    }
 }

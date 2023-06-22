@@ -16,6 +16,8 @@ export class CRA {
     this._month = month;
     this._year = year;
     this._holidayAdapter = new HolidayAdapter();
+    this.fetchHolidays();
+    
   }
 
   async fetchHolidays() {
@@ -104,18 +106,22 @@ export class CRA {
         this._absences.push(absence);
     }
 
+    calculateEmptyDays():number{
+      const totalHolidays = this._holidays.length;
+      const totalAbsences = this._absences.length;
+      const totalActivities = this._activites.length;
+      const totalBusinessDays = this.calculateBusinessDays(this._year, this._month);
+      return totalBusinessDays-(totalHolidays + (totalAbsences + totalActivities)*0.5);
+
+    }
+
 
 
     verifyTotalDays(): boolean {
-        
-        const totalHolidays = this._holidays.length;
-        const totalAbsences = this._absences.length;
-        const totalActivities = this._activites.length;
-        const totalDaysInCRA = totalHolidays + totalAbsences + totalActivities;
-
-        const totalBusinessDays = this.calculateBusinessDays(this._year, this._month);
-
-        return totalDaysInCRA === totalBusinessDays;
+      
+        if(this.calculateEmptyDays()==0)
+        return true;
+        return false;
     }
 
     public get holidays():any[]{

@@ -29,7 +29,7 @@ holidayAdapter.getHolidays()
         
     });
 
-    it('peut etre associee que au projet du son collab',()=>{
+    it('peut etre cree par un collab',()=>{
          //given 
         
          const collab= new Collab();

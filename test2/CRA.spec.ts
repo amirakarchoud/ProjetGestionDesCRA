@@ -41,7 +41,26 @@ describe('Un CRA ', () => {
     });
 
     it('ne peut pas contenir des jours vides :verifier le total absence+activite+ferie==jours ouvre', () => {
-        //a voir
+        const collab=new Collab();
+        const projet=new Project();
+        projet.addCollab(collab);
+        const date = new Date(); 
+        let tomorrow = new Date();
+        tomorrow.setDate(date.getDate() +1);
+        const activite1=new Activity(collab,projet,false,new Date(),[]);
+        const absence=new Absence(collab,true,new Date(),Raison.maladie);
+        const activite3=new Activity(collab,projet,false,tomorrow,[]);
+
+        
+        //When
+        const cra=new CRA(date.getMonth()+1,date.getFullYear());
+        cra.addActivity(activite1);
+        cra.addAbsence(absence);
+        cra.addActivity(activite3);
+
+        //then
+        expect(cra.verifyTotalDays()).toBe(false);
+
 
     });
 
@@ -131,8 +150,33 @@ describe('Un CRA ', () => {
 
     it('peut reccuperer les jours vides du mois',()=>{
         //=jours - (activities + absences)
+        const collab=new Collab();
+        const projet=new Project();
+        projet.addCollab(collab);
+        const date = new Date(); 
+        let tomorrow = new Date();
+        tomorrow.setDate(date.getDate() +1);
+        const activite1=new Activity(collab,projet,false,new Date(),[]);
+        const absence=new Absence(collab,true,new Date(),Raison.maladie);
+        const activite3=new Activity(collab,projet,false,tomorrow,[]);
+
+        
+        //When
+        const cra=new CRA(date.getMonth()+1,date.getFullYear());
+        cra.addActivity(activite1);
+        cra.addAbsence(absence);
+        cra.addActivity(activite3)
+
+        //then
+        const businessDays=cra.calculateBusinessDays(date.getMonth()+1,date.getFullYear());
+        expect(cra.calculateEmptyDays()).toBe(businessDays-(3 * 0.5));
+
         
     });
+
+
+
+  
     
 
 
