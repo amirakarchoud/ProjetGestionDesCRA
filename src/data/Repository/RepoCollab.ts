@@ -4,7 +4,7 @@ import { IRepoCollab } from "../../domain/IRepository/IRepoCollab";
 import { Repository } from "typeorm";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDB } from "../dataModel/user.entity";
-import { Role } from "@app/domain/model/Role";
+import { Role } from "../../domain/model/Role";
 
 @Injectable()
 export class RepoCollab implements IRepoCollab {

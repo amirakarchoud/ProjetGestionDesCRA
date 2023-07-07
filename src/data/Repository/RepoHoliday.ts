@@ -1,9 +1,9 @@
-import { IRepoHoliday } from "@app/domain/IRepository/IRepoHoliday";
+import { IRepoHoliday } from "../../domain/IRepository/IRepoHoliday";
 import { HolidayDB } from "../dataModel/holiday.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { Holiday } from "@app/domain/model/Holiday";
+import { Holiday } from "../../domain/model/Holiday";
 
 @Injectable()
 export class RepoHoliday implements IRepoHoliday {

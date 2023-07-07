@@ -8,14 +8,15 @@ import { UserDB } from "../dataModel/user.entity";
 import { RepoCollab } from "./RepoCollab";
 import { RepoCra } from "./RepoCra";
 import { IRepoHoliday } from "../../domain/IRepository/IRepoHoliday";
-import { CRA } from "@app/domain/model/CRA";
+import { CRA } from "../../domain/model/CRA";
+import { RepoHoliday } from "./RepoHoliday";
 
 @Injectable()
 export class RepoAbsence implements IRepoAbsence {
     constructor(
         @InjectRepository(AbsenceDB)
         private absenceRepository: Repository<AbsenceDB>, private readonly repoCollab: RepoCollab, private readonly repoCra: RepoCra
-        , private readonly repoHoliday: IRepoHoliday
+        , private readonly repoHoliday: RepoHoliday
     ) { }
 
     async findAll(): Promise<Absence[]> {
@@ -53,7 +54,8 @@ export class RepoAbsence implements IRepoAbsence {
         absencedb.matin = absence.matin;
         absencedb.raison = absence.raison;
         // absencedb.collab=absence.collab;
-        //absencedb.collab=await this.repoCollab.findById(absence.collab.email);
+        let user=await this.repoCollab.findById(absence.collab.email);
+       // absencedb.collab=user;
 
         // Test in the CRA for the same month and year
         if (absence.cra.month != dateAbs.getMonth() + 1 || absence.cra.year != dateAbs.getFullYear()) {
@@ -67,11 +69,23 @@ export class RepoAbsence implements IRepoAbsence {
             throw new Error('FULL day or period');
         }
 
-
-
         //save and done
         this.absenceRepository.save(absencedb);
 
         return absence;
     }
+
+
+
+
+  async findById(id: number): Promise<Absence> {
+    const absence = (await this.absenceRepository.findOne({ where: { id } ,relations:['collab','cra']}));
+    let user= await this.repoCollab.findById(absence.collab.email);
+    let cra = await this.repoCra.findById(absence.cra.id);
+    return new Absence(user,absence.matin,absence.date,absence.raison,cra);
+  }
+
+  async delete(id: number) {
+      await this.absenceRepository.delete(id);
+  }
 }

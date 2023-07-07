@@ -6,13 +6,13 @@ import { CRA } from "../../domain/model/CRA";
 import { IRepoCra } from "../../domain/IRepository/IRepoCra";
 import { RepoCollab } from "./RepoCollab";
 import { IRepoCollab } from "../../domain/IRepository/IRepoCollab";
-import { Etat } from "@app/domain/model/etat.enum";
+import { Etat } from "../../domain/model/etat.enum";
 
 @Injectable()
 export class RepoCra implements IRepoCra {
   constructor(
     @InjectRepository(CRADB)
-    private craRepository: Repository<CRADB>,private readonly  collabRepository:IRepoCollab
+    private craRepository: Repository<CRADB>,private readonly  collabRepository:RepoCollab
   ) { }
 
 
@@ -24,7 +24,7 @@ export class RepoCra implements IRepoCra {
 
 
   async findById(id: number): Promise<CRA> {
-    const cra = (await this.craRepository.findOne({ where: { id } ,relations:['collab']}));
+    const cra = (await this.craRepository.findOne({ where: { id } ,relations:['collab','activities', 'absences']}));
     let user= await this.collabRepository.findById(cra.collab.email);
     return new CRA(cra.month, cra.year,user,cra.date);
   }
