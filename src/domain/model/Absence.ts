@@ -1,12 +1,14 @@
 import { ForbiddenException } from "@nestjs/common";
 import { Collab } from "./Collab";
 import { Raison } from "./Raison";
+import { CRA } from "./CRA";
 
 export class Absence{
     private _collab: Collab;
     private _matin:boolean;
     private _date:Date;
     private _raison:Raison;
+    private _cra: CRA;
 
 
     constructor(collab: Collab,matin:boolean,date:Date,raison:Raison) {

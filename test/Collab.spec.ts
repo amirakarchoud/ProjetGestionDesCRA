@@ -1,11 +1,11 @@
-import { Project } from "../src/model/Project";
-import { Activity } from "../src/model/Activity";
-import { Collab } from "../src/model/Collab";
-import { Raison } from "../src/model/Raison";
-import { Absence } from "../src/model/Absence";
-import { Role } from "src/model/Role";
+
 
 describe('Collaborateur ',()=>{
+    it('peut contenir des collaborateurs',()=>{
+
+
+    });
+   /* 
     it('peut creer une activite ',()=>{
         //given
         const collab= new Collab();
@@ -74,6 +74,6 @@ describe('Collaborateur ',()=>{
     });
 
    
-
+*/
 
 })

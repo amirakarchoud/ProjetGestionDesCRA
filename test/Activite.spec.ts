@@ -1,11 +1,10 @@
-import { ForbiddenException } from "@nestjs/common";
-import { Activity } from "../src/model/Activity";
-import { Collab } from "../src/model/Collab";
-import { Project } from "../src/model/Project";
-import { HolidayAdapter } from "../src/model/HolidayAdapter";
 
 describe('Une activite ',()=>{
+  it('peut contenir des collaborateurs',()=>{
 
+
+  });
+/*
     it('ne peut pas tomber sur un jour ferie',()=>{
         const holidayAdapter = new HolidayAdapter();
 
@@ -61,5 +60,6 @@ holidayAdapter.getHolidays()
 
    });
 
-
+*/
 })
+

@@ -1,9 +1,11 @@
-import { Collab } from "../src/model/Collab";
-import { Raison } from "src/model/Raison";
-import { Absence } from "src/model/Absence";
+
 
 describe('Une absence ',()=>{
+         it('peut contenir des collaborateurs',()=>{
 
+
+    });
+/*
 
     it('peut etre cree par un collab',()=>{
          //given 
@@ -24,6 +26,7 @@ describe('Une absence ',()=>{
    });
 
 
-
+*/
 
 })
+

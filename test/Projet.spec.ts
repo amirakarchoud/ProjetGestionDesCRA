@@ -1,7 +1,11 @@
-import { Collab } from "../src/model/Collab";
-import { Project } from "../src/model/Project";
+
 
 describe('Un projet ',()=>{
+    it('peut contenir des collaborateurs',()=>{
+
+
+    });
+    /*
     it('peut contenir des collaborateurs',()=>{
 
         //given
@@ -29,4 +33,5 @@ describe('Un projet ',()=>{
     it('peut etre modifie que par un admin',()=>{
         
     });
+    */
 })

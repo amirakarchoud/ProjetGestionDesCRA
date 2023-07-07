@@ -2,6 +2,7 @@ import { ForbiddenException } from "@nestjs/common";
 import { Collab } from "./Collab";
 import { Project } from "./Project";
 import { HolidayAdapter } from "./HolidayAdapter";
+import { CRA } from "./CRA";
 
 export class Activity {
 
@@ -9,7 +10,9 @@ export class Activity {
     private _projet: Project;
     private _matin: boolean;
     private _date: Date;
+    private _cra: CRA;
 
+    
     constructor(collab: Collab, projet: Project, matin: boolean, date: Date, holidays: any) {
 
         //step1:check if the date is a holiday
@@ -24,9 +27,8 @@ export class Activity {
             }
         }
 
-        //step 2: check if its the collab's
-        
-        if (!projet.collabs.includes(collab) )
+        //step 2: check if its the collab's 
+        if (!projet.collabs.includes(collab))
 
             throw new ForbiddenException();
 
@@ -50,7 +52,7 @@ export class Activity {
         return this._date;
     }
 
-    public get matin():boolean{
+    public get matin(): boolean {
         return this._matin;
     }
 

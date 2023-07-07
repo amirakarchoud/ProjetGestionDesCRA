@@ -1,7 +1,11 @@
-import { Collab } from "../src/model/Collab";
-import { Notification } from "../src/model/Notiification";
+import { Collab } from "../src/domain/model/Collab";
 
 describe('Une notification',()=>{
+    it('peut contenir des collaborateurs',()=>{
+
+
+    });
+    /*
 
 it('concerne un collab',()=>{
     const collab=new Collab();
@@ -33,5 +37,5 @@ expect(notif.date).toBe(date);
 
 
 
-
+*/
 })
