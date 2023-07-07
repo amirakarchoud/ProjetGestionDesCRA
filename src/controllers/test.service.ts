@@ -1,4 +1,4 @@
-import { CraApplication } from "@app/domain/application/craApplication";
+import { CraApplication } from "../domain/application/craApplication";
 import { Injectable, OnModuleInit } from "@nestjs/common";
 
 @Injectable()

@@ -5,15 +5,16 @@ import { Repository } from "typeorm";
 import { CraApplication } from "../../src/domain/application/craApplication";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ModuleRef } from "@nestjs/core";
-import { RepoCollab } from "../../src/data/RepoCollab";
-import { IRepoCollab } from "../../src/domain/IRepoCollab";
+import { RepoCollab } from "../../src/data/Repository/RepoCollab";
+import { IRepoCollab } from "../../src/domain/IRepository/IRepoCollab";
 import { Collab } from "../../src/domain/model/Collab";
 import { UserDB } from "../../src/data/dataModel/user.entity";
 import { AbsenceDB } from "../../src/data/dataModel/absence.entity";
 import { ActivityDB } from "../../src/data/dataModel/activity.entity";
 import { CRADB } from "../../src/data/dataModel/cra.entity";
-import { Holiday } from "../../src/data/dataModel/holiday.entity";
+import { HolidayDB } from "../../src/data/dataModel/holiday.entity";
 import { ProjectDB } from "../../src/data/dataModel/project.entity";
+import { Role } from "../../src/domain/model/Role";
 
 describe('APP', () => {
     let app: INestApplication;
@@ -33,7 +34,7 @@ describe('APP', () => {
                     __dirname + '../../src/**/*.entity{.ts,.js}',
                 ],
                 synchronize: true,
-            }), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,Holiday,ProjectDB])],
+            }), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
             providers: [
                 CraApplication,
                 { provide: 'IRepoCollab', useClass: RepoCollab }]
@@ -46,7 +47,7 @@ describe('APP', () => {
 
     it(`create user from token`, () => {
         const a: RepoCollab = app.get('IRepoCollab');
-        a?.createUser(new Collab('test','toto'));
+        a?.save(new Collab('test','toto',Role.admin));
 
         //const res = app.get(CraApplication).addUser('token');
         //const repo = moduleRef.get(Repository<CollabDB>);

@@ -4,6 +4,7 @@ import { Raison } from "./Raison";
 import { CRA } from "./CRA";
 
 export class Absence{
+   // private _id:number;
     private _collab: Collab;
     private _matin:boolean;
     private _date:Date;
@@ -11,14 +12,23 @@ export class Absence{
     private _cra: CRA;
 
 
-    constructor(collab: Collab,matin:boolean,date:Date,raison:Raison) {
+    constructor(collab: Collab,matin:boolean,date:Date,raison:Raison,cra:CRA) {
 
         this._collab = collab;
         this._matin=matin;
         this._date=date;
         this._raison=raison;
+        this._cra=cra;
 
 
+    }
+
+    public get collab():Collab{
+        return this._collab;
+    }
+
+    public get cra():CRA{
+        return this._cra;
     }
 
     public get matin():boolean{

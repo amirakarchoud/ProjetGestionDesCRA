@@ -2,8 +2,10 @@ import { ForbiddenException } from "@nestjs/common";
 import { Absence } from "./Absence";
 import { Activity } from "./Activity";
 import { HolidayAdapter } from "./HolidayAdapter";
+import { Collab } from "./Collab";
 
 export class CRA {
+
 
     private _holidays: any[] = [];
     private _holidayAdapter: HolidayAdapter;
@@ -11,14 +13,49 @@ export class CRA {
     private _activites: Activity[] = [];
     private _month: number;
   private _year: number;
+  private _collab:Collab;
+  private _date:Date;
 
-  constructor(month: number, year: number) {
+  constructor(month: number, year: number,collab:Collab,date:Date) {
     this._month = month;
     this._year = year;
+    this._date=date;
+    this._collab=collab;
     this._holidayAdapter = new HolidayAdapter();
     this.fetchHolidays();
     
   }
+
+
+  checkActivityOrAbsenceExists(date: Date, matin: boolean):boolean {
+    const existingActivity = this._activites.find((activity) => this.formatDate(activity.date) === this.formatDate(date) && activity.matin === matin);
+    console.log('existingActivity= '+existingActivity);
+    if (existingActivity) {
+      console.log('found activity');
+      return true;
+    }
+
+    const existingAbsence = this._absences.find((absence) => this.formatDate(absence.date) === this.formatDate(date) && absence.matin === matin);
+    console.log('existingAbsence= '+existingAbsence);
+    if (existingAbsence) {
+      console.log('found absence');
+      
+      return true;
+    }
+
+
+    const activities = this._activites.filter((activity) => this.formatDate(activity.date) === this.formatDate(date) );
+    const absences = this._absences.filter((absence) => this.formatDate(absence.date) === this.formatDate(date) );
+  if (activities.length+absences.length>1)
+  {
+    return true;
+  }
+    return false;
+   
+}
+
+
+
 
   async fetchHolidays() {
     try {
@@ -126,6 +163,20 @@ export class CRA {
 
     public get holidays():any[]{
         return this._holidays;
+    }
+
+    public get month():number{
+      return this._month;
+    }
+    public get year():number{
+      return this._year;
+    }
+
+    public get date():Date{
+      return this._date;
+    }
+    public get collab():Collab{
+      return this._collab;
     }
 
 
