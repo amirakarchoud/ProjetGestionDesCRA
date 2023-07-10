@@ -51,4 +51,8 @@ export class Collab {
         return this._projects;
     }
 
+    public set email(em:string){
+        this._email=em;
+    }
+
 }

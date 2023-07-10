@@ -10,6 +10,10 @@ import { ActivityDB } from './data/dataModel/activity.entity';
 import { CRADB } from './data/dataModel/cra.entity';
 import { HolidayDB } from './data/dataModel/holiday.entity';
 import { ProjectDB } from './data/dataModel/project.entity';
+import { CraService } from './domain/service/cra.service';
+import { CraController } from './controllers/cra.controller';
+import { RepoCra } from './data/Repository/RepoCra';
+import { RepoHoliday } from './data/Repository/RepoHoliday';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -24,8 +28,9 @@ import { ProjectDB } from './data/dataModel/project.entity';
   ],
     synchronize: true,
   }), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
-  controllers: [],
-  providers: [AppService,CraApplication,TestService,
-    { provide: 'IRepoCollab', useClass: RepoCollab }],
+  controllers: [CraController],
+  providers: [AppService,CraApplication,TestService,CraService,
+    { provide: 'IRepoCollab', useClass: RepoCollab },{ provide: 'IRepoCra', useClass: RepoCra }
+  ,{ provide: 'IRepoHoliday', useClass: RepoHoliday }],
 })
 export class AppModule {}

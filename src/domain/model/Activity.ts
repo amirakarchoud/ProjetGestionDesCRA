@@ -5,13 +5,17 @@ import { HolidayAdapter } from "./HolidayAdapter";
 import { CRA } from "./CRA";
 
 export class Activity {
+    private _id :number;
 
     private _collab: Collab;
-    private _projet: Project;
+    private _project: Project;
     private _matin: boolean;
     private _date: Date;
     private _cra: CRA;
-
+ 
+public get id():number{
+    return this._id;
+}
     
     constructor(collab: Collab, projet: Project, matin: boolean, date: Date, holidays: any) {
 
@@ -33,7 +37,7 @@ export class Activity {
             throw new ForbiddenException();
 
         this._collab = collab;
-        this._projet = projet;
+        this._project = projet;
         this._matin = matin;
         this._date = date;
 
@@ -44,8 +48,11 @@ export class Activity {
         this._collab = collab;
     }
 
-    public set projet(projet: Project) {
-        this._projet = projet;
+    public set project(projet: Project) {
+        this._project = projet;
+    }
+    public get project():Project{
+        return this._project;
     }
 
     public get date(): Date {
@@ -54,6 +61,9 @@ export class Activity {
 
     public get matin(): boolean {
         return this._matin;
+    }
+    public get cra():CRA{
+        return this._cra;
     }
 
 }

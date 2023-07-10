@@ -3,8 +3,10 @@ import { Absence } from "./Absence";
 import { Activity } from "./Activity";
 import { HolidayAdapter } from "./HolidayAdapter";
 import { Collab } from "./Collab";
+import { Etat } from "./etat.enum";
 
 export class CRA {
+  private _id:number;
 
 
     private _holidays: any[] = [];
@@ -15,8 +17,10 @@ export class CRA {
   private _year: number;
   private _collab:Collab;
   private _date:Date;
+  private _etat:Etat;
 
-  constructor(month: number, year: number,collab:Collab,date:Date) {
+  constructor(id:number,month: number, year: number,collab:Collab,date:Date) {
+    this._id=id;
     this._month = month;
     this._year = year;
     this._date=date;
@@ -25,6 +29,10 @@ export class CRA {
     this.fetchHolidays();
     
   }
+  public get etat():Etat{
+    return this._etat;
+  }
+  
 
 
   checkActivityOrAbsenceExists(date: Date, matin: boolean):boolean {
@@ -89,15 +97,27 @@ export class CRA {
         return businessDays;
     }
 
-    public get activites(): Activity[] {
+    public get activities(): Activity[] {
         return this._activites;
     }
 
     public get absences(): Absence[] {
         return this._absences;
     }
+    public set absences(abs:Absence[]){
+      this._absences=abs;
+    }
+    public set activities(act:Activity[]){
+      this._activites=act;
+    }
+
+    addActivity(activity: Activity) {
+      
+      this._activites.push(activity);
+  }
 
 
+/*
     addActivity(activity: Activity) {
         if(!this.verifyDateNotInCRA(activity.date,activity.matin))
         {
@@ -121,26 +141,32 @@ export class CRA {
         throw new Error('not in the same month');
         this._activites.push(activity);
     }
-
+*/
     addAbsence(absence: Absence) {
+      console.log("in add absence");
         if(!this.verifyDateNotInCRA(absence.date,absence.matin))
         {
             throw new Error('full day');
         }
+        console.log("after checking date in cra")
         const today=new Date();
         let beforeFiveDays = new Date(); //fel CRA
         beforeFiveDays.setDate(today.getDate()-5);
-        
-        if ( (absence.date.getMonth()!=today.getMonth() && beforeFiveDays.getMonth() != absence.date.getMonth()))
+        const absDate=new Date(absence.date);
+        /*
+        //to add later
+        if ( (absDate.getMonth()!=today.getMonth() && beforeFiveDays.getMonth() != absDate.getMonth()))
 
-            throw new ForbiddenException();
-            const y=absence.date.getFullYear();
-            const m=absence.date.getMonth()+1;
+            {throw new ForbiddenException();}
+            */
+            const y=absDate.getFullYear();
+            const m=absDate.getMonth()+1;
     
     
             if(y!=this._year || m!=this._month)
         throw new Error('not in the same month');
         this._absences.push(absence);
+        console.log("done adding");
     }
 
     calculateEmptyDays():number{
@@ -159,6 +185,10 @@ export class CRA {
         if(this.calculateEmptyDays()==0)
         return true;
         return false;
+    }
+
+    public get id():number{
+      return this._id;
     }
 
     public get holidays():any[]{
@@ -183,7 +213,7 @@ export class CRA {
 
      verifyDateNotInCRA(date: Date, periode:boolean): boolean {
 
-        const formattedDate = this.formatDate(date); 
+        const formattedDate = this.formatDate(new Date(date)); 
 
         const hasActivity = this._activites.filter(activity => this.formatDate(activity.date) === formattedDate);
   
@@ -211,6 +241,8 @@ export class CRA {
 
 
        formatDate(date: Date): string {
+        //console.log("here format date")
+       // console.log("formatdate = "+date);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');

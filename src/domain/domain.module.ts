@@ -1,7 +1,8 @@
 import { Module } from "@nestjs/common";
-/*
+import { CraService } from "./service/cra.service";
+
 @Module({
     imports: [],
     controllers: [],
-    providers: [],})
-export class DoaminModule(){}*/
+    providers: [CraService],})
+export class DoaminModule{}

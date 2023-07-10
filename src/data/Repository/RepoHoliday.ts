@@ -14,8 +14,14 @@ export class RepoHoliday implements IRepoHoliday {
 
 
     async findByDate(date: Date): Promise<Holiday> {
+      console.log("date in find holiday "+date);
        const holiday= await this.holidayRepository.findOne({where:{date}});
+       console.log("find done");
+       if(holiday)
+       {
        return new Holiday(holiday.date,holiday.name)
+       }
+       return null;
     }
    
 

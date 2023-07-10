@@ -21,7 +21,7 @@ export class AbsenceDB {
   @Column('enum', { default: 'conges', enum: [ 'rtt', 'conges', 'maladie'] })
   raison: Raison;
 
-  @ManyToOne(() => CRADB)
+  @ManyToOne(() => CRADB, cra => cra.absences)
   cra: CRADB;
 
 

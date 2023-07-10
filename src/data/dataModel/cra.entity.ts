@@ -23,10 +23,10 @@ export class CRADB {
   @ManyToOne(() => UserDB)
   collab: UserDB;
 
-  @OneToMany(() => AbsenceDB,(absence)=>absence.cra)
+  @OneToMany(() => AbsenceDB,(absence)=>absence.cra,{ cascade: true })
   absences: AbsenceDB[];
 
-  @OneToMany(() => ActivityDB,(activity)=>activity.cra)
+  @OneToMany(() => ActivityDB,(activity)=>activity.cra,{ cascade: true })
   activities: ActivityDB[];
 
 

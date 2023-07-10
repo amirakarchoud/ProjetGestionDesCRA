@@ -3,13 +3,11 @@ import { Collab } from "../../domain/model/Collab";
 import { IRepoCollab } from "../IRepository/IRepoCollab";
 import { Inject, Injectable } from "@nestjs/common";
 import { Role } from "../model/Role";
-import { IRepoAbsence } from "../IRepository/IRepoAbsence";
 import { Absence } from "../model/Absence";
 
 @Injectable()
 export class CraApplication{
-    constructor(@Inject('IRepoCollab') private collabRepository :IRepoCollab
-    ,@Inject('IRepoAbsence') private absenceRepository :IRepoAbsence){}
+    constructor(@Inject('IRepoCollab') private collabRepository :IRepoCollab){}
 
     addUser(jwtToken:string){
         console.log("craqpp add user");

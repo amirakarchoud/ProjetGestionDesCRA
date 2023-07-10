@@ -22,7 +22,7 @@ export class ActivityDB {
   @ManyToOne(() => ProjectDB)
   project: ProjectDB;
 
-  @ManyToOne(() => CRADB)
+  @ManyToOne(() => CRADB, cra => cra.activities)
   cra: CRADB;
 
 
