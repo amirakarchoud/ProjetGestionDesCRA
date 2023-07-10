@@ -1,7 +1,7 @@
 import { INestApplication } from "@nestjs/common";
 import * as request from 'supertest';
 import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
-import { Repository } from "typeorm";
+import { DataSource, Repository, getManager } from "typeorm";
 import { CraApplication } from "../../src/domain/application/craApplication";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ModuleRef } from "@nestjs/core";
@@ -16,6 +16,7 @@ import { ProjectDB } from "../../src/data/dataModel/project.entity";
 import { Role } from "../../src/domain/model/Role";
 import { RepoHoliday } from "../../src/data/Repository/RepoHoliday";
 import { RepoCra } from "../../src/data/Repository/RepoCra";
+import { AppModule } from "../../src/app.module";
 
 describe('APP', () => {
     let app: INestApplication;
@@ -23,38 +24,29 @@ describe('APP', () => {
 
     beforeAll(async () => {
         moduleRef = await Test.createTestingModule({
-            imports: [TypeOrmModule.forRoot({
-                type: 'mysql',
-                host: 'localhost',
-                port: 3306,
-                username: 'root',
-                password: '',
-                database: 'test2',
-                entities: [
-                    __dirname + '../../src/**/*.entity{.ts,.js}',
-                ],
-                synchronize: true,
-            }), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
-            providers: [
-                CraApplication,{ provide: 'IRepoCollab', useClass: RepoCollab }
-                ,{ provide: 'IRepoHoliday', useClass: RepoHoliday },{ provide: 'IRepoCra', useClass: RepoCra },RepoCollab,RepoCra,RepoHoliday,
-                ]
+            imports: [AppModule]
         })
             .compile();
 
         app = moduleRef.createNestApplication();
         await app.init();
     });
+    beforeEach(async ()=> {
+        const ds = app.get(DataSource);
+        ds.manager.query('truncate user ')
+       // let a = 43
+    })
 
-    it(`create user from token`, () => {
-        const a: RepoCollab = app.get('IRepoCollab');
-        a?.save(new Collab('test','toto',Role.admin));
+    it(`create user from token`, async () => {
+        const repo: RepoCollab = app.get('IRepoCollab');
+        const application = app.get(CraApplication);
+        //await a?.save(new Collab('test', 'toto', Role.admin));
 
-        //const res = app.get(CraApplication).addUser('token');
+        const res = await application.addUser('token');
         //const repo = moduleRef.get(Repository<CollabDB>);
-        // const repo = app.get(Repository<CollabDB>);
-        // const createdUser = repo.findOneBy({ email: 'toto' });
-        //expect(createdUser).toBeDefined();
+        //const repo = app.get(Repository<Collab>);
+        const createdUser = await repo.findById('test1');
+        expect(createdUser).toBeDefined();
     });
 
     afterAll(async () => {

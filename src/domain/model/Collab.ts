@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { Absence } from "./Absence";
 import { Activity } from "./Activity";
 import { CRA } from "./CRA";
@@ -32,6 +33,10 @@ export class Collab {
     }
     addActivity(arg0: Activity) {
         this._activities.push(arg0);
+    }
+
+    addProject(arg0: Project) {
+        this._projects.push(arg0);
     }
 
     public get activities(): Activity[] {

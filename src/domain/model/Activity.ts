@@ -17,7 +17,7 @@ public get id():number{
     return this._id;
 }
     
-    constructor(collab: Collab, projet: Project, matin: boolean, date: Date, holidays: any) {
+    constructor(id:number,collab: Collab, projet: Project, matin: boolean, date: Date, holidays: any) {
 
         //step1:check if the date is a holiday
         const day = String(date.getDate()).padStart(2, '0');
@@ -31,10 +31,13 @@ public get id():number{
             }
         }
 
+        /*
         //step 2: check if its the collab's 
         if (!projet.collabs.includes(collab))
 
             throw new ForbiddenException();
+            */
+            this._id=id;
 
         this._collab = collab;
         this._project = projet;

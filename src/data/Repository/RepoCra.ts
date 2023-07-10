@@ -11,8 +11,10 @@ import { UserDB } from "../dataModel/user.entity";
 import { AbsenceDB } from "../dataModel/absence.entity";
 import { classToPlain, plainToClass } from "class-transformer";
 import { ActivityDB } from "../dataModel/activity.entity";
-import { Absence } from "@app/domain/model/Absence";
-import { Collab } from "@app/domain/model/Collab";
+import { Absence } from "../../domain/model/Absence";
+import { Collab } from "../../domain/model/Collab";
+import { Activity } from "../../domain/model/Activity";
+import { Project } from "../../domain/model/Project";
 
 @Injectable()
 export class RepoCra implements IRepoCra {
@@ -30,7 +32,7 @@ export class RepoCra implements IRepoCra {
     
     let foundcra=new CRA(cra.id,cra.month, cra.year,user,cra.date);
     foundcra.collab.email=user.email;
-    //fill 
+    //fill absences
 
     const craAbsences: Absence[] = cra.absences.map( (abs) => {
       const absf = new Absence(abs.id,new Collab(cra.collab.email,cra.collab.name,cra.collab.role),
@@ -38,6 +40,14 @@ export class RepoCra implements IRepoCra {
       return absf;
     });
     foundcra.absences=craAbsences;
+//fill activities
+//
+    const craAact: Activity[] = cra.activities.map( (abs) => {
+      const absf = new Activity(abs.id,new Collab(cra.collab.email,cra.collab.name,cra.collab.role),new Project(abs.project.code,[]),
+      abs.matin,abs.date,foundcra);
+      return absf;
+    });
+    foundcra.activities=craAact;
     return foundcra;
     }
     return null;
@@ -75,8 +85,11 @@ export class RepoCra implements IRepoCra {
     cradb.etat=Etat.unsubmitted;
     const craActivitiesDB: ActivityDB[] = cra.activities.map((activity) => {
       const activityDB = new ActivityDB();
+      activityDB.cra=new CRADB();
+      activityDB.cra.id=cra.id;
       activityDB.id = activity.id;
       activityDB.date=activity.date;
+      activityDB.collab=new UserDB();
       activityDB.collab.email=activity.collab.email;
       activityDB.matin=activity.matin;
 

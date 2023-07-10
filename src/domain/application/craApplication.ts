@@ -9,11 +9,11 @@ import { Absence } from "../model/Absence";
 export class CraApplication{
     constructor(@Inject('IRepoCollab') private collabRepository :IRepoCollab){}
 
-    addUser(jwtToken:string){
+    async addUser(jwtToken:string){
         console.log("craqpp add user");
         const collab=new Collab('test1','test',Role.admin);
         console.log('collab'+collab.email);
-        this.collabRepository.save(collab);
+        await this.collabRepository.save(collab);
 
     }
 

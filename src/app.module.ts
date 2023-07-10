@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CraApplication } from './domain/application/craApplication';
 import { RepoCollab } from './data/Repository/RepoCollab';
 import { UserDB } from './data/dataModel/user.entity';
-import { TestService } from './controllers/test.service';
 import { AbsenceDB } from './data/dataModel/absence.entity';
 import { ActivityDB } from './data/dataModel/activity.entity';
 import { CRADB } from './data/dataModel/cra.entity';
@@ -14,6 +13,8 @@ import { CraService } from './domain/service/cra.service';
 import { CraController } from './controllers/cra.controller';
 import { RepoCra } from './data/Repository/RepoCra';
 import { RepoHoliday } from './data/Repository/RepoHoliday';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ProjectController } from './controllers/Project.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -27,9 +28,9 @@ import { RepoHoliday } from './data/Repository/RepoHoliday';
       __dirname + '/**/*.entity{.ts,.js}',
   ],
     synchronize: true,
-  }), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
-  controllers: [CraController],
-  providers: [AppService,CraApplication,TestService,CraService,
+  }),ScheduleModule.forRoot(), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
+  controllers: [CraController,ProjectController],
+  providers: [AppService,CraApplication,CraService,
     { provide: 'IRepoCollab', useClass: RepoCollab },{ provide: 'IRepoCra', useClass: RepoCra }
   ,{ provide: 'IRepoHoliday', useClass: RepoHoliday }],
 })

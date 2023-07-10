@@ -1,18 +1,18 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { UserDB } from "./user.entity";
 import { ActivityDB } from "./activity.entity";
+import { Exclude } from "class-transformer";
 
 
 @Entity('project')
 export class ProjectDB {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+ 
+  
   @Column()
+  @PrimaryColumn()
   code: string;
 
   @ManyToMany(() => UserDB)
-  @JoinTable()
   collabs: UserDB[];
 
   @OneToMany(() => ActivityDB,(activity) => activity.project)
