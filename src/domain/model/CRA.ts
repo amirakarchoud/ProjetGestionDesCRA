@@ -7,9 +7,8 @@ import { Etat } from "./etat.enum";
 import { Holiday } from "./Holiday";
 
 export class CRA {
+   
   private _id:number;
-
-
     private _holidays: Holiday[] = [];
     private _holidayAdapter: HolidayAdapter;
     private _absences: Absence[] = [];
@@ -268,6 +267,18 @@ export class CRA {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
+
+
+
+      deleteAbsence(date: Date, matin: boolean) {
+        this.absences.forEach((abs, index) => {
+          if (this.formatDate(abs.date) === this.formatDate(date) && abs.matin === matin) {
+            this.absences.splice(index, 1);
+          }
+        });
+      }
+      
+    
       
 
 }

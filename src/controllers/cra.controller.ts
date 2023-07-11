@@ -2,7 +2,7 @@ import { CraApplication } from "../domain/application/craApplication";
 import { CreateAbsenceDto } from "../Dto/CreateAbsenceDto";
 import { Absence } from "../domain/model/Absence";
 import { CraService } from "../domain/service/cra.service";
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Post } from "@nestjs/common";
 
 @Controller('cra')
 export class CraController{
@@ -26,5 +26,16 @@ export class CraController{
         return await this.craApp.addAbsence(createAbsenceDto);
       
     }
+
+    /*
+    @Delete('absence/:id')
+    async deleteAbsence(@Param('id')idAbsence:number): Promise<Absence> {
+       
+        return await this.craApp.addAbsence();
+      
+    }
+    */
+
+
 
 }

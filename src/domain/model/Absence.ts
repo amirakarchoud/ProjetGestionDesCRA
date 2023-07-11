@@ -4,15 +4,14 @@ import { Raison } from "./Raison";
 import { CRA } from "./CRA";
 
 export class Absence{
-    private _id:number;
-    private _collab: Collab;
+    //private _id:number;
+    //private _collab: Collab;
     private _matin:boolean;
     private _date:Date;
     private _raison:Raison;
-    private _cra: CRA;
+    private _craId: number;
     toJSON(): object {
         return {
-          collab: this._collab,
           matin: this._matin,
           date: this._date,
           raison: this._raison
@@ -20,28 +19,19 @@ export class Absence{
       }
 
 
-    constructor(id:number,collab: Collab,matin:boolean,date:Date,raison:Raison,cra:CRA) {
-        this._id=id;
-        this._collab = collab;
+    constructor(id:number,matin:boolean,date:Date,raison:Raison) {
+        this._craId=id;
         this._matin=matin;
         this._date=date;
         this._raison=raison;
-        this._cra=cra;
 
 
     }
 
     public get id():number{
-        return this._id;
+        return this._craId;
     }
 
-    public get collab():Collab{
-        return this._collab;
-    }
-
-    public get cra():CRA{
-        return this._cra;
-    }
 
     public get matin():boolean{
         return this._matin;

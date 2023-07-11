@@ -16,7 +16,7 @@ import { Collab } from "../../domain/model/Collab";
 import { Activity } from "../../domain/model/Activity";
 import { Project } from "../../domain/model/Project";
 import { HolidayDB } from "../dataModel/holiday.entity";
-import { Holiday } from "@app/domain/model/Holiday";
+import { Holiday } from "../../domain/model/Holiday";
 
 @Injectable()
 export class RepoCra implements IRepoCra {
@@ -39,8 +39,8 @@ export class RepoCra implements IRepoCra {
     //fill absences
 
     const craAbsences: Absence[] = cra.absences.map( (abs) => {
-      const absf = new Absence(abs.id,new Collab(cra.collab.email,cra.collab.name,cra.collab.role),
-      abs.matin,abs.date,abs.raison,foundcra);
+      const absf = new Absence(foundcra.id,
+      abs.matin,abs.date,abs.raison);
       return absf;
     });
     foundcra.absences=craAbsences;
@@ -73,8 +73,8 @@ export class RepoCra implements IRepoCra {
     //fill 
 
     const craAbsences: Absence[] = cra.absences.map( (abs) => {
-      const absf = new Absence(abs.id,new Collab(cra.collab.email,cra.collab.name,cra.collab.role),
-      abs.matin,abs.date,abs.raison,found);
+      const absf = new Absence(found.id,
+      abs.matin,abs.date,abs.raison);
       return absf;
     });
     found.absences=craAbsences;

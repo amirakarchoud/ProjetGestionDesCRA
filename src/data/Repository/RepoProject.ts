@@ -1,6 +1,6 @@
-import { Project } from "@app/domain/model/Project";
+import { Project } from "../../domain/model/Project";
 import { ProjectDB } from "../dataModel/project.entity";
-import { IRepoProject } from "@app/domain/IRepository/IRepoProject";
+import { IRepoProject } from "../../domain/IRepository/IRepoProject";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";

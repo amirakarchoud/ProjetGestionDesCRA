@@ -1,23 +1,11 @@
 import { INestApplication } from "@nestjs/common";
-import * as request from 'supertest';
-import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
-import { DataSource, Repository, getManager } from "typeorm";
+import { Test, TestingModule } from '@nestjs/testing';
+import { DataSource } from "typeorm";
 import { CraApplication } from "../../src/domain/application/craApplication";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ModuleRef } from "@nestjs/core";
 import { RepoCollab } from "../../src/data/Repository/RepoCollab";
-import { Collab } from "../../src/domain/model/Collab";
-import { UserDB } from "../../src/data/dataModel/user.entity";
-import { AbsenceDB } from "../../src/data/dataModel/absence.entity";
-import { ActivityDB } from "../../src/data/dataModel/activity.entity";
-import { CRADB } from "../../src/data/dataModel/cra.entity";
-import { HolidayDB } from "../../src/data/dataModel/holiday.entity";
-import { ProjectDB } from "../../src/data/dataModel/project.entity";
-import { Role } from "../../src/domain/model/Role";
-import { RepoHoliday } from "../../src/data/Repository/RepoHoliday";
-import { RepoCra } from "../../src/data/Repository/RepoCra";
 import { AppModule } from "../../src/app.module";
 import { Project } from "../../src/domain/model/Project";
+import { RepoProject } from "../../src/data/Repository/RepoProject";
 
 describe('APP', () => {
     let app: INestApplication;
@@ -34,7 +22,7 @@ describe('APP', () => {
     });
     beforeEach(async ()=> {
         const ds = app.get(DataSource);
-        ds.manager.query('truncate user ')
+        //ds.manager.query('truncate user ')
        // let a = 43
     })
 
@@ -51,17 +39,17 @@ describe('APP', () => {
     });
 
     it(`create project`, async () => {
-        const repo: RepoCollab = app.get('IRepoCollab');
+        
+        const repo: RepoProject = app.get('IRepoProject');
+        const repoCollab: RepoCollab = app.get('IRepoCollab');
         const application = app.get(CraApplication);
-        //await a?.save(new Collab('test', 'toto', Role.admin));
 
         const res = await application.addUser('token');
-        //const repo = moduleRef.get(Repository<CollabDB>);
-        //const repo = app.get(Repository<Collab>);
-        const createdUser = await repo.findById('test1');
-        const project=new Project("code",[createdUser]);
-        const createdProject=await repo.addProject(project);
+        const createdUser = await repoCollab.findById('test1');
+        const project=new Project("code",[createdUser.email]);
+        const createdProject=await repo.save(project);
         expect(project).toBeDefined();
+        
     });
 
 
