@@ -6,11 +6,16 @@ import { Role } from "../model/Role";
 import { Absence } from "../model/Absence";
 import { IRepoProject } from "../IRepository/IRepoProject";
 import { Project } from "../model/Project";
+import { IRepoCra } from "../IRepository/IRepoCra";
+import { CraService } from "../service/cra.service";
+import { CreateAbsenceDto } from "../../Dto/CreateAbsenceDto";
 
 @Injectable()
 export class CraApplication {
     constructor(@Inject('IRepoCollab') private collabRepository: IRepoCollab,
-        @Inject('IRepoProject') private projectRepository: IRepoProject) { }
+        @Inject('IRepoProject') private projectRepository: IRepoProject,
+        @Inject('IRepoCra') private craRepository: IRepoCra,
+        private readonly craService:CraService) { }
 
     async addUser(jwtToken: string) {
         console.log("craqpp add user");
@@ -43,11 +48,8 @@ export class CraApplication {
     async getProjectsByUser(id: string) {
         return await this.projectRepository.findByUser(id);
     }
-    addAbsence(
-        //absenceDTO??
-    ) {
-        // const user=this.collabRepository.findById(absDto.collab);
-        // const absence=new Absence(user,absDto.matin,absDto.date,absDto.raison,)
+    async addAbsence(absence:CreateAbsenceDto) {
+        return await this.craService.addAbsence(absence);
     }
 
 

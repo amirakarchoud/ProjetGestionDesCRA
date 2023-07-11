@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserDB } from "./user.entity";
 import { Etat } from "../../domain/model/etat.enum";
 import { AbsenceDB } from "./absence.entity";
 import { ActivityDB } from "./activity.entity";
+import { HolidayDB } from "./holiday.entity";
 
 
 @Entity('cra')
@@ -28,6 +29,10 @@ export class CRADB {
 
   @OneToMany(() => ActivityDB,(activity)=>activity.cra,{ cascade: true })
   activities: ActivityDB[];
+
+  @ManyToMany(() => HolidayDB,(holiday)=>holiday.cras)
+  @JoinTable()
+  holidays: HolidayDB[];
 
 
 

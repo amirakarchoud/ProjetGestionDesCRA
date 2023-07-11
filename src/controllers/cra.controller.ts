@@ -1,3 +1,4 @@
+import { CraApplication } from "../domain/application/craApplication";
 import { CreateAbsenceDto } from "../Dto/CreateAbsenceDto";
 import { Absence } from "../domain/model/Absence";
 import { CraService } from "../domain/service/cra.service";
@@ -5,7 +6,7 @@ import { Body, Controller, Post } from "@nestjs/common";
 
 @Controller('cra')
 export class CraController{
-    constructor(private readonly craService: CraService) {}
+    constructor(private readonly craApp:CraApplication) {}
 /*
     @Post()
     async createCra(@Body() createCraDto: CreateCraDto): Promise<CRA> {
@@ -19,10 +20,10 @@ export class CraController{
     }
     */
 
-    @Post('activity')
+    @Post('absence')
     async addAbsence(@Body() createAbsenceDto: CreateAbsenceDto): Promise<Absence> {
        
-        return this.craService.addAbsence(createAbsenceDto);
+        return await this.craApp.addAbsence(createAbsenceDto);
       
     }
 

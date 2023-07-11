@@ -16,7 +16,7 @@ export class RepoHoliday implements IRepoHoliday {
   ) {}
 
 
-  //@Cron('0 * * * * *')
+  @Cron('33 14 * * *')
   async fetchAndStoreHolidays(): Promise<HolidayDB[]> {
     console.log("fetching holidays");
     await this.holidayRepository.clear();
@@ -80,7 +80,7 @@ export class RepoHoliday implements IRepoHoliday {
        if(holiday)
        {
         holiday.forEach(element => {
-          returnedHoliday.push(new Holiday(element.date,element.name))
+          returnedHoliday.push(new Holiday(element.id,element.date,element.name))
           
         });
        return returnedHoliday;
@@ -99,7 +99,7 @@ export class RepoHoliday implements IRepoHoliday {
       });
     
       if (holidays) {
-        const returnedHoliday: Holiday[] = holidays.map((holiday) => new Holiday(holiday.date, holiday.name));
+        const returnedHoliday: Holiday[] = holidays.map((holiday) => new Holiday(holiday.id,holiday.date, holiday.name));
         return returnedHoliday;
       }
     

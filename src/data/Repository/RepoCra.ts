@@ -15,6 +15,8 @@ import { Absence } from "../../domain/model/Absence";
 import { Collab } from "../../domain/model/Collab";
 import { Activity } from "../../domain/model/Activity";
 import { Project } from "../../domain/model/Project";
+import { HolidayDB } from "../dataModel/holiday.entity";
+import { Holiday } from "@app/domain/model/Holiday";
 
 @Injectable()
 export class RepoCra implements IRepoCra {
@@ -26,12 +28,14 @@ export class RepoCra implements IRepoCra {
 
   async findByMonthYearCollab(month: number, year: number, collabid: string) {
  
-    const cra = (await this.craRepository.findOne({ where: { month,year,collab:{email:collabid} },relations:['collab','activities', 'absences'] }));
+    const cra = (await this.craRepository.findOne({ where: { month,year,collab:{email:collabid} },relations:['collab','activities', 'absences','holidays'] }));
     if (cra){
     let user= await this.collabRepository.findById(cra.collab.email);
+    console.log("holidays here22 "+cra.holidays.length)
     
     let foundcra=new CRA(cra.id,cra.month, cra.year,user,cra.date);
     foundcra.collab.email=user.email;
+    console.log("holidays here33 "+foundcra.holidays.length)
     //fill absences
 
     const craAbsences: Absence[] = cra.absences.map( (abs) => {
@@ -48,6 +52,13 @@ export class RepoCra implements IRepoCra {
       return absf;
     });
     foundcra.activities=craAact;
+
+    const craholiday: Holiday[] = cra.holidays.map( (abs) => {
+      const absf = new Holiday(abs.id,abs.date,abs.name);
+      return absf;
+    });
+    foundcra.holidays=craholiday;
+    console.log("holidays here44 "+foundcra.holidays.length)
     return foundcra;
     }
     return null;
@@ -107,12 +118,22 @@ export class RepoCra implements IRepoCra {
       absdb.collab=new UserDB();
       absdb.collab.email=cra.collab.email;
       absdb.raison=abs.raison;
-      console.log("cra id in absdb "+absdb.cra.id);
       return absdb;
     });
     cradb.absences = craAbsencesDB;
-    console.log("absences du cra = "+cradb.absences.length);
-    console.log("absences du cra2 = "+cra.absences.length);
+
+    console.log("holidays= "+cra.holidays.length);
+
+    const holidaydb: HolidayDB[] = cra.holidays.map( (hol) => {
+      const holdb=new HolidayDB();
+      holdb.id=hol.id;
+      holdb.date=hol.date;
+      holdb.name=hol.name;
+      return holdb;
+    });
+    cradb.holidays=holidaydb;
+    console.log("holidays in save here55 "+cra.holidays.length)
+    console.log("holidays in save here66 "+cradb.holidays.length)
     await this.craRepository.save(cradb);
 
     return cra;

@@ -4,12 +4,13 @@ import { Activity } from "./Activity";
 import { HolidayAdapter } from "./HolidayAdapter";
 import { Collab } from "./Collab";
 import { Etat } from "./etat.enum";
+import { Holiday } from "./Holiday";
 
 export class CRA {
   private _id:number;
 
 
-    private _holidays: any[] = [];
+    private _holidays: Holiday[] = [];
     private _holidayAdapter: HolidayAdapter;
     private _absences: Absence[] = [];
     private _activites: Activity[] = [];
@@ -25,8 +26,7 @@ export class CRA {
     this._year = year;
     this._date=date;
     this._collab=collab;
-    this._holidayAdapter = new HolidayAdapter();
-    this.fetchHolidays();
+    this._holidays=[];
     
   }
   public get etat():Etat{
@@ -64,7 +64,7 @@ export class CRA {
 
 
 
-
+/*
   async fetchHolidays() {
     try {
       const allHolidays = await this._holidayAdapter.getHolidays();
@@ -79,6 +79,7 @@ export class CRA {
       console.error('Failed to fetch holidays:', error);
     }
   }
+  */
 
     calculateBusinessDays(year: number, month: number): number {
         const startDate = new Date(year, month - 1, 1);
@@ -110,9 +111,27 @@ export class CRA {
     public set activities(act:Activity[]){
       this._activites=act;
     }
+    public set holidays(holidays:Holiday[]){
+      this._holidays=holidays;
+    }
 
     addActivity(activity: Activity) {
-      
+      const dateAbs = new Date(activity.date);
+      //check if holiday
+      this.holidays.forEach(element => {
+        if(this.formatDate(element.date)==this.formatDate(activity.date))
+        {
+          throw Error('it is a holiday :'+element.name);
+        }
+        
+      });
+
+      // Test if the day is already fully occupied or part of a fully occupied period
+      if (this.checkActivityOrAbsenceExists(dateAbs, activity.matin)) //cra
+      {
+          throw new Error('FULL day or period');
+      }
+
       this._activites.push(activity);
   }
 
@@ -143,30 +162,34 @@ export class CRA {
     }
 */
     addAbsence(absence: Absence) {
-      console.log("in add absence");
-        if(!this.verifyDateNotInCRA(absence.date,absence.matin))
+      const dateAbs = new Date(absence.date);
+      //check if holiday
+      this.holidays.forEach(element => {
+        if(this.formatDate(element.date)==this.formatDate(dateAbs))
         {
-            throw new Error('full day');
+          throw Error('it is a holiday :'+element.name);
         }
-        console.log("after checking date in cra")
+        
+      });
+
+      // Test if the day is already fully occupied or part of a fully occupied period
+      if (this.checkActivityOrAbsenceExists(dateAbs, absence.matin)) //cra
+      {
+          throw new Error('FULL day or period');
+      }
+/*
+        //to add later
         const today=new Date();
         let beforeFiveDays = new Date(); //fel CRA
         beforeFiveDays.setDate(today.getDate()-5);
         const absDate=new Date(absence.date);
-        /*
-        //to add later
+        
         if ( (absDate.getMonth()!=today.getMonth() && beforeFiveDays.getMonth() != absDate.getMonth()))
 
             {throw new ForbiddenException();}
             */
-            const y=absDate.getFullYear();
-            const m=absDate.getMonth()+1;
-    
-    
-            if(y!=this._year || m!=this._month)
-        throw new Error('not in the same month');
         this._absences.push(absence);
-        console.log("done adding");
+        
     }
 
     calculateEmptyDays():number{
@@ -191,7 +214,7 @@ export class CRA {
       return this._id;
     }
 
-    public get holidays():any[]{
+    public get holidays():Holiday[]{
         return this._holidays;
     }
 
@@ -219,13 +242,10 @@ export class CRA {
   
         const hasAbsence = this._absences.filter(absence => this.formatDate(absence.date) === formattedDate);
 
-        const hasHoliday = this._holidays.filter(holiday => this.formatDate(holiday.date) === formattedDate);
+       // const hasHoliday = this._holidays.filter(holiday => this.formatDate(holiday.date) === formattedDate);
       
         const num=hasActivity.length + hasAbsence.length;
-        if (hasHoliday.length>0)
-        {
-            return false;
-        }
+        
   if (num === 0) {
     return true;
   } else if (num > 1) {

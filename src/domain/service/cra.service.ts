@@ -16,48 +16,23 @@ export class CraService{
    async addAbsence(createAbsenceDto: CreateAbsenceDto){
 
         const dateAbs = new Date(createAbsenceDto.date);
-        console.log("date"+dateAbs)
-        //Test holiday
-        const holidays = await this.repoHoliday.findByDate(dateAbs);
-        if (holidays) {
-            throw new Error('it is a holiday');
-        }
-        console.log("after holidays check");
-        let craId: number = 0;
         let user=await this.repoCollab.findById(createAbsenceDto.collabId);
         
         // Check if the specified CRA exists
         let cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth()+1, dateAbs.getFullYear(), createAbsenceDto.collabId));
         if (!cra) {
+            console.log("creating a new cra")
             cra = new CRA(0,dateAbs.getMonth() + 1, dateAbs.getFullYear(), user, new Date());
+            cra.holidays=await this.repoHoliday.findForCra(dateAbs.getMonth() + 1, dateAbs.getFullYear());
+            console.log("holidays in service save here77 "+cra.holidays.length)
             await this.repoCra.save(cra);
             console.log("created a new cra");
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth()+1, dateAbs.getFullYear(), createAbsenceDto.collabId)) as CRA;
-        console.log("cra here is "+cra)
+        console.log("holidays here11 "+cra.holidays.length)
         //create absence
         const absence = new Absence(0,user,createAbsenceDto.matin,createAbsenceDto.date,createAbsenceDto.raison,cra);
-        console.log("created absence new")
        
-        
-/*
-        // Test in the CRA for the same month and year
-        if (absence.cra.month != dateAbs.getMonth() + 1 || absence.cra.year != dateAbs.getFullYear()) {
-            throw new Error('Not in this CRA');
-        }
-        */
-
-        console.log("absences in cra before adding = "+cra.absences.length)
-
-        // Test if the day is already fully occupied or part of a fully occupied period
-        if (cra.checkActivityOrAbsenceExists(dateAbs, createAbsenceDto.matin)) //cra
-        {
-            throw new Error('FULL day or period');
-        }
-        console.log("checked full day/period");
-
-        
-
         // add absence to the cra
         cra.addAbsence(absence);
         console.log("absence added");
