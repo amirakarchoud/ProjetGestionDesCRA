@@ -4,7 +4,7 @@ import { Collab } from "./Collab";
 
 export class Project{
     
-   private  _collabs: Collab[]=[];
+   private  _collabs: string[]=[];
    private _code:string;
    private _activities:Activity[]=[];
    toJSON(): object {
@@ -12,16 +12,16 @@ export class Project{
       code: this._code
     };
   }
-   constructor(code:string,collabs:Collab[]){
+   constructor(code:string,collabs:string[]){
    
     this._code=code;
     this._collabs=collabs;
    }
-    addCollab(collab: Collab) {
+    addCollab(collab: string) {
         this._collabs.push(collab);
     }
 
-    public get collabs():Collab[]{
+    public get collabs():string[]{
 
         return this._collabs;
     }

@@ -15,6 +15,8 @@ import { RepoCra } from './data/Repository/RepoCra';
 import { RepoHoliday } from './data/Repository/RepoHoliday';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ProjectController } from './controllers/Project.controller';
+import { DoaminModule } from './domain/domain.module';
+import { RepoProject } from './data/Repository/RepoProject';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -28,10 +30,11 @@ import { ProjectController } from './controllers/Project.controller';
       __dirname + '/**/*.entity{.ts,.js}',
   ],
     synchronize: true,
-  }),ScheduleModule.forRoot(), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB])],
+   // dropSchema: true,
+  }),ScheduleModule.forRoot(), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB]),DoaminModule],
   controllers: [CraController,ProjectController],
   providers: [AppService,CraApplication,CraService,
     { provide: 'IRepoCollab', useClass: RepoCollab },{ provide: 'IRepoCra', useClass: RepoCra }
-  ,{ provide: 'IRepoHoliday', useClass: RepoHoliday }],
+  ,{ provide: 'IRepoHoliday', useClass: RepoHoliday },{ provide: 'IRepoProject', useClass: RepoProject }]
 })
 export class AppModule {}

@@ -17,6 +17,7 @@ import { Role } from "../../src/domain/model/Role";
 import { RepoHoliday } from "../../src/data/Repository/RepoHoliday";
 import { RepoCra } from "../../src/data/Repository/RepoCra";
 import { AppModule } from "../../src/app.module";
+import { Project } from "../../src/domain/model/Project";
 
 describe('APP', () => {
     let app: INestApplication;
@@ -48,6 +49,21 @@ describe('APP', () => {
         const createdUser = await repo.findById('test1');
         expect(createdUser).toBeDefined();
     });
+
+    it(`create project`, async () => {
+        const repo: RepoCollab = app.get('IRepoCollab');
+        const application = app.get(CraApplication);
+        //await a?.save(new Collab('test', 'toto', Role.admin));
+
+        const res = await application.addUser('token');
+        //const repo = moduleRef.get(Repository<CollabDB>);
+        //const repo = app.get(Repository<Collab>);
+        const createdUser = await repo.findById('test1');
+        const project=new Project("code",[createdUser]);
+        const createdProject=await repo.addProject(project);
+        expect(project).toBeDefined();
+    });
+
 
     afterAll(async () => {
         await app.close();

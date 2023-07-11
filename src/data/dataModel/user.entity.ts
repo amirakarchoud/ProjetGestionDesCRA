@@ -27,7 +27,7 @@ export class UserDB{
     activities:ActivityDB[];
   
   
-    @ManyToMany(() => ProjectDB,(project) => project.collabs,{ cascade: true })
+    @ManyToMany(() => ProjectDB,(project) => project.collabs)
     @JoinTable()
     projects:ProjectDB[];
   

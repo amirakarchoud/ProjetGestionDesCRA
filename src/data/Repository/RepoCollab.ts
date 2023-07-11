@@ -42,7 +42,7 @@ export class RepoCollab implements IRepoCollab {
     return user;
   }
 
-
+/*
   async addProject(project: Project): Promise<Project> {
     for (const user of project.collabs) {
       user.addProject(project);
@@ -59,6 +59,7 @@ export class RepoCollab implements IRepoCollab {
     }
     return project;
   }
+  */
   
   
 

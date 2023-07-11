@@ -12,7 +12,7 @@ export class ProjectDB {
   @PrimaryColumn()
   code: string;
 
-  @ManyToMany(() => UserDB)
+  @ManyToMany(() => UserDB,user=>user.projects)
   collabs: UserDB[];
 
   @OneToMany(() => ActivityDB,(activity) => activity.project)
