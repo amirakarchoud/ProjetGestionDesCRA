@@ -1,7 +1,6 @@
 import { ForbiddenException } from "@nestjs/common";
 import { Absence } from "./Absence";
 import { Activity } from "./Activity";
-import { HolidayAdapter } from "./HolidayAdapter";
 import { Collab } from "./Collab";
 import { Etat } from "./etat.enum";
 import { Holiday } from "./Holiday";
@@ -10,26 +9,30 @@ export class CRA {
    
   private _id:number;
     private _holidays: Holiday[] = [];
-    private _holidayAdapter: HolidayAdapter;
     private _absences: Absence[] = [];
     private _activites: Activity[] = [];
     private _month: number;
   private _year: number;
   private _collab:Collab;
   private _date:Date;
-  private _etat:Etat;
+  private _etat:Etat=Etat.unsubmitted;
 
-  constructor(id:number,month: number, year: number,collab:Collab,date:Date) {
+  constructor(id:number,month: number, year: number,collab:Collab,date:Date,etat:Etat) {
     this._id=id;
     this._month = month;
     this._year = year;
     this._date=date;
     this._collab=collab;
     this._holidays=[];
+    this._etat=etat;
+    
     
   }
   public get etat():Etat{
     return this._etat;
+  }
+  public set etat(etat:Etat){
+     this._etat=etat;
   }
   
 
@@ -61,24 +64,6 @@ export class CRA {
    
 }
 
-
-
-/*
-  async fetchHolidays() {
-    try {
-      const allHolidays = await this._holidayAdapter.getHolidays();
-      this._holidays = allHolidays.filter(holiday => {
-        const holidayDate = new Date(holiday.date);
-        const holidayDayOfWeek = holidayDate.getDay();
-        return holidayDate.getFullYear() === this._year && holidayDate.getMonth() + 1 === this._month&& // Month is zero-based in JavaScript's Date object
-        holidayDayOfWeek !== 0 && // Exclude Sunday (dayOfWeek 0)
-        holidayDayOfWeek !== 6 // Exclude Saturday (dayOfWeek 6);
-      });
-    } catch (error) {
-      console.error('Failed to fetch holidays:', error);
-    }
-  }
-  */
 
     calculateBusinessDays(year: number, month: number): number {
         const startDate = new Date(year, month - 1, 1);
@@ -134,32 +119,6 @@ export class CRA {
       this._activites.push(activity);
   }
 
-
-/*
-    addActivity(activity: Activity) {
-        if(!this.verifyDateNotInCRA(activity.date,activity.matin))
-        {
-            throw new Error('full day');
-        }
-
-        //step 3:check if it is either this month or less than 5days after
-        const today = new Date();
-        let beforeFiveDays = new Date(); //fel CRA
-        beforeFiveDays.setDate(today.getDate() - 5);
-        
-        if ((activity.date.getMonth() != today.getMonth() && beforeFiveDays.getMonth() != activity.date.getMonth()))
-
-        throw new ForbiddenException();
-
-        const y=activity.date.getFullYear();
-        const m=activity.date.getMonth()+1;
-
-
-        if(y!=this._year || m!=this._month)
-        throw new Error('not in the same month');
-        this._activites.push(activity);
-    }
-*/
     addAbsence(absence: Absence) {
       const dateAbs = new Date(absence.date);
       //check if holiday
@@ -176,8 +135,7 @@ export class CRA {
       {
           throw new Error('FULL day or period');
       }
-/*
-        //to add later
+
         const today=new Date();
         let beforeFiveDays = new Date(); //fel CRA
         beforeFiveDays.setDate(today.getDate()-5);
@@ -186,7 +144,7 @@ export class CRA {
         if ( (absDate.getMonth()!=today.getMonth() && beforeFiveDays.getMonth() != absDate.getMonth()))
 
             {throw new ForbiddenException();}
-            */
+            
         this._absences.push(absence);
         
     }
@@ -260,8 +218,6 @@ export class CRA {
 
 
        formatDate(date: Date): string {
-        //console.log("here format date")
-       // console.log("formatdate = "+date);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -276,6 +232,99 @@ export class CRA {
             this.absences.splice(index, 1);
           }
         });
+      }
+
+
+
+      deleteActivity(date: Date, matin: boolean) {
+        this.activities.forEach((act, index) => {
+          if (this.formatDate(act.date) === this.formatDate(date) && act.matin === matin) {
+            this.activities.splice(index, 1);
+          }
+        });
+      }
+
+
+
+
+
+      getAvailableDatesOfCra(): Date[] {
+        const startDate = new Date(this.year, this.month - 1, 1);
+        const endDate = new Date(this.year, this.month, 0);
+        const availableDates: Date[] = [];
+      
+        const currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          const isWeekend = this.isWeekend(currentDate);
+          const isHoliday = this.checkDateIsHoliday(currentDate);
+          const isActivityOrAbsenceExists = this.checkDayIsFull( currentDate);
+          
+          if (!isWeekend && !isHoliday && !isActivityOrAbsenceExists) {
+            availableDates.push(new Date(currentDate));
+          }
+      
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      
+        return availableDates;
+      }
+      
+      isWeekend(date: Date): boolean {
+        const dayOfWeek = date.getDay();
+        return dayOfWeek === 0 || dayOfWeek === 6; 
+      }
+
+
+      checkDateIsHoliday(date:Date):Boolean{
+        this.holidays.forEach(hol => {
+          if (this.formatDate(hol.date)==this.formatDate(date))
+          {
+            return true;
+          }
+        });
+        return false;
+      }
+
+
+      checkDayIsFull(date:Date):Boolean{
+        const existingActivity = this.activities.filter((activity) => this.isSameDate(activity.date, date));
+        if (existingActivity.length>1) {
+          return true;
+        }
+    
+        const existingAbsence = this.absences.filter((absence) => this.isSameDate(absence.date, date));
+        if (existingAbsence.length>1) {
+          return true;
+        }
+    
+        if(existingAbsence.length+existingActivity.length>1)
+        {
+          return true;
+        }
+        return false;
+      }
+
+
+      isSameDate(date1: Date, date2: Date): boolean {
+        const year1 = date1.getFullYear();
+        const month1 = date1.getMonth();
+        const day1 = date1.getDate();
+        
+        const year2 = date2.getFullYear();
+        const month2 = date2.getMonth();
+        const day2 = date2.getDate();
+      
+        return year1 === year2 && month1 === month2 && day1 === day2;
+      }
+
+
+      SubmitCra():Boolean{
+        if(this.getAvailableDatesOfCra().length>0)
+        {
+          return false;
+        }
+        this._etat=Etat.submitted;
+        return true;
       }
       
     

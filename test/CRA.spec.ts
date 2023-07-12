@@ -1,70 +1,166 @@
 
+import { Project } from "../src/domain/model/Project";
 import { Absence } from "../src/domain/model/Absence";
 import { CRA } from "../src/domain/model/CRA";
 import { Collab } from "../src/domain/model/Collab";
 import { Raison } from "../src/domain/model/Raison";
 import { Role } from "../src/domain/model/Role";
+import { Activity } from "../src/domain/model/Activity";
+import { Etat } from "../src/domain/model/etat.enum";
 import { ForbiddenException } from "@nestjs/common";
 
 describe('Un CRA ', () => {
-    it('peut contenir des collaborateurs', () => {
-
-
-    });
     it('peut supprimer des absences', () => {
 
         //given
-        const today=new Date();
-        const cra=new CRA(1,3,2023,new Collab("user","test",Role.admin),new Date());
-        cra.addAbsence(new Absence(1,true,today,Raison.maladie));
+        const today = new Date();
+        const cra = new CRA(1, 3, 2023, new Collab("user", "test", Role.admin), new Date(),Etat.unsubmitted);
+        cra.addAbsence(new Absence(1, true, today, Raison.maladie));
 
         expect(cra.absences.length).toBe(1);
-        cra.deleteAbsence(today,true);
+        cra.deleteAbsence(today, true);
 
         expect(cra.absences.length).toBe(0);
 
     });
-    it('ne peut pas supprimer une absence apres le 5 du mois suivant', () => {
+
+    it('ne peut pas contenir 2 activites ou absences dans le meme creneau',()=>{
+        //Given
+        const date = new Date();
+        const collab = new Collab("user", "test", Role.admin);
+        const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+        const projet = new Project("123", []);
+        projet.addCollab(collab.email);
+        const activity = new Activity(cra.id, collab, projet, true, new Date(), []);
+        const absence = new Absence(1, true, date, Raison.maladie)
+
+
+        //When
+        cra.addActivity(activity);
+
+        //Then
+        expect(()=>{cra.addAbsence(absence)}).toThrow(Error("FULL day or period"));
+        expect(cra.activities).toHaveLength(1);
+
+    });
+
+
+    it('ne peut pas contenir plus que 2 activites ou absences par jour',()=>{
+        //Given
+        const date = new Date();
+        const collab = new Collab("user", "test", Role.admin);
+        const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+        const projet = new Project("123", []);
+        projet.addCollab(collab.email);
+        const activity = new Activity(cra.id, collab, projet, true, new Date(), []);
+        const activity2 = new Activity(cra.id, collab, projet, false, new Date(), []);
+        const absence = new Absence(1, true, date, Raison.maladie);
+
+
+        //When
+        cra.addActivity(activity);
+        cra.addActivity(activity2);
+
+        //Then
+        expect(()=>{cra.addAbsence(absence)}).toThrow(Error("FULL day or period"));
+        expect(cra.activities).toHaveLength(2);
+        expect(cra.absences.length).toBe(0);
+        
+    });
+
+    it('ne peut pas ajouter une absence apres le 5 du mois suivant', () => {
+         //Given
+         const date = new Date();
+         const collab = new Collab("user", "test", Role.admin);
+         const cra = new CRA(1, 6, date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+ 
+         //When
+         const absence = new Absence(cra.id, true, new Date("02-06-2023"), Raison.maladie);
+ 
+         //Then
+         expect(()=>{cra.addAbsence(absence)}).toThrow(ForbiddenException);
 
 
     });
+
+
 
     it("ne peut pas supprimer une absence qui n'existe pas", () => {
 
 
+        //given
+        const today = new Date();
+        const cra = new CRA(1, 3, 2023, new Collab("user", "test", Role.admin), new Date(),Etat.unsubmitted);
+        cra.addAbsence(new Absence(1, true, today, Raison.maladie));
+
+        expect(cra.absences.length).toBe(1);
+        cra.deleteAbsence(today, false);
+
+        expect(cra.absences.length).toBe(1);
+
+
     });
-    /*  it('peut contenir des activites ', () => {
-          //Given
-          const collab = new Collab();
-          const projet = new Project();
-          projet.addCollab(collab);
-          const activity = new Activity(collab, projet, true, new Date(), []);
-  
-          const date=new Date();
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addActivity(activity);
-  
-          //Then
-          expect(cra.activites).toHaveLength(1);
-  
-      });
-  
-      it('peut contenir des absences', () => {
-  
-          //Given
-          const collab = new Collab();
-          const absence = new Absence(collab, true, new Date(),Raison.maladie);
-  
-          const date=new Date();
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addAbsence(absence);
-  
-          //Then
-          expect(cra.absences).toHaveLength(1);
-  
-      });
+
+    it('peut contenir des activites ', () => {
+        //Given
+        const date = new Date();
+        const collab = new Collab("user", "test", Role.admin);
+        const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+        const projet = new Project("123", []);
+        projet.addCollab(collab.email);
+        const activity = new Activity(cra.id, collab, projet, true, new Date(), []);
+
+
+        //When
+        cra.addActivity(activity);
+
+        //Then
+        expect(cra.activities).toHaveLength(1);
+
+    });
+    it('peut contenir des absences ', () => {
+        //Given
+        const date = new Date();
+        const collab = new Collab("user", "test", Role.admin);
+        const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+        const absence = new Absence(cra.id, true, new Date(), Raison.maladie);
+
+
+        //When
+        cra.addAbsence(absence);
+
+        //Then
+        expect(cra.absences).toHaveLength(1);
+
+    });
+
+    it('ne peut etre soumis si il contient des jours vides ', () => {
+         //Given
+         const date = new Date();
+         const collab = new Collab("user", "test", Role.admin);
+         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(),Etat.unsubmitted);
+         const absence = new Absence(cra.id, true, new Date(), Raison.maladie);
+         const absence2 = new Absence(cra.id, false, new Date(), Raison.maladie);
+ 
+         //When
+         cra.addAbsence(absence);
+         cra.addAbsence(absence2);
+ 
+         //Then
+         expect(cra.SubmitCra()).toBe(false);
+
+
+
+    });
+
+    it('peut retourner les dates vides ', () => {
+        //given
+
+
+
+    });
+    
+    /*  
   
       it('ne peut pas contenir des jours vides :verifier le total absence+activite+ferie==jours ouvre', () => {
           const collab=new Collab();
@@ -135,44 +231,6 @@ describe('Un CRA ', () => {
   
   
   
-  
-      it('ne peut pas contenir 2 activites ou absences dans le meme creneau',()=>{
-          //check l'ensemble de ses activites(array activities) et calcul
-  
-          const collab=new Collab();
-          const projet=new Project();
-          projet.addCollab(collab);
-          const activite1=new Activity(collab,projet,false,new Date(),[]);
-          const activite2=new Activity(collab,projet,false,new Date(),[]);
-  
-          const date=new Date();
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addActivity(activite1);
-          
-          expect(()=>{cra.addActivity(activite2)}).toThrowError();
-          
-      });
-  
-      it('ne peut pas contenir plus que 2 activites ou absences par jour',()=>{
-          //check l'ensemble de ses activites(array activities) et calcul
-  
-          const collab=new Collab();
-          const projet=new Project();
-          projet.addCollab(collab);
-          const activite1=new Activity(collab,projet,false,new Date(),[]);
-          const absence=new Absence(collab,true,new Date(),Raison.maladie);
-          const activite3=new Activity(collab,projet,false,new Date(),[]);
-  
-          const date=new Date();
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addActivity(activite1);
-          cra.addAbsence(absence);
-          
-          expect(()=>{cra.addActivity(activite3)}).toThrowError();
-          
-      });
   
       it('peut reccuperer les jours vides du mois',()=>{
           //=jours - (activities + absences)
