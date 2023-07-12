@@ -15,6 +15,7 @@ import { Activity } from "../../domain/model/Activity";
 import { Project } from "../../domain/model/Project";
 import { HolidayDB } from "../dataModel/holiday.entity";
 import { Holiday } from "../../domain/model/Holiday";
+import { ProjectDB } from "../dataModel/project.entity";
 
 @Injectable()
 export class RepoCra implements IRepoCra {
@@ -26,11 +27,11 @@ export class RepoCra implements IRepoCra {
 
   async findByMonthYearCollab(month: number, year: number, collabid: string) {
 
-    const cra = (await this.craRepository.findOne({ where: { month, year, collab: { email: collabid } }, relations: ['collab', 'activities', 'absences', 'holidays'] }));
+    const cra = (await this.craRepository.findOne({ where: { month, year, collab: { email: collabid } }, relations: ['collab', 'activities', 'absences', 'holidays', 'activities.project'] }));
     if (cra) {
       let user = await this.collabRepository.findById(cra.collab.email);
 
-      let foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date,cra.etat);
+      let foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
       foundcra.collab.email = user.email;
       //fill absences
 
@@ -61,9 +62,9 @@ export class RepoCra implements IRepoCra {
 
 
   async findById(id: number): Promise<CRA> {
-    const cra = (await this.craRepository.findOne({ where: { id }, relations: ['collab', 'activities', 'absences'] }));
+    const cra = (await this.craRepository.findOne({ where: { id }, relations: ['collab', 'activities', 'absences', 'activities.project', 'holidays'] }));
     let user = await this.collabRepository.findById(cra.collab.email);
-    let found = new CRA(cra.id, cra.month, cra.year, user, cra.date,cra.etat);
+    let found = new CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
 
     //fill 
 
@@ -109,8 +110,10 @@ export class RepoCra implements IRepoCra {
       activityDB.id = activity.id;
       activityDB.date = activity.date;
       activityDB.collab = new UserDB();
-      activityDB.collab.email = activity.collab.email;
+      activityDB.collab.email = cra.collab.email;
       activityDB.matin = activity.matin;
+      activityDB.project = new ProjectDB();
+      activityDB.project.code = activity.project.code;
 
       return activityDB;
     });
@@ -155,7 +158,7 @@ export class RepoCra implements IRepoCra {
     if (cras) {
       cras.forEach(cra => {
 
-        let foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date,cra.etat);
+        let foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
         foundcra.collab.email = user.email;
         //fill absences
 
