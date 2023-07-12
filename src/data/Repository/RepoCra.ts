@@ -95,13 +95,11 @@ export class RepoCra implements IRepoCra {
 
   async save(cra: CRA): Promise<CRA> {
     const cradb = new CRADB();
-    console.log("id in save= " + cra.id)
     cradb.id = cra.id;
     cradb.month = cra.month;
     cradb.year = cra.year;
     cradb.collab = new UserDB();
     cradb.collab.email = cra.collab.email;
-    console.log("save= " + cra.date);
     cradb.date = cra.date;
     cradb.etat = cra.etat;
     const craActivitiesDB: ActivityDB[] = cra.activities.map((activity) => {
@@ -132,8 +130,6 @@ export class RepoCra implements IRepoCra {
     });
     cradb.absences = craAbsencesDB;
 
-    console.log("holidays= " + cra.holidays.length);
-
     const holidaydb: HolidayDB[] = cra.holidays.map((hol) => {
       const holdb = new HolidayDB();
       holdb.id = hol.id;
@@ -142,8 +138,6 @@ export class RepoCra implements IRepoCra {
       return holdb;
     });
     cradb.holidays = holidaydb;
-    console.log("holidays in save here55 " + cra.holidays.length)
-    console.log("holidays in save here66 " + cradb.holidays.length)
     await this.craRepository.save(cradb);
 
     return cra;

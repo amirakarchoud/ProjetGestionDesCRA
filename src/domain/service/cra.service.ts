@@ -6,6 +6,7 @@ import { IRepoHoliday } from "../IRepository/IRepoHoliday";
 import { Absence } from "../model/Absence";
 import { CRA } from "../model/CRA";
 import { Inject, Injectable } from "@nestjs/common";
+import { Etat } from "../model/etat.enum";
 
 @Injectable()
 export class CraService{
@@ -26,19 +27,18 @@ export class CraService{
         // Check if the specified CRA exists
         let cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth()+1, dateAbs.getFullYear(), createAbsenceDto.collabId));
         if (!cra) {
-            cra = new CRA(0,dateAbs.getMonth() + 1, dateAbs.getFullYear(), user, new Date());
+            cra = new CRA(0,dateAbs.getMonth() + 1, dateAbs.getFullYear(), user, new Date(),Etat.unsubmitted);
             cra.holidays=await this.repoHoliday.findForCra(dateAbs.getMonth() + 1, dateAbs.getFullYear());
             await this.repoCra.save(cra);
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth()+1, dateAbs.getFullYear(), createAbsenceDto.collabId)) as CRA;
-        console.log("holidays here11 "+cra.holidays.length)
         //create absence
         const absence = new Absence(cra.id,createAbsenceDto.matin,createAbsenceDto.date,createAbsenceDto.raison);
        
         // add absence to the cra
         cra.addAbsence(absence);
         //save cra and done
-        this.repoCra.save(cra);
+        await this.repoCra.save(cra);
 
         return absence;
     }
