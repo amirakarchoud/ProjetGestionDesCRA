@@ -1,0 +1,30 @@
+import { IRepoCollab } from "../IRepository/IRepoCollab";
+import { Absence } from "../model/Absence";
+import { IRepoProject } from "../IRepository/IRepoProject";
+import { Project } from "../model/Project";
+import { IRepoCra } from "../IRepository/IRepoCra";
+import { CraService } from "../service/cra.service";
+import { CreateAbsenceDto } from "../../Dto/CreateAbsenceDto";
+import { CreateActivityDto } from "@app/Dto/CreateActivityDto";
+import { CRA } from "../model/CRA";
+export declare class CraApplication {
+    private collabRepository;
+    private projectRepository;
+    private craRepository;
+    private readonly craService;
+    constructor(collabRepository: IRepoCollab, projectRepository: IRepoProject, craRepository: IRepoCra, craService: CraService);
+    addUser(jwtToken: string): Promise<void>;
+    addProject(project: Project): Promise<Project>;
+    getAllProjects(): Promise<Project[]>;
+    updateProject(project: Project): Promise<Project>;
+    getProjectById(id: string): Promise<Project>;
+    deleteProject(id: string): Promise<void>;
+    getProjectsByUser(id: string): Promise<Project[]>;
+    addAbsence(absence: CreateAbsenceDto): Promise<Absence>;
+    deleteAbsence(idCra: number, date: Date, matin: boolean): Promise<CRA>;
+    addActivity(activity: CreateActivityDto): Promise<import("../model/Activity").Activity>;
+    deleteActivity(idCra: number, date: Date, matin: boolean): Promise<CRA>;
+    getCraByCollabMonthYear(idUser: string, month: number, year: number): Promise<any>;
+    submitCra(idCra: number): Promise<CRA>;
+    getEmptyDates(idCra: number): Promise<Date[]>;
+}

@@ -10,6 +10,7 @@ import { IRepoCra } from "../IRepository/IRepoCra";
 import { CraService } from "../service/cra.service";
 import { CreateAbsenceDto } from "../../Dto/CreateAbsenceDto";
 import { CreateActivityDto } from "@app/Dto/CreateActivityDto";
+import { CRA } from "../model/CRA";
 
 @Injectable()
 export class CraApplication {
@@ -64,6 +65,22 @@ export class CraApplication {
 
     async deleteActivity(idCra: number, date: Date, matin: boolean) {
         return await this.craService.deleteActivity(idCra, date, matin);
+    }
+
+    async getCraByCollabMonthYear(idUser:string,month:number,year:number){
+        return await this.craRepository.findByMonthYearCollab(month,year,idUser);
+    }
+
+    async submitCra(idCra:number){
+        let cra=await this.craRepository.findById(idCra);
+         cra.SubmitCra();
+         return await this.craRepository.save(cra);
+    }
+
+    async getEmptyDates(idCra:number){
+        let cra=await this.craRepository.findById(idCra);
+        return cra.getAvailableDatesOfCra();
+        
     }
 
 

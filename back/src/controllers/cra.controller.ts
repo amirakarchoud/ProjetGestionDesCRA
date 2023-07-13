@@ -1,8 +1,7 @@
 import { CraApplication } from "../domain/application/craApplication";
 import { CreateAbsenceDto } from "../Dto/CreateAbsenceDto";
 import { Absence } from "../domain/model/Absence";
-import { CraService } from "../domain/service/cra.service";
-import { Body, Controller, Delete, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { CreateActivityDto } from "../Dto/CreateActivityDto";
 import { Activity } from "../domain/model/Activity";
 
@@ -50,6 +49,21 @@ export class CraController{
        
         return await this.craApp.deleteActivity(idCra,dateActivity,matin);
       
+    }
+
+    @Get('get/:user/:month/:year')
+    async getUserCra(@Param('user')idUser:string,@Param('month')month:number,@Param('year')year:number){
+      return await this.craApp.getCraByCollabMonthYear(idUser,month,year);
+    }
+
+    @Get('submt/:id')
+    async submitCra(@Param('id')idCra:number){
+      return await this.craApp.submitCra(idCra);
+    }
+
+    @Get('availableDates/:id')
+    async availableDates(@Param('id')idCra:number){
+      return await this.craApp.getEmptyDates(idCra);
     }
     
 
