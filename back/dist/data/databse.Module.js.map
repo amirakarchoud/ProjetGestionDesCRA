@@ -1,0 +1,1 @@
+{"version":3,"file":"databse.Module.js","sourceRoot":"","sources":["../../src/data/databse.Module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,6DAAyD;AAMhD,IAAM,cAAc,4BAApB,MAAM,cAAc;CAAG,CAAA;yBAAjB,cAAc;IAJ5B,IAAA,eAAM,EAAC;QACJ,SAAS,EAAE,CAAC,GAAG,sCAAiB,CAAC;QACjC,OAAO,EAAE,CAAC,GAAG,sCAAiB,CAAC;KAChC,CAAC;GACW,cAAc,CAAG"}
