@@ -72,6 +72,9 @@ let CraApplication = exports.CraApplication = class CraApplication {
         let cra = await this.craRepository.findById(idCra);
         return cra.getAvailableDatesOfCra();
     }
+    async userYearCra(idUser, year) {
+        return await this.craRepository.findByYearUser(idUser, year);
+    }
 };
 exports.CraApplication = CraApplication = __decorate([
     (0, common_1.Injectable)(),

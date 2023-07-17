@@ -2,6 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Activity = void 0;
 class Activity {
+    toJSON() {
+        return {
+            matin: this._matin,
+            date: this._date,
+            project: this._project,
+        };
+    }
     get id() {
         return this._id;
     }

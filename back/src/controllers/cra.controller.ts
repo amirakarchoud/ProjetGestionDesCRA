@@ -65,6 +65,12 @@ export class CraController{
     async availableDates(@Param('id')idCra:number){
       return await this.craApp.getEmptyDates(idCra);
     }
+
+
+    @Get('userYear/:id/:year')
+    async userYearCra(@Param('id')idUser:string,@Param('year')year:number){
+      return await this.craApp.userYearCra(idUser,year);
+    }
     
 
 

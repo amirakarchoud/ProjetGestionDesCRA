@@ -26,6 +26,7 @@ let ProjectController = exports.ProjectController = class ProjectController {
         return await this.craApplication.addProject(project);
     }
     async getProjects() {
+        console.log("getting projects back");
         return await this.craApplication.getAllProjects();
     }
     async getUserProjects(userId) {
