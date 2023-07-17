@@ -10,6 +10,14 @@ export class Activity {
     private _matin: boolean;
     private _date: Date;
     private _cra: CRA;
+    toJSON(): object {
+        return {
+          matin: this._matin,
+          date: this._date,
+          project: this._project,
+        };
+      }
+
 
     public get id(): number {
         return this._id;

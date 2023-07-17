@@ -42,6 +42,9 @@ let CraController = exports.CraController = class CraController {
     async availableDates(idCra) {
         return await this.craApp.getEmptyDates(idCra);
     }
+    async userYearCra(idUser, year) {
+        return await this.craApp.userYearCra(idUser, year);
+    }
 };
 __decorate([
     (0, common_1.Post)('absence'),
@@ -98,6 +101,14 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CraController.prototype, "availableDates", null);
+__decorate([
+    (0, common_1.Get)('userYear/:id/:year'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('year')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", Promise)
+], CraController.prototype, "userYearCra", null);
 exports.CraController = CraController = __decorate([
     (0, common_1.Controller)('cra'),
     __metadata("design:paramtypes", [craApplication_1.CraApplication])

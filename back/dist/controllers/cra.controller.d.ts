@@ -13,4 +13,5 @@ export declare class CraController {
     getUserCra(idUser: string, month: number, year: number): Promise<any>;
     submitCra(idCra: number): Promise<import("../domain/model/CRA").CRA>;
     availableDates(idCra: number): Promise<Date[]>;
+    userYearCra(idUser: string, year: number): Promise<import("../domain/model/CRA").CRA[]>;
 }

@@ -61,7 +61,7 @@ let CraService = exports.CraService = class CraService {
             await this.repoCra.save(cra);
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAct.getMonth() + 1, dateAct.getFullYear(), createActivityDto.collabId));
-        const activity = new Activity_1.Activity(cra.id, user, project, createActivityDto.matin, createActivityDto.date, cra);
+        const activity = new Activity_1.Activity(cra.id, user, project, createActivityDto.matin, dateAct, cra);
         cra.addActivity(activity);
         await this.repoCra.save(cra);
         return activity;

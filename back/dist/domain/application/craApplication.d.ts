@@ -27,4 +27,5 @@ export declare class CraApplication {
     getCraByCollabMonthYear(idUser: string, month: number, year: number): Promise<any>;
     submitCra(idCra: number): Promise<CRA>;
     getEmptyDates(idCra: number): Promise<Date[]>;
+    userYearCra(idUser: string, year: number): Promise<CRA[]>;
 }

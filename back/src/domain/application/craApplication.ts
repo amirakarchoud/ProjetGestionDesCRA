@@ -83,6 +83,10 @@ export class CraApplication {
         
     }
 
+    async userYearCra(idUser:string,year:number){
+        return await this.craRepository.findByYearUser(idUser,year);
+    }
+
 
 
 }

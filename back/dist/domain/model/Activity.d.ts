@@ -8,6 +8,7 @@ export declare class Activity {
     private _matin;
     private _date;
     private _cra;
+    toJSON(): object;
     get id(): number;
     constructor(id: number, collab: Collab, projet: Project, matin: boolean, date: Date, cra: CRA);
     set collab(collab: Collab);

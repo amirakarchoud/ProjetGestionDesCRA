@@ -7,6 +7,7 @@ export declare class RepoCra implements IRepoCra {
     private craRepository;
     private readonly collabRepository;
     constructor(craRepository: Repository<CRADB>, collabRepository: IRepoCollab);
+    findByYearUser(collabid: string, year: number): Promise<CRA[]>;
     findByMonthYearCollab(month: number, year: number, collabid: string): Promise<CRA>;
     findById(id: number): Promise<CRA>;
     save(cra: CRA): Promise<CRA>;

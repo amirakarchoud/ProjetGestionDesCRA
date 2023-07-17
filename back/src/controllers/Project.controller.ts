@@ -18,6 +18,7 @@ export class ProjectController{
 
     @Get('all')
     async getProjects(): Promise<Project[]> {
+        console.log("getting projects back");
         return await this.craApplication.getAllProjects();
       
     }

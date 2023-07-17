@@ -23,6 +23,48 @@ export class RepoCra implements IRepoCra {
     @InjectRepository(CRADB)
     private craRepository: Repository<CRADB>, @Inject('IRepoCollab') private readonly collabRepository: IRepoCollab
   ) { }
+  async findByYearUser(collabid: string, year: number): Promise<CRA[]> {
+    
+    let foundcras: CRA[] = [];
+
+    const cras = (await this.craRepository.find({ where: { collab: { email: collabid },year }, relations: ['collab', 'activities', 'absences', 'holidays','activities.project'] }));
+    let user = await this.collabRepository.findById(collabid);
+    if (cras) {
+      cras.forEach(cra => {
+
+        let foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
+        foundcra.collab.email = user.email;
+        //fill absences
+
+        const craAbsences: Absence[] = cra.absences.map((abs) => {
+          const absf = new Absence(foundcra.id,
+            abs.matin, abs.date, abs.raison);
+          return absf;
+        });
+        foundcra.absences = craAbsences;
+        //fill activities
+        //
+        const craAact: Activity[] = cra.activities.map((abs) => {
+          const absf = new Activity(abs.id, new Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project(abs.project.code, []),
+            abs.matin, abs.date, foundcra);
+          return absf;
+        });
+        foundcra.activities = craAact;
+
+        const craholiday: Holiday[] = cra.holidays.map((abs) => {
+          const absf = new Holiday(abs.id, abs.date, abs.name);
+          return absf;
+        });
+        foundcra.holidays = craholiday;
+        foundcras.push(foundcra);
+
+      });
+
+
+
+    }
+    return foundcras;
+  }
 
 
   async findByMonthYearCollab(month: number, year: number, collabid: string) {

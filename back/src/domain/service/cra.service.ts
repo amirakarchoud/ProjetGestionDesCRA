@@ -68,7 +68,7 @@ export class CraService {
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAct.getMonth() + 1, dateAct.getFullYear(), createActivityDto.collabId)) as CRA;
         //create absence
-        const activity = new Activity(cra.id, user, project, createActivityDto.matin, createActivityDto.date, cra);
+        const activity = new Activity(cra.id, user, project, createActivityDto.matin, dateAct, cra);
 
         // add absence to the cra
         cra.addActivity(activity);

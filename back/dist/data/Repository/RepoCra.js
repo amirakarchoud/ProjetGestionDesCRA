@@ -33,6 +33,34 @@ let RepoCra = exports.RepoCra = class RepoCra {
         this.craRepository = craRepository;
         this.collabRepository = collabRepository;
     }
+    async findByYearUser(collabid, year) {
+        let foundcras = [];
+        const cras = (await this.craRepository.find({ where: { collab: { email: collabid }, year }, relations: ['collab', 'activities', 'absences', 'holidays', 'activities.project'] }));
+        let user = await this.collabRepository.findById(collabid);
+        if (cras) {
+            cras.forEach(cra => {
+                let foundcra = new CRA_1.CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
+                foundcra.collab.email = user.email;
+                const craAbsences = cra.absences.map((abs) => {
+                    const absf = new Absence_1.Absence(foundcra.id, abs.matin, abs.date, abs.raison);
+                    return absf;
+                });
+                foundcra.absences = craAbsences;
+                const craAact = cra.activities.map((abs) => {
+                    const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra);
+                    return absf;
+                });
+                foundcra.activities = craAact;
+                const craholiday = cra.holidays.map((abs) => {
+                    const absf = new Holiday_1.Holiday(abs.id, abs.date, abs.name);
+                    return absf;
+                });
+                foundcra.holidays = craholiday;
+                foundcras.push(foundcra);
+            });
+        }
+        return foundcras;
+    }
     async findByMonthYearCollab(month, year, collabid) {
         const cra = (await this.craRepository.findOne({ where: { month, year, collab: { email: collabid } }, relations: ['collab', 'activities', 'absences', 'holidays', 'activities.project'] }));
         if (cra) {
