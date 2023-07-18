@@ -14,6 +14,9 @@ import Radio from '@mui/material/Radio';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import DetailsCard from './Details'
+import ConfirmationModal from './ConfirmationDelete'
+import { toast } from 'react-toastify';
+import './custom-calendar.css';
 
 const style = {
   position: 'absolute',
@@ -21,11 +24,13 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: 'background.paper',
+  bgcolor: '#E8F4FD',
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 };
+
+
 
 const localizer = momentLocalizer(moment);
 const apiUrl = 'http://localhost:3000';
@@ -35,13 +40,13 @@ const CalendarComponent = () => {
   const [selectedRange, setSelectedRange] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedOption, setSelectedOption] = useState('activity');
-  const [selectedAbsenceOption, setSelectedAbsenceOption] = useState('full-day'); 
-  const [selectedAmPm, setSelectedAmPm] = useState('am'); 
+  const [selectedAbsenceOption, setSelectedAbsenceOption] = useState('full-day');
+  const [selectedAmPm, setSelectedAmPm] = useState('am');
   const [selectedReason, setSelectedReason] = useState('');
   const [userProjects, setUserProjects] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null); 
-  const [showCard, setShowCard] = useState(false); 
-
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showCard, setShowCard] = useState(false);
+  const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
 
   const user = 'user2';
 
@@ -87,7 +92,10 @@ const CalendarComponent = () => {
         const formattedDate = moment(activity.date).format('YYYY-MM-DD');
         const event = {
           id: activity._id,
-          title: 'activity',
+          type:'Activity',
+          cra:entry._id,
+          matin:activity.matin,
+          title: activity.project.code,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
         };
@@ -100,7 +108,10 @@ const CalendarComponent = () => {
         const formattedDate = moment(absence.date).format('YYYY-MM-DD');
         const event = {
           id: absence.id,
+          type:'Absence',
           title: absence.raison,
+          cra:entry._id,
+          matin:absence.matin,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
         };
@@ -110,6 +121,19 @@ const CalendarComponent = () => {
     });
 
     return processedEvents;
+  };
+
+  const eventStyleGetter = (event) => {
+    if (event.type === 'Activity') {
+      return {
+        className: 'rbc-event-activity',
+      };
+    } else if (event.type === 'Absence') {
+      return {
+        className: 'rbc-event-absence',
+      };
+    }
+    return {}; 
   };
 
   const handleSelectSlot = ({ slots }) => {
@@ -153,7 +177,7 @@ const CalendarComponent = () => {
   };
 
   const handleConfirm = async () => {
-    const matin = selectedAbsenceOption === 'half-day' ? (selectedAmPm === 'am' ? true : false) : true; 
+    const matin = selectedAbsenceOption === 'half-day' ? (selectedAmPm === 'am' ? true : false) : true;
 
     const dateRange = [];
     let currentDate = moment(selectedRange.start);
@@ -213,8 +237,8 @@ const CalendarComponent = () => {
 
       if (selectedAbsenceOption === 'full-day') {
         const secondMatinValue = !matin;
-        console.log("matin value before= "+matin);
-        console.log("full day , matin value here= "+secondMatinValue);
+        console.log("matin value before= " + matin);
+        console.log("full day , matin value here= " + secondMatinValue);
 
         if (selectedOption === 'activity') {
           const createActivityDto = {
@@ -277,6 +301,77 @@ const CalendarComponent = () => {
     setShowCard(false);
   };
 
+  const handleDelete = async () => {
+    try {
+      setShowConfirmationDelete(true);
+    } catch (error) {
+      console.error('Error deleting:', error);
+    }
+  };
+  
+  const handleConfirmDelete = async () => {
+    try {
+      if (selectedEvent.type === 'Activity') {
+        const deleteActivityDto = {
+          id: selectedEvent.cra,
+          date: selectedEvent.start,
+          matin: selectedEvent.matin, 
+        };
+  
+        const response = await fetch(`${apiUrl}/cra/activity`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(deleteActivityDto),
+        });
+  
+        if (response.ok) {
+          const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
+          setEvents(updatedEvents);
+  
+          toast.success('Activity successfully deleted!');
+        } else {
+          toast.error('Failed to delete activity');
+        }
+      } else if (selectedEvent.type === 'Absence') {
+        const deleteAbsenceDto = {
+          id: selectedEvent.cra,
+          date: selectedEvent.start,
+          matin: selectedEvent.matin,
+        };
+  
+        const response = await fetch(`${apiUrl}/cra/absence`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(deleteAbsenceDto),
+        });
+  
+        if (response.ok) {
+          const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
+          setEvents(updatedEvents);
+  
+          toast.success('Absence successfully deleted!');
+        } else {
+          toast.error('Failed to delete absence');
+        }
+      }
+  
+      setShowConfirmationDelete(false);
+      setSelectedEvent(null);
+    } catch (error) {
+      console.error('Error deleting:', error);
+    }
+  };
+
+  const handleCloseConfirmationModal = () => {
+   // setSelectedEventToDelete(null);
+    setShowConfirmationDelete(false);
+  };
+  
+
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
@@ -288,7 +383,8 @@ const CalendarComponent = () => {
             endAccessor="end"
             selectable={true}
             onSelectSlot={handleSelectSlot}
-            onSelectEvent={handleSelectEvent} 
+            onSelectEvent={handleSelectEvent}
+            eventPropGetter={eventStyleGetter}
             style={{ flex: 1 }}
           />
         </div>
@@ -356,10 +452,15 @@ const CalendarComponent = () => {
           </Box>
         </Modal>
         {showCard && selectedEvent && (
-          <div style={{ position: 'absolute', top: 100, right: 10 }}>
-            <DetailsCard event={selectedEvent} onClose={handleCloseCard} />
+          <div style={{ position: 'absolute', top: '25%', right: '10%' ,width:'30%'}}>
+            <DetailsCard event={selectedEvent} onClose={handleCloseCard} onDelete={handleDelete}/>
           </div>
         )}
+<ConfirmationModal
+    open={showConfirmationDelete}
+    onClose={handleCloseConfirmationModal}
+    onConfirm={handleConfirmDelete}
+  />
       </CardContent>
     </Card>
   );
