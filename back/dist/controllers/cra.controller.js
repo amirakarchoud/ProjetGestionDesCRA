@@ -17,6 +17,7 @@ const craApplication_1 = require("../domain/application/craApplication");
 const CreateAbsenceDto_1 = require("../Dto/CreateAbsenceDto");
 const common_1 = require("@nestjs/common");
 const CreateActivityDto_1 = require("../Dto/CreateActivityDto");
+const deleteActivityAbsenceDto_1 = require("../Dto/deleteActivityAbsenceDto");
 let CraController = exports.CraController = class CraController {
     constructor(craApp) {
         this.craApp = craApp;
@@ -25,14 +26,16 @@ let CraController = exports.CraController = class CraController {
         console.log("adding absence back");
         return await this.craApp.addAbsence(createAbsenceDto);
     }
-    async deleteAbsence(idCra, dateAbsence, matin) {
-        return await this.craApp.deleteAbsence(idCra, dateAbsence, matin);
+    async deleteAbsence(delAbsenceDto) {
+        console.log("deleting absence");
+        return await this.craApp.deleteAbsence(delAbsenceDto.id, new Date(delAbsenceDto.date), delAbsenceDto.matin);
     }
     async addActivity(createActivityDto) {
         return await this.craApp.addActivity(createActivityDto);
     }
-    async deleteActivity(idCra, dateActivity, matin) {
-        return await this.craApp.deleteActivity(idCra, dateActivity, matin);
+    async deleteActivity(delActivityDto) {
+        console.log("deleting activity");
+        return await this.craApp.deleteActivity(delActivityDto.id, delActivityDto.date, delActivityDto.matin);
     }
     async getUserCra(idUser, month, year) {
         return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
@@ -55,12 +58,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CraController.prototype, "addAbsence", null);
 __decorate([
-    (0, common_1.Delete)('absence/:id/:date/:matin'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('date')),
-    __param(2, (0, common_1.Param)('matin')),
+    (0, common_1.Delete)('absence'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Date, Boolean]),
+    __metadata("design:paramtypes", [deleteActivityAbsenceDto_1.deleteActivityAbsenceDto]),
     __metadata("design:returntype", Promise)
 ], CraController.prototype, "deleteAbsence", null);
 __decorate([
@@ -71,12 +72,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], CraController.prototype, "addActivity", null);
 __decorate([
-    (0, common_1.Delete)('activity/:id/:date/:matin'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Param)('date')),
-    __param(2, (0, common_1.Param)('matin')),
+    (0, common_1.Delete)('activity'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Date, Boolean]),
+    __metadata("design:paramtypes", [deleteActivityAbsenceDto_1.deleteActivityAbsenceDto]),
     __metadata("design:returntype", Promise)
 ], CraController.prototype, "deleteActivity", null);
 __decorate([

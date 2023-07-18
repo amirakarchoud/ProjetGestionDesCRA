@@ -1,72 +1,92 @@
 .rbc-calendar {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transform: translateY(2px);
-  }
-  
-  .rbc-event {
-    background-color: #1571f3;
-    color: #f4efef;
-    padding: 4px;
-  }
-  
-  .rbc-event:hover {
-    background-color: #62eef6;
-    color: #fff;
-  }
-  
-  .rbc-selected-cell {
-    background-color: #a0d8ff;
-  }
-  
-  .rbc-now {
-    background-color: #f0f0f0;
-    border: 2px solid #4dddf0;
-  }
-  
-  .rbc-toolbar {
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .rbc-toolbar button {
-    background-color: #f8f8f8;
-    color: #333;
-    border: none;
-    margin: 0 2px;
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-  
-  .rbc-toolbar button:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .rbc-toolbar .rbc-active {
-    background-color: #ccc;
-    color: #fff;
-  }
-  
-  .rbc-toolbar .rbc-toolbar-label {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .rbc-time-header {
-    background-color: #f8f8f8;
-    border-right: 1px solid #ccc;
-    font-weight: bold;
-  }
-  
-  .rbc-time-header:hover {
-    background-color: #e0e0e0;
-  }
-  
-  .rbc-timeslot {
-    background-color: #fff;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .rbc-timeslot:hover {
-    background-color: #e0e0e0;
-  }
-  
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transform: translateY(2px);
+}
+
+.rbc-event-activity {
+  background-color: #3682ed;
+  color: #020000;
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-event-absence {
+  background-color: #1c3e5e;
+  color: #070000;
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
+.rbc-event {
+  background-color: #E8F4FD;
+  color: #0b0000;
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-event:hover {
+  background-color: #6287f6;
+  color: #fff;
+}
+
+.rbc-selected-cell {
+  background-color: #a0d8ff;
+
+
+}
+
+.rbc-now {
+  background-color: #f0f0f0;
+  border: 2px solid #4dddf0;
+}
+
+.rbc-toolbar {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ccc;
+}
+
+.rbc-toolbar button {
+  background-color: #f8f8f8;
+  color: #333;
+  border: none;
+  margin: 0 2px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #e0e0e0;
+}
+
+.rbc-toolbar .rbc-active {
+  background-color: #ccc;
+  color: #fff;
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.rbc-time-header {
+  background-color: #f8f8f8;
+  border-right: 1px solid #ccc;
+  font-weight: bold;
+}
+
+.rbc-time-header:hover {
+  background-color: #e0e0e0;
+}
+
+.rbc-timeslot {
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+.rbc-timeslot:hover {
+  background-color: #e0e0e0;
+}
