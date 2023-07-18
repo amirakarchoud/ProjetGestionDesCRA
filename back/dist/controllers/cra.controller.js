@@ -22,6 +22,7 @@ let CraController = exports.CraController = class CraController {
         this.craApp = craApp;
     }
     async addAbsence(createAbsenceDto) {
+        console.log("adding absence back");
         return await this.craApp.addAbsence(createAbsenceDto);
     }
     async deleteAbsence(idCra, dateAbsence, matin) {

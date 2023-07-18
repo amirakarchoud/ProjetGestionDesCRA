@@ -9,13 +9,17 @@ class Absence {
             raison: this._raison
         };
     }
-    constructor(id, matin, date, raison) {
-        this._craId = id;
+    constructor(id, cra, matin, date, raison) {
+        this._id = id;
+        this._craId = cra;
         this._matin = matin;
         this._date = date;
         this._raison = raison;
     }
     get id() {
+        return this._id;
+    }
+    get cra() {
         return this._craId;
     }
     get matin() {

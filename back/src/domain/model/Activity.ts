@@ -9,7 +9,7 @@ export class Activity {
     private _project: Project;
     private _matin: boolean;
     private _date: Date;
-    private _cra: CRA;
+    private _craId: number;
     toJSON(): object {
         return {
           matin: this._matin,
@@ -23,7 +23,7 @@ export class Activity {
         return this._id;
     }
 
-    constructor(id: number, collab: Collab, projet: Project, matin: boolean, date: Date, cra: CRA) {
+    constructor(id: number, collab: Collab, projet: Project, matin: boolean, date: Date, cra: number) {
 
         this._id = id;
 
@@ -31,7 +31,7 @@ export class Activity {
         this._project = projet;
         this._matin = matin;
         this._date = date;
-        this._cra = cra;
+        this._craId = cra;
 
 
     }
@@ -54,8 +54,8 @@ export class Activity {
     public get matin(): boolean {
         return this._matin;
     }
-    public get cra(): CRA {
-        return this._cra;
+    public get cra(): number {
+        return this._craId;
     }
 
 }

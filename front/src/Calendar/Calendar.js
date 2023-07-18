@@ -13,6 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import DetailsCard from './Details'
 
 const style = {
   position: 'absolute',
@@ -34,10 +35,21 @@ const CalendarComponent = () => {
   const [selectedRange, setSelectedRange] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedOption, setSelectedOption] = useState('activity');
+  const [selectedAbsenceOption, setSelectedAbsenceOption] = useState('full-day'); 
+  const [selectedAmPm, setSelectedAmPm] = useState('am'); 
   const [selectedReason, setSelectedReason] = useState('');
   const [userProjects, setUserProjects] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null); 
+  const [showCard, setShowCard] = useState(false); 
+
 
   const user = 'user2';
+
+  const raisonOptions = [
+    { value: 'rtt', label: 'RTT' },
+    { value: 'conges', label: 'Congés' },
+    { value: 'maladie', label: 'Maladie' },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,23 +131,150 @@ const CalendarComponent = () => {
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
     setSelectedReason('');
+    setSelectedAbsenceOption('full-day');
+    setSelectedAmPm('am');
+  };
+
+  const handleAbsenceOptionChange = (event) => {
+    setSelectedAbsenceOption(event.target.value);
+    setSelectedAmPm('am');
+  };
+
+  const handleAmPmChange = (event) => {
+    setSelectedAmPm(event.target.value);
   };
 
   const handleReasonChange = (event) => {
     setSelectedReason(event.target.value);
   };
-
-  const handleConfirm = () => {
-    console.log('Confirmed range:', selectedRange);
-    console.log('Selected option:', selectedOption);
-    console.log('Selected reason:', selectedReason);
+  const handleCancel = () => {
     setSelectedRange(null);
     setShowConfirmation(false);
   };
 
-  const handleCancel = () => {
+  const handleConfirm = async () => {
+    const matin = selectedAbsenceOption === 'half-day' ? (selectedAmPm === 'am' ? true : false) : true; 
+
+    const dateRange = [];
+    let currentDate = moment(selectedRange.start);
+    const endDate = moment(selectedRange.end);
+    while (currentDate <= endDate) {
+      dateRange.push(currentDate.toDate());
+      currentDate = currentDate.clone().add(1, 'day');
+    }
+
+    for (const date of dateRange) {
+      console.log('creating');
+      if (selectedOption === 'activity') {
+        const createActivityDto = {
+          date,
+          matin,
+          collabId: user,
+          projectId: selectedReason,
+          craId: 0,
+        };
+
+        try {
+          const response = await fetch(apiUrl + '/cra/activity', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(createActivityDto),
+          });
+          const data = await response.json();
+          console.log('Added activity:', data);
+        } catch (error) {
+          console.error('Error adding activity:', error);
+        }
+      } else if (selectedOption === 'absence') {
+        const createAbsenceDto = {
+          date,
+          matin,
+          collabId: user,
+          raison: selectedReason,
+          craId: 0,
+        };
+
+        try {
+          const response = await fetch(apiUrl + '/cra/absence', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(createAbsenceDto),
+          });
+          const data = await response.json();
+          console.log('Added absence:', data);
+        } catch (error) {
+          console.error('Error adding absence:', error);
+        }
+      }
+
+      if (selectedAbsenceOption === 'full-day') {
+        const secondMatinValue = !matin;
+        console.log("matin value before= "+matin);
+        console.log("full day , matin value here= "+secondMatinValue);
+
+        if (selectedOption === 'activity') {
+          const createActivityDto = {
+            date,
+            matin: secondMatinValue,
+            collabId: user,
+            projectId: selectedReason,
+            craId: 0,
+          };
+
+          try {
+            const response = await fetch(apiUrl + '/cra/activity', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(createActivityDto),
+            });
+            const data = await response.json();
+            console.log('Added activity:', data);
+          } catch (error) {
+            console.error('Error adding activity:', error);
+          }
+        } else if (selectedOption === 'absence') {
+          const createAbsenceDto = {
+            date,
+            matin: secondMatinValue,
+            collabId: user,
+            raison: selectedReason,
+            craId: 0,
+          };
+
+          try {
+            const response = await fetch(apiUrl + '/cra/absence', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(createAbsenceDto),
+            });
+            const data = await response.json();
+            console.log('Added absence:', data);
+          } catch (error) {
+            console.error('Error adding absence:', error);
+          }
+        }
+      }
+    }
+
     setSelectedRange(null);
     setShowConfirmation(false);
+  };
+
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
+    setShowCard(true);
+  };
+
+  const handleCloseCard = () => {
+    setShowCard(false);
   };
 
   return (
@@ -149,6 +288,7 @@ const CalendarComponent = () => {
             endAccessor="end"
             selectable={true}
             onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent} 
             style={{ flex: 1 }}
           />
         </div>
@@ -172,6 +312,20 @@ const CalendarComponent = () => {
                 <FormControlLabel value="activity" control={<Radio />} label="Activité" />
                 <FormControlLabel value="absence" control={<Radio />} label="Absence" />
               </RadioGroup>
+
+              <div>
+                <RadioGroup aria-label="half-full-day" name="half-full-day" value={selectedAbsenceOption} onChange={handleAbsenceOptionChange}>
+                  <FormControlLabel value="half-day" control={<Radio />} label="Demi Journée" />
+                  <FormControlLabel value="full-day" control={<Radio />} label="Journée" />
+                </RadioGroup>
+                {selectedAbsenceOption === 'half-day' && (
+                  <RadioGroup aria-label="am-pm" name="am-pm" value={selectedAmPm} onChange={handleAmPmChange}>
+                    <FormControlLabel value="am" control={<Radio />} label="Matin" />
+                    <FormControlLabel value="pm" control={<Radio />} label="Après-midi" />
+                  </RadioGroup>
+                )}
+              </div>
+
               <Select
                 value={selectedReason}
                 onChange={handleReasonChange}
@@ -187,17 +341,13 @@ const CalendarComponent = () => {
                       {project.code}
                     </MenuItem>
                   ))
-                  : [
-                    <MenuItem key="reason1" value="reason1">
-                      Raison 1
-                    </MenuItem>,
-                    <MenuItem key="reason2" value="reason2">
-                      Raison 2
-                    </MenuItem>,
-                    <MenuItem key="reason3" value="reason3">
-                      Raison 3
-                    </MenuItem>
-                  ]}
+                  : (
+                    raisonOptions.map((raison) => (
+                      <MenuItem key={raison.value} value={raison.value}>
+                        {raison.label}
+                      </MenuItem>
+                    ))
+                  )}
               </Select>
 
             </Typography>
@@ -205,6 +355,11 @@ const CalendarComponent = () => {
             <Button onClick={handleCancel}>Cancel</Button>
           </Box>
         </Modal>
+        {showCard && selectedEvent && (
+          <div style={{ position: 'absolute', top: 100, right: 10 }}>
+            <DetailsCard event={selectedEvent} onClose={handleCloseCard} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

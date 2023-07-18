@@ -42,12 +42,12 @@ let RepoCra = exports.RepoCra = class RepoCra {
                 let foundcra = new CRA_1.CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
                 foundcra.collab.email = user.email;
                 const craAbsences = cra.absences.map((abs) => {
-                    const absf = new Absence_1.Absence(foundcra.id, abs.matin, abs.date, abs.raison);
+                    const absf = new Absence_1.Absence(abs.id, foundcra.id, abs.matin, abs.date, abs.raison);
                     return absf;
                 });
                 foundcra.absences = craAbsences;
                 const craAact = cra.activities.map((abs) => {
-                    const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra);
+                    const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra.id);
                     return absf;
                 });
                 foundcra.activities = craAact;
@@ -68,12 +68,12 @@ let RepoCra = exports.RepoCra = class RepoCra {
             let foundcra = new CRA_1.CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
             foundcra.collab.email = user.email;
             const craAbsences = cra.absences.map((abs) => {
-                const absf = new Absence_1.Absence(foundcra.id, abs.matin, abs.date, abs.raison);
+                const absf = new Absence_1.Absence(abs.id, foundcra.id, abs.matin, abs.date, abs.raison);
                 return absf;
             });
             foundcra.absences = craAbsences;
             const craAact = cra.activities.map((abs) => {
-                const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra);
+                const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra.id);
                 return absf;
             });
             foundcra.activities = craAact;
@@ -91,12 +91,12 @@ let RepoCra = exports.RepoCra = class RepoCra {
         let user = await this.collabRepository.findById(cra.collab.email);
         let found = new CRA_1.CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
         const craAbsences = cra.absences.map((abs) => {
-            const absf = new Absence_1.Absence(found.id, abs.matin, abs.date, abs.raison);
+            const absf = new Absence_1.Absence(abs.id, found.id, abs.matin, abs.date, abs.raison);
             return absf;
         });
         found.absences = craAbsences;
         const craAact = cra.activities.map((abs) => {
-            const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, found);
+            const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, found.id);
             return absf;
         });
         found.activities = craAact;
@@ -151,6 +151,7 @@ let RepoCra = exports.RepoCra = class RepoCra {
             return holdb;
         });
         cradb.holidays = holidaydb;
+        console.log("cra absence len in save = " + cradb.absences.length);
         await this.craRepository.save(cradb);
         return cra;
     }
@@ -163,12 +164,12 @@ let RepoCra = exports.RepoCra = class RepoCra {
                 let foundcra = new CRA_1.CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
                 foundcra.collab.email = user.email;
                 const craAbsences = cra.absences.map((abs) => {
-                    const absf = new Absence_1.Absence(foundcra.id, abs.matin, abs.date, abs.raison);
+                    const absf = new Absence_1.Absence(abs.id, foundcra.id, abs.matin, abs.date, abs.raison);
                     return absf;
                 });
                 foundcra.absences = craAbsences;
                 const craAact = cra.activities.map((abs) => {
-                    const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra);
+                    const absf = new Activity_1.Activity(abs.id, new Collab_1.Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project_1.Project(abs.project.code, []), abs.matin, abs.date, foundcra.id);
                     return absf;
                 });
                 foundcra.activities = craAact;

@@ -4,7 +4,7 @@ import { Raison } from "./Raison";
 import { CRA } from "./CRA";
 
 export class Absence{
-    //private _id:number;
+    private _id:number;
     //private _collab: Collab;
     private _matin:boolean;
     private _date:Date;
@@ -19,8 +19,9 @@ export class Absence{
       }
 
 
-    constructor(id:number,matin:boolean,date:Date,raison:Raison) {
-        this._craId=id;
+    constructor(id:number,cra:number,matin:boolean,date:Date,raison:Raison) {
+        this._id=id;
+        this._craId=cra;
         this._matin=matin;
         this._date=date;
         this._raison=raison;
@@ -29,6 +30,10 @@ export class Absence{
     }
 
     public get id():number{
+        return this._id;
+    }
+
+    public get cra():number{
         return this._craId;
     }
 
