@@ -23,6 +23,7 @@ export class CraController{
 
     @Post('absence')
     async addAbsence(@Body() createAbsenceDto: CreateAbsenceDto): Promise<Absence> {
+      console.log("adding absence back");
        
         return await this.craApp.addAbsence(createAbsenceDto);
       

@@ -37,7 +37,7 @@ export class RepoCra implements IRepoCra {
         //fill absences
 
         const craAbsences: Absence[] = cra.absences.map((abs) => {
-          const absf = new Absence(foundcra.id,
+          const absf = new Absence(abs.id,foundcra.id,
             abs.matin, abs.date, abs.raison);
           return absf;
         });
@@ -46,7 +46,7 @@ export class RepoCra implements IRepoCra {
         //
         const craAact: Activity[] = cra.activities.map((abs) => {
           const absf = new Activity(abs.id, new Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project(abs.project.code, []),
-            abs.matin, abs.date, foundcra);
+            abs.matin, abs.date, foundcra.id);
           return absf;
         });
         foundcra.activities = craAact;
@@ -78,7 +78,7 @@ export class RepoCra implements IRepoCra {
       //fill absences
 
       const craAbsences: Absence[] = cra.absences.map((abs) => {
-        const absf = new Absence(foundcra.id,
+        const absf = new Absence(abs.id,foundcra.id,
           abs.matin, abs.date, abs.raison);
         return absf;
       });
@@ -87,7 +87,7 @@ export class RepoCra implements IRepoCra {
       //
       const craAact: Activity[] = cra.activities.map((abs) => {
         const absf = new Activity(abs.id, new Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project(abs.project.code, []),
-          abs.matin, abs.date, foundcra);
+          abs.matin, abs.date, foundcra.id);
         return absf;
       });
       foundcra.activities = craAact;
@@ -111,7 +111,7 @@ export class RepoCra implements IRepoCra {
     //fill 
 
     const craAbsences: Absence[] = cra.absences.map((abs) => {
-      const absf = new Absence(found.id,
+      const absf = new Absence(abs.id,found.id,
         abs.matin, abs.date, abs.raison);
       return absf;
     });
@@ -121,7 +121,7 @@ export class RepoCra implements IRepoCra {
     //
     const craAact: Activity[] = cra.activities.map((abs) => {
       const absf = new Activity(abs.id, new Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project(abs.project.code, []),
-        abs.matin, abs.date, found);
+        abs.matin, abs.date, found.id);
       return absf;
     });
     found.activities = craAact;
@@ -183,6 +183,7 @@ export class RepoCra implements IRepoCra {
       return holdb;
     });
     cradb.holidays = holidaydb;
+    console.log("cra absence len in save = "+cradb.absences.length);
     await this.craRepository.save(cradb);
 
     return cra;
@@ -205,7 +206,7 @@ export class RepoCra implements IRepoCra {
         //fill absences
 
         const craAbsences: Absence[] = cra.absences.map((abs) => {
-          const absf = new Absence(foundcra.id,
+          const absf = new Absence(abs.id,foundcra.id,
             abs.matin, abs.date, abs.raison);
           return absf;
         });
@@ -214,7 +215,7 @@ export class RepoCra implements IRepoCra {
         //
         const craAact: Activity[] = cra.activities.map((abs) => {
           const absf = new Activity(abs.id, new Collab(cra.collab.email, cra.collab.name, cra.collab.role), new Project(abs.project.code, []),
-            abs.matin, abs.date, foundcra);
+            abs.matin, abs.date, foundcra.id);
           return absf;
         });
         foundcra.activities = craAact;

@@ -18,7 +18,7 @@ class Activity {
         this._project = projet;
         this._matin = matin;
         this._date = date;
-        this._cra = cra;
+        this._craId = cra;
     }
     set collab(collab) {
         this._collab = collab;
@@ -36,7 +36,7 @@ class Activity {
         return this._matin;
     }
     get cra() {
-        return this._cra;
+        return this._craId;
     }
 }
 exports.Activity = Activity;

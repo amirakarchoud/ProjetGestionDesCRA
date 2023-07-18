@@ -73,8 +73,8 @@ describe('APP', () => {
         const application = app.get(CraApplication);
         const absence = new CreateAbsenceDto();
         absence.date = date;
-        absence.matin = true;
-        absence.raison = Raison.maladie;
+        absence.matin = false;
+        absence.raison = Raison.rtt;
         absence.craId = 1;
 
         absence.collabId = 'test1';

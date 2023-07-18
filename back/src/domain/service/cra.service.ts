@@ -36,12 +36,23 @@ export class CraService {
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth() + 1, dateAbs.getFullYear(), createAbsenceDto.collabId)) as CRA;
         //create absence
-        const absence = new Absence(cra.id, createAbsenceDto.matin, createAbsenceDto.date, createAbsenceDto.raison);
-
+        console.log("before new absence");
+        const absence = new Absence(0,cra.id, createAbsenceDto.matin, createAbsenceDto.date, createAbsenceDto.raison);
+        
+        console.log("after new absence");
+        console.log("cra id = "+absence.id);
+        console.log("matin = "+absence.matin);
+        console.log("date = "+absence.date);
+        console.log("raison = "+absence.raison);
         // add absence to the cra
+        console.log("cra absence len before  = "+cra.absences.length);
         cra.addAbsence(absence);
+        console.log("after add absence");
+        console.log("cra absence len after = "+cra.absences.length);
+        console.log("cra absence len after = "+cra.absences.length);
         //save cra and done
         await this.repoCra.save(cra);
+        console.log("after save cra");
 
         return absence;
     }
@@ -68,10 +79,11 @@ export class CraService {
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAct.getMonth() + 1, dateAct.getFullYear(), createActivityDto.collabId)) as CRA;
         //create absence
-        const activity = new Activity(cra.id, user, project, createActivityDto.matin, dateAct, cra);
-
+        const activity = new Activity(0, user, project, createActivityDto.matin, dateAct, cra.id);
+console.log("activities len before add = "+cra.activities.length);
         // add absence to the cra
         cra.addActivity(activity);
+        console.log("activities len after add = "+cra.activities.length);
         //save cra and done
         await this.repoCra.save(cra);
 
