@@ -48,12 +48,17 @@ const CalendarComponent = () => {
   const [showCard, setShowCard] = useState(false);
   const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
 
+  const formattedStartDate = selectedRange && selectedRange.start ? selectedRange.start.toDateString() : '';
+  const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
+
+
   const user = 'user2';
 
   const raisonOptions = [
-    { value: 'rtt', label: 'RTT' },
-    { value: 'conges', label: 'Congés' },
-    { value: 'maladie', label: 'Maladie' },
+    { value: 'RTT', label: 'RTT' },
+    { value: 'Conges', label: 'Congés' },
+    { value: 'Maladie', label: 'Maladie' },
+    { value: 'Exceptionnel', label: 'Exceptionnel' },
   ];
 
   useEffect(() => {
@@ -83,6 +88,17 @@ const CalendarComponent = () => {
     fetchUserProjects();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch(apiUrl + '/cra/userYear/' + user + '/2023', { mode: 'cors' });
+      const data = await response.json();
+      const processedEvents = processData(data);
+      setEvents(processedEvents);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const processData = (data) => {
     const processedEvents = [];
 
@@ -91,10 +107,10 @@ const CalendarComponent = () => {
       entry._activites.forEach((activity) => {
         const formattedDate = moment(activity.date).format('YYYY-MM-DD');
         const event = {
-          id: activity._id,
-          type:'Activity',
-          cra:entry._id,
-          matin:activity.matin,
+          id: activity.id,
+          type: 'Activity',
+          cra: entry._id,
+          matin: activity.matin,
           title: activity.project.code,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
@@ -108,17 +124,38 @@ const CalendarComponent = () => {
         const formattedDate = moment(absence.date).format('YYYY-MM-DD');
         const event = {
           id: absence.id,
-          type:'Absence',
+          type: 'Absence',
           title: absence.raison,
-          cra:entry._id,
-          matin:absence.matin,
+          cra: entry._id,
+          matin: absence.matin,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
         };
 
         processedEvents.push(event);
       });
+
+
+      // Process holidays
+      entry._holidays.forEach((holiday) => {
+        const formattedDate = moment(holiday._date).format('YYYY-MM-DD');
+        const startOfDay = moment(formattedDate).startOf('day').toDate();
+        const endOfDay = moment(formattedDate).endOf('day').toDate();
+
+        const event = {
+          id: holiday._id,
+          type: 'Holiday',
+          cra: entry._id,
+          title: holiday._name,
+          start: startOfDay,
+          end: endOfDay,
+        };
+
+        processedEvents.push(event);
+      });
+
     });
+
 
     return processedEvents;
   };
@@ -132,8 +169,12 @@ const CalendarComponent = () => {
       return {
         className: 'rbc-event-absence',
       };
+    } else if (event.type === 'Holiday') {
+      return {
+        className: 'rbc-event-holiday',
+      };
     }
-    return {}; 
+    return {};
   };
 
   const handleSelectSlot = ({ slots }) => {
@@ -182,10 +223,14 @@ const CalendarComponent = () => {
     const dateRange = [];
     let currentDate = moment(selectedRange.start);
     const endDate = moment(selectedRange.end);
+
     while (currentDate <= endDate) {
-      dateRange.push(currentDate.toDate());
+      if (currentDate.day() !== 0 && currentDate.day() !== 6) {
+        dateRange.push(currentDate.toDate());
+      }
       currentDate = currentDate.clone().add(1, 'day');
     }
+
 
     for (const date of dateRange) {
       console.log('creating');
@@ -206,8 +251,19 @@ const CalendarComponent = () => {
             },
             body: JSON.stringify(createActivityDto),
           });
-          const data = await response.json();
-          console.log('Added activity:', data);
+
+          if (response.ok) {
+            toast.success('Activite ajoutee avec succes!');
+            fetchData();
+          } else {
+            const errorData = await response.json();
+            console.error('Error adding activity:', errorData);
+            if (errorData.message) {
+              toast.error(errorData.message);
+            } else {
+              toast.error('Failed to add activity');
+            }
+          }
         } catch (error) {
           console.error('Error adding activity:', error);
         }
@@ -230,6 +286,18 @@ const CalendarComponent = () => {
           });
           const data = await response.json();
           console.log('Added absence:', data);
+          if (response.ok) {
+            toast.success('Absence ajoutee avec succes!');
+            fetchData();
+          } else {
+            const errorData = await response.json();
+            console.error('Error adding absence:', errorData);
+            if (errorData.message) {
+              toast.error(errorData.message);
+            } else {
+              toast.error('Failed to add absence');
+            }
+          }
         } catch (error) {
           console.error('Error adding absence:', error);
         }
@@ -287,7 +355,7 @@ const CalendarComponent = () => {
         }
       }
     }
-
+    fetchData();
     setSelectedRange(null);
     setShowConfirmation(false);
   };
@@ -308,16 +376,16 @@ const CalendarComponent = () => {
       console.error('Error deleting:', error);
     }
   };
-  
+
   const handleConfirmDelete = async () => {
     try {
       if (selectedEvent.type === 'Activity') {
         const deleteActivityDto = {
           id: selectedEvent.cra,
           date: selectedEvent.start,
-          matin: selectedEvent.matin, 
+          matin: selectedEvent.matin,
         };
-  
+
         const response = await fetch(`${apiUrl}/cra/activity`, {
           method: 'DELETE',
           headers: {
@@ -325,12 +393,13 @@ const CalendarComponent = () => {
           },
           body: JSON.stringify(deleteActivityDto),
         });
-  
+
         if (response.ok) {
           const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
-          setEvents(updatedEvents);
-  
+          setEvents([...updatedEvents]);
+
           toast.success('Activity successfully deleted!');
+
         } else {
           toast.error('Failed to delete activity');
         }
@@ -340,7 +409,7 @@ const CalendarComponent = () => {
           date: selectedEvent.start,
           matin: selectedEvent.matin,
         };
-  
+
         const response = await fetch(`${apiUrl}/cra/absence`, {
           method: 'DELETE',
           headers: {
@@ -348,17 +417,17 @@ const CalendarComponent = () => {
           },
           body: JSON.stringify(deleteAbsenceDto),
         });
-  
+
         if (response.ok) {
           const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
-          setEvents(updatedEvents);
-  
+          setEvents([...updatedEvents]);
           toast.success('Absence successfully deleted!');
+
         } else {
           toast.error('Failed to delete absence');
         }
       }
-  
+
       setShowConfirmationDelete(false);
       setSelectedEvent(null);
     } catch (error) {
@@ -367,10 +436,10 @@ const CalendarComponent = () => {
   };
 
   const handleCloseConfirmationModal = () => {
-   // setSelectedEventToDelete(null);
+    // setSelectedEventToDelete(null);
     setShowConfirmationDelete(false);
   };
-  
+
 
   return (
     <Card sx={{ minWidth: 275 }}>
@@ -401,8 +470,12 @@ const CalendarComponent = () => {
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               Etes-vous sûr des dates sélectionnées?<br />
 
-              Les dates: {selectedRange && selectedRange.start?.toDateString()} au{' '}
-              {selectedRange && selectedRange.end?.toDateString()}
+              <strong> Les dates: </strong>{selectedRange && selectedRange.start && (
+                <>
+                  {formattedStartDate}
+                  {selectedRange.end && formattedStartDate !== formattedEndDate && ` au ${formattedEndDate}`}
+                </>
+              )}
               <br />
               <RadioGroup aria-label="activity-absence" name="activity-absence" value={selectedOption} onChange={handleOptionChange}>
                 <FormControlLabel value="activity" control={<Radio />} label="Activité" />
@@ -410,6 +483,7 @@ const CalendarComponent = () => {
               </RadioGroup>
 
               <div>
+                <strong>Journée ou demie journee:</strong>
                 <RadioGroup aria-label="half-full-day" name="half-full-day" value={selectedAbsenceOption} onChange={handleAbsenceOptionChange}>
                   <FormControlLabel value="half-day" control={<Radio />} label="Demi Journée" />
                   <FormControlLabel value="full-day" control={<Radio />} label="Journée" />
@@ -452,15 +526,15 @@ const CalendarComponent = () => {
           </Box>
         </Modal>
         {showCard && selectedEvent && (
-          <div style={{ position: 'absolute', top: '25%', right: '10%' ,width:'30%'}}>
-            <DetailsCard event={selectedEvent} onClose={handleCloseCard} onDelete={handleDelete}/>
+          <div style={{ position: 'absolute', top: '25%', right: '10%', width: '30%' }}>
+            <DetailsCard event={selectedEvent} onClose={handleCloseCard} onDelete={handleDelete} />
           </div>
         )}
-<ConfirmationModal
-    open={showConfirmationDelete}
-    onClose={handleCloseConfirmationModal}
-    onConfirm={handleConfirmDelete}
-  />
+        <ConfirmationModal
+          open={showConfirmationDelete}
+          onClose={handleCloseConfirmationModal}
+          onConfirm={handleConfirmDelete}
+        />
       </CardContent>
     </Card>
   );

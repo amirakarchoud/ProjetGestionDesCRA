@@ -24,7 +24,7 @@ export class RepoCollab implements IRepoCollab {
   }
 
   async findAll(): Promise<Collab[]> {
-    let collabs: Collab[];
+    let collabs: Collab[]=[];
     (await this.userRepository.find()).map(user => { collabs.push(new Collab(user.email, user.name, user.role)) });
     return collabs;
 

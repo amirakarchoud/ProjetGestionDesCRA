@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import Projects from './Projects/project';
 import CalendarComponent from './Calendar/Calendar';
+import ProjectDetails from './Projects/projectDetails';
+import AddProject from './Projects/addProject';
 
 const events = [
   
@@ -34,6 +36,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/calendar" element={<CalendarComponent />} />
+          <Route exact path="/project/:projectCode" element={<ProjectDetails/>} />
+          <Route path="/add-project" element={<AddProject />} />
+       
         </Routes>
       </div>
     </Router>

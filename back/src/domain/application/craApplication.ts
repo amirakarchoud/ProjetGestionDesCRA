@@ -87,6 +87,14 @@ export class CraApplication {
         return await this.craRepository.findByYearUser(idUser,year);
     }
 
+    async getAllCollabs(){
+        return await this.collabRepository.findAll();
+    }
+
+    async getAllCollabsByIds(ids:string[]){
+        return await this.collabRepository.findByIds(ids);
+    }
+
 
 
 }

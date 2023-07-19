@@ -1,7 +1,7 @@
 import { CraApplication } from "../domain/application/craApplication";
 import { CreateAbsenceDto } from "../Dto/CreateAbsenceDto";
 import { Absence } from "../domain/model/Absence";
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
 import { CreateActivityDto } from "../Dto/CreateActivityDto";
 import { Activity } from "../domain/model/Activity";
 import { deleteActivityAbsenceDto } from "@app/Dto/deleteActivityAbsenceDto";
@@ -24,9 +24,20 @@ export class CraController {
 
   @Post('absence')
   async addAbsence(@Body() createAbsenceDto: CreateAbsenceDto): Promise<Absence> {
-    console.log("adding absence back");
-
-    return await this.craApp.addAbsence(createAbsenceDto);
+    try {
+      const result = await this.craApp.addAbsence(createAbsenceDto);
+      return result;
+    }  catch (error) {
+      if (error.message.includes('it is a holiday')) {
+        throw new HttpException({ message: "C'est un jour ferie!" }, HttpStatus.BAD_REQUEST);
+      } else if (error.message === 'FULL day or period') {
+        throw new HttpException({ message: "La journee est deja remplie" }, HttpStatus.BAD_REQUEST);
+      } else if (error.message === 'Forbidden') {
+        throw new HttpException({ message: "ce n'est pas le moment de dresser ce compte rendu" }, HttpStatus.FORBIDDEN);
+      } else {
+        throw new HttpException({ message: 'Internal server error' }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 
   }
 
@@ -41,7 +52,20 @@ export class CraController {
   @Post('activity')
   async addActivity(@Body() createActivityDto: CreateActivityDto): Promise<Activity> {
     
-    return await this.craApp.addActivity(createActivityDto);
+    try {
+      const result = await this.craApp.addActivity(createActivityDto);
+      return result;
+    } catch (error) {
+      if (error.message.includes('it is a holiday')) {
+        throw new HttpException({ message: "C'est un jour ferie!" }, HttpStatus.BAD_REQUEST);
+      } else if (error.message === 'FULL day or period') {
+        throw new HttpException({ message: "La journee est deja remplie" }, HttpStatus.BAD_REQUEST);
+      } else if (error.message === 'Forbidden') {
+        throw new HttpException({ message: "ce n'est pas le moment de dresser ce compte rendu" }, HttpStatus.FORBIDDEN);
+      } else {
+        throw new HttpException({ message: 'Internal server error' }, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
 
   }
 

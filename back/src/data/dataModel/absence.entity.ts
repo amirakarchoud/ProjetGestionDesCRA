@@ -18,7 +18,7 @@ export class AbsenceDB {
   @ManyToOne(() => UserDB)
   collab: UserDB;
 
-  @Column('enum', { default: 'conges', enum: [ 'rtt', 'conges', 'maladie'] })
+  @Column('enum', { default: 'Conges', enum: [ 'RTT', 'Conges', 'Maladie','Exceptionnel'] })
   raison: Raison;
 
   @ManyToOne(() => CRADB, cra => cra.absences)
