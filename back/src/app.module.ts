@@ -17,6 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ProjectController } from './controllers/Project.controller';
 import { DoaminModule } from './domain/domain.module';
 import { RepoProject } from './data/Repository/RepoProject';
+import { CollabController } from './controllers/Collab.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -32,7 +33,7 @@ import { RepoProject } from './data/Repository/RepoProject';
     synchronize: true,
    // dropSchema: true,
   }),ScheduleModule.forRoot(), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB]),DoaminModule],
-  controllers: [CraController,ProjectController],
+  controllers: [CraController,ProjectController,CollabController],
   providers: [AppService,CraApplication,CraService,
     { provide: 'IRepoCollab', useClass: RepoCollab },{ provide: 'IRepoCra', useClass: RepoCra }
   ,{ provide: 'IRepoHoliday', useClass: RepoHoliday },{ provide: 'IRepoProject', useClass: RepoProject }]

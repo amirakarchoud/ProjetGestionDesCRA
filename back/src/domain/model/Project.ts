@@ -9,7 +9,8 @@ export class Project{
    private _activities:Activity[]=[];
    toJSON(): object {
     return {
-      code: this._code
+      code: this._code,
+      collabs:this._collabs
     };
   }
    constructor(code:string,collabs:string[]){

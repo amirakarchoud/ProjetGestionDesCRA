@@ -12,6 +12,7 @@ export class Activity {
     private _craId: number;
     toJSON(): object {
         return {
+            id:this._id,
           matin: this._matin,
           date: this._date,
           project: this._project,

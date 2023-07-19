@@ -90,3 +90,10 @@
 .rbc-timeslot:hover {
   background-color: #e0e0e0;
 }
+.rbc-event-holiday {
+  background-color: #f9c0c0;
+  color: #000;
+  padding: 4px;
+  border-radius: 4px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}

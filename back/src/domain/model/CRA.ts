@@ -241,7 +241,7 @@ export class CRA {
 
   deleteActivity(date: Date, matin: boolean) {
     this.activities.forEach((act, index) => {
-      if (this.formatDate(act.date) === this.formatDate(date) && act.matin === matin) {
+      if (this.formatDate(new Date(act.date)) === this.formatDate(new Date(date)) && act.matin === matin) {
         this.activities.splice(index, 1);
       }
     });
