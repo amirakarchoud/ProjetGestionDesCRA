@@ -3,7 +3,7 @@ import { ProjectDB } from "../dataModel/project.entity";
 import { IRepoProject } from "../../domain/IRepository/IRepoProject";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Like, Repository } from "typeorm";
 import { UserDB } from "../dataModel/user.entity";
 
 @Injectable()
@@ -12,6 +12,18 @@ export class RepoProject implements IRepoProject {
     @InjectRepository(ProjectDB)
     private projectRepository: Repository<ProjectDB>,
   ) { }
+
+
+  async findLikeById(id: string): Promise<Project[]> {
+    const projectsDB =await this.projectRepository.find({
+      where:{code:Like(id)},
+      relations: ['collabs'],
+    });
+    return projectsDB.map((projectDB) => {
+      const collabs: string[] = projectDB.collabs.map((collab) => collab.email);
+      return new Project(projectDB.code, collabs);
+    });
+  }
    
 
   

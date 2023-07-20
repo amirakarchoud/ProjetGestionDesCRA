@@ -95,6 +95,10 @@ export class CraApplication {
         return await this.collabRepository.findByIds(ids);
     }
 
+    async getProjectsLikeId(id:string){
+        return await this.projectRepository.findLikeById(id);
+    }
+
 
 
 }

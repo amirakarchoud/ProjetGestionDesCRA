@@ -5,6 +5,7 @@ import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 
 const AddProject = () => {
@@ -95,9 +96,8 @@ const AddProject = () => {
       <Button variant="contained" color="primary" onClick={handleAddProject} style={{ marginTop: '16px' , width: '50%'}}>
         Ajouter
       </Button>
-      <Button variant="contained" style={{ marginTop: '16px' , width: '20%'}} color="primary">
-        <Link to="/projects" >Retourner</Link>
-      </Button>
+      <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>
+       
     </div>
   );
 };

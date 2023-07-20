@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Paper, Typography, Button } from '@mui/material';
-import { FaEdit } from 'react-icons/fa';
+import { Typography, Button } from '@mui/material';
+import { FaArrowLeft, FaEdit } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const ProjectDetails = () => {
   const { projectCode } = useParams();
@@ -40,20 +41,22 @@ const ProjectDetails = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '60%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '60%' }}>
       <h1>Project Details</h1>
       {project ? (
         <>
-          <Typography variant="body1">Code du projet: {project.code}</Typography>
-          <Typography variant="h6" style={{ marginTop: '16px' }}>Collabs:</Typography>
+          <Typography variant="h6"><strong>Code du projet : </strong></Typography>
+          <Typography variant="body">{project.code}</Typography>
+          <Typography variant="h6" style={{ marginTop: '16px' }}><strong>Les collaborateurs :</strong> </Typography>
           <ul>
             {collabs.map((collab) => (
               <li key={collab._email}>
-                <Typography variant="body2">{collab._name}</Typography>
+                <Typography variant="body">{collab._name}</Typography>
               </li>
             ))}
           </ul>
-          <Button variant="outlined" startIcon={<FaEdit />} style={{ marginTop: '16px' }}>Modifier</Button>
+          <Link to={`/projectUpdate/${project.code}`} ><Button  variant="contained" color="primary" startIcon={<FaEdit />} style={{ marginTop: '16px', width: '50%' }}>Modifier</Button></Link>
+          <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>
         </>
       ) : (
         <Typography variant="body1">Loading...</Typography>

@@ -5,6 +5,7 @@ import Projects from './Projects/project';
 import CalendarComponent from './Calendar/Calendar';
 import ProjectDetails from './Projects/projectDetails';
 import AddProject from './Projects/addProject';
+import UpdateProject from './Projects/updateProject';
 
 const events = [
   
@@ -37,6 +38,7 @@ function App() {
           <Route path="/projects" element={<Projects />} />
           <Route path="/calendar" element={<CalendarComponent />} />
           <Route exact path="/project/:projectCode" element={<ProjectDetails/>} />
+          <Route exact path="/projectUpdate/:projectCode" element={<UpdateProject/>} />
           <Route path="/add-project" element={<AddProject />} />
        
         </Routes>

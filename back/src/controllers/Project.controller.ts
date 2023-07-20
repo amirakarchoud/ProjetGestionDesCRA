@@ -44,4 +44,10 @@ export class ProjectController{
       
     }
 
+    @Get('search/:id')
+    async getProjectsSearch(@Param('id') id:string): Promise<Project[]> {
+        return await this.craApplication.getProjectsLikeId(id);
+      
+    }
+
 }
