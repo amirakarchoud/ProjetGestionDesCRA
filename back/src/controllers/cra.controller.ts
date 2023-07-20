@@ -98,6 +98,11 @@ export class CraController {
     return await this.craApp.userYearCra(idUser, year);
   }
 
+  @Get('monthCra/:month/:year')
+  async getMonthCra(@Param('month') month: number, @Param('year') year: number) {
+    return await this.craApp.getMonthCra(month,year);
+  }
+
 
 
 

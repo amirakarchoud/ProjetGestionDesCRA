@@ -6,6 +6,7 @@ import CalendarComponent from './Calendar/Calendar';
 import ProjectDetails from './Projects/projectDetails';
 import AddProject from './Projects/addProject';
 import UpdateProject from './Projects/updateProject';
+import RecapAdmin from './Admin/RecapAdmin';
 
 const events = [
   
@@ -30,6 +31,9 @@ function App() {
             <li>
               <Link to="/calendar">Calendar</Link>
             </li>
+            <li>
+              <Link to="/recap-admin">Admin</Link>
+            </li>
           </ul>
         </nav>
 
@@ -40,6 +44,7 @@ function App() {
           <Route exact path="/project/:projectCode" element={<ProjectDetails/>} />
           <Route exact path="/projectUpdate/:projectCode" element={<UpdateProject/>} />
           <Route path="/add-project" element={<AddProject />} />
+          <Route path="/recap-admin" element={<RecapAdmin />} />
        
         </Routes>
       </div>

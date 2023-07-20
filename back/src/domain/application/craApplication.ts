@@ -100,5 +100,10 @@ export class CraApplication {
     }
 
 
+    async getMonthCra(month:number,year:number){
+        return await this.craRepository.findByMonthYear(month,year);
+    }
+
+
 
 }
