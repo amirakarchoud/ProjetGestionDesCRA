@@ -6,5 +6,6 @@ export interface IRepoCra {
     findById(id: number): Promise<CRA>;
     findByMonthYearCollab(month: number, year: number, collab: string);
     findByYearUser(idUser:string,year:number):Promise<CRA[]>;
+    findByMonthYear(month: number, year: number):Promise<CRA[]>;
 
 }

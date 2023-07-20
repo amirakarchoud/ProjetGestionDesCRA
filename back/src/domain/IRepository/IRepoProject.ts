@@ -7,4 +7,5 @@ export interface IRepoProject {
     delete(id: string): Promise<void>;
     update( updatedProject: Project): Promise<Project> ;
     findByUser(idUser:string):Promise<Project[]>;
+    findLikeById(id:string):Promise<Project[]>;
   }
