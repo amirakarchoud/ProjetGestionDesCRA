@@ -17,6 +17,7 @@ import DetailsCard from './Details'
 import ConfirmationModal from './ConfirmationDelete'
 import { toast } from 'react-toastify';
 import './custom-calendar.css';
+import RecapCraCollab from './RecapCraCollab';
 
 const style = {
   position: 'absolute',

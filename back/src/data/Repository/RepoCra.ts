@@ -23,6 +23,70 @@ export class RepoCra implements IRepoCra {
     @InjectRepository(CRADB)
     private craRepository: Repository<CRADB>, @Inject('IRepoCollab') private readonly collabRepository: IRepoCollab
   ) { }
+
+
+
+  async findByMonthYear(month: number, year: number): Promise<CRA[]> {
+    const foundcras: CRA[] = [];
+  
+    const cras = await this.craRepository.find({
+      where: { month, year },
+      relations: ['collab', 'activities', 'absences', 'holidays', 'activities.project'],
+    });
+  
+    console.log("year= " + year);
+    console.log("month= " + month);
+    console.log("cras len= " + cras.length);
+  
+    for (const cra of cras) {
+      const user = await this.collabRepository.findById(cra.collab.email);
+      console.log("user= " + user.email);
+  
+      const foundcra = new CRA(cra.id, cra.month, cra.year, user, cra.date, cra.etat);
+      foundcra.collab.email = user.email;
+  
+      // Fill absences
+      const craAbsences: Absence[] = cra.absences.map((abs) => {
+        const absf = new Absence(abs.id, foundcra.id, abs.matin, abs.date, abs.raison);
+        return absf;
+      });
+      foundcra.absences = craAbsences;
+  
+      // Fill activities
+      const craAact: Activity[] = cra.activities.map((abs) => {
+        const absf = new Activity(
+          abs.id,
+          new Collab(cra.collab.email, cra.collab.name, cra.collab.role),
+          new Project(abs.project.code, []),
+          abs.matin,
+          abs.date,
+          foundcra.id
+        );
+        return absf;
+      });
+      foundcra.activities = craAact;
+  
+      // Fill holidays
+      const craholiday: Holiday[] = cra.holidays.map((abs) => {
+        const absf = new Holiday(abs.id, abs.date, abs.name);
+        return absf;
+      });
+      foundcra.holidays = craholiday;
+  
+      console.log("foundcras inside len = " + foundcras.length);
+      foundcras.push(foundcra);
+    }
+  
+    console.log("foundcras len = " + foundcras.length);
+    return foundcras;
+  }
+  
+
+
+
+
+
+
   async findByYearUser(collabid: string, year: number): Promise<CRA[]> {
     
     let foundcras: CRA[] = [];

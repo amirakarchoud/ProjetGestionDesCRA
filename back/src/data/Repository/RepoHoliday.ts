@@ -16,7 +16,7 @@ export class RepoHoliday implements IRepoHoliday {
   ) {}
 
 
-  @Cron('33 14 * * *')
+  @Cron('0 0 1 1 *')
   async fetchAndStoreHolidays(): Promise<HolidayDB[]> {
     console.log("fetching holidays");
     await this.holidayRepository.clear();
