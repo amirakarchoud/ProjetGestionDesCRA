@@ -45,6 +45,7 @@ const CalendarComponent = () => {
   const [selectedAmPm, setSelectedAmPm] = useState('am');
   const [selectedReason, setSelectedReason] = useState('');
   const [userProjects, setUserProjects] = useState([]);
+  const [userCras, setUserCras] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
@@ -67,6 +68,7 @@ const CalendarComponent = () => {
       try {
         const response = await fetch(apiUrl + '/cra/userYear/' + user + '/2023', { mode: 'cors' });
         const data = await response.json();
+        setUserCras(data);
         const processedEvents = processData(data);
         setEvents(processedEvents);
       } catch (error) {
@@ -532,7 +534,7 @@ const CalendarComponent = () => {
           </div>
         )}
         <div style={{ position: 'absolute', top: '40%', right: '10%', width: '30%' }}>
-        <RecapCraCollab idCollab={user}/>
+        <RecapCraCollab collabId={user} cras={userCras} />
         </div >
         <ConfirmationModal
           open={showConfirmationDelete}
