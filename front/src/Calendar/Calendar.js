@@ -527,15 +527,19 @@ const CalendarComponent = () => {
           </Box>
         </Modal>
         {showCard && selectedEvent && (
-          <div style={{ position: 'absolute', top: '25%', right: '10%', width: '30%' }}>
+          <div style={{ position: 'absolute', top: '15%', right: '10%', width: '30%' }}>
             <DetailsCard event={selectedEvent} onClose={handleCloseCard} onDelete={handleDelete} />
           </div>
         )}
+        <div style={{ position: 'absolute', top: '40%', right: '10%', width: '30%' }}>
+        <RecapCraCollab idCollab={user}/>
+        </div >
         <ConfirmationModal
           open={showConfirmationDelete}
           onClose={handleCloseConfirmationModal}
           onConfirm={handleConfirmDelete}
         />
+        
       </CardContent>
     </Card>
   );
