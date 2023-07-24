@@ -6,6 +6,7 @@ import { Box, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TodayIcon from '@mui/icons-material/Today';
+import { toast } from 'react-toastify';
 
 const RecapCraCollab = ({ collabId }) => {
     const today = new Date();
@@ -13,10 +14,26 @@ const RecapCraCollab = ({ collabId }) => {
     const [businessDays, setBusinessDays] = useState(0);
     const [userCras, setUserCras] = useState([]);
     const apiUrl = 'http://localhost:3000';
+    const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
+    const [etat, setEtat] = useState('');
+    const [etatChangeTrigger, setEtatChangeTrigger] = useState(0);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [etatChangeTrigger]);
+    useEffect(() => {
+        if (userCras.length > 0) {
+            calculateBusinessDays(currentDate.getMonth() + 1, currentDate.getFullYear());
+            setIsSubmitButtonDisabled(() => {
+                const currentMonthCra = getCurrentMonthCra();
+                if (Object.keys(currentMonthCra).length === 0) {
+                    return true;
+                }
+                return (currentMonthCra._activites.length + currentMonthCra._absences.length) / 2 !== businessDays - currentMonthCra._holidays.length;
+            });
+        }
+    }, [userCras, businessDays, currentDate]);
+
 
     const fetchData = async () => {
         try {
@@ -31,9 +48,49 @@ const RecapCraCollab = ({ collabId }) => {
 
     useEffect(() => {
         if (userCras.length > 0) {
-            calculateBusinessDays(currentDate.getMonth() + 1, currentDate.getFullYear());
+          calculateBusinessDays(currentDate.getMonth() + 1, currentDate.getFullYear());
+    
+          const currentMonthCra = getCurrentMonthCra();
+    
+          if (Object.keys(currentMonthCra).length === 0) {
+            setEtat('Pas cree'); // If CRA doesn't exist, set etat to 'Pas cree'
+          } else {
+            setIsSubmitButtonDisabled(() => {
+              return (
+                (currentMonthCra._activites.length + currentMonthCra._absences.length) / 2 !==
+                businessDays - currentMonthCra._holidays.length
+              );
+            });
+            setEtat(currentMonthCra._etat ? 'Pas Soumis' : 'Soumis'); 
+          }
         }
-    }, [userCras, currentDate]);
+      }, [userCras, businessDays, currentDate]);
+
+    const handleCraSubmit = async () => {
+        try {
+            const currentMonthCra = getCurrentMonthCra();
+            if ((currentMonthCra._activites.length + currentMonthCra._absences.length) / 2 === businessDays - currentMonthCra._holidays.length) {
+
+                const response = await fetch(`${apiUrl}/cra/submit/${currentMonthCra._id}`, {
+                    method: 'POST',
+                });
+
+                if (response.ok) {
+                    toast.success('CRA submitted successfully.');
+                    setEtatChangeTrigger((prevState) => prevState + 1);
+                } else {
+                    toast.error('Error submitting CRA.');
+                }
+            } else {
+                toast.warning('Cannot submit CRA. Please make sure all data is filled.');
+            }
+        } catch (error) {
+            console.error('Error submitting CRA:', error);
+            toast.error('Error submitting CRA.');
+        }
+    };
+
+
 
     const calculateBusinessDays = (month, year) => {
         const startDate = new Date(year, month - 1, 1);
@@ -67,12 +124,41 @@ const RecapCraCollab = ({ collabId }) => {
         'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
     ];
 
-    const cardStyle = {
-        backgroundColor: '#E8F4FD',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-        borderRadius: '10px',
-        padding: '16px',
-    };
+ 
+  const paperStyle = {
+    backgroundColor: '',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+    borderRadius: '10px',
+    padding: '16px',
+  };
+
+  const pasSoumisStyle = {
+    ...paperStyle,
+    backgroundColor: '#E8F4FD', 
+  };
+
+  const soumisStyle = {
+    ...paperStyle,
+    backgroundColor: '#CFFFCF', 
+  };
+
+  const pasCreeStyle = {
+    ...paperStyle,
+    backgroundColor: '#FFD9D9', 
+  };
+
+  const getPaperStyle = () => {
+    switch (etat) {
+      case 'Pas Soumis':
+        return pasSoumisStyle;
+      case 'Soumis':
+        return soumisStyle;
+      case 'Pas cree':
+        return pasCreeStyle;
+      default:
+        return paperStyle;
+    }
+  };
 
     const getCurrentMonthCra = () => {
         const currentMonth = currentDate.getMonth() + 1;
@@ -86,7 +172,7 @@ const RecapCraCollab = ({ collabId }) => {
 
 
     return (
-        <Paper sx={cardStyle}>
+        <Paper sx={getPaperStyle()}>
             <Box display="flex" alignItems="center" justifyContent="space-between" marginBottom="16px">
                 <IconButton onClick={handlePrevMonth} size="large" edge="start" color="inherit" aria-label="prev">
                     <ArrowBackIcon />
@@ -116,13 +202,28 @@ const RecapCraCollab = ({ collabId }) => {
                             : businessDays}
                         <br />
 
-                        <strong>Total:</strong>
+                        <strong>Total: </strong>
                         {getCurrentMonthCra()._activites && getCurrentMonthCra()._absences
                             ? (getCurrentMonthCra()._activites.length + getCurrentMonthCra()._absences.length) / 2
                             : 0} / {businessDays - (getCurrentMonthCra()._holidays ? getCurrentMonthCra()._holidays.length : 0)}
+
+                        <br />
+
+                        <strong>Etat: </strong>
+                        {etat}
+                        <br />
                     </>
                 )}
             </Typography>
+            <br />
+            <Button
+                variant="contained"
+                color="primary"
+                disabled={isSubmitButtonDisabled}
+                onClick={handleCraSubmit}
+            >
+                Submit
+            </Button>
 
         </Paper>
     );

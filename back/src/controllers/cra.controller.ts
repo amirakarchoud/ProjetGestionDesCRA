@@ -85,7 +85,7 @@ export class CraController {
     return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
   }
 
-  @Get('submt/:id')
+  @Post('submit/:id')
   async submitCra(@Param('id') idCra: number) {
     return await this.craApp.submitCra(idCra);
   }

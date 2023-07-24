@@ -49,6 +49,7 @@ const CalendarComponent = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
+  const [recapCraKey, setRecapCraKey] = useState(0); 
 
   const formattedStartDate = selectedRange && selectedRange.start ? selectedRange.start.toDateString() : '';
   const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
@@ -60,7 +61,7 @@ const CalendarComponent = () => {
     { value: 'RTT', label: 'RTT' },
     { value: 'Conges', label: 'Congés' },
     { value: 'Maladie', label: 'Maladie' },
-    { value: 'Exceptionnel', label: 'Exceptionnel' },
+    { value: 'Exceptionnel', label: 'Exceptionnelle' },
   ];
 
   useEffect(() => {
@@ -95,6 +96,7 @@ const CalendarComponent = () => {
     try {
       const response = await fetch(apiUrl + '/cra/userYear/' + user + '/2023', { mode: 'cors' });
       const data = await response.json();
+      setUserCras(data);
       const processedEvents = processData(data);
       setEvents(processedEvents);
     } catch (error) {
@@ -361,6 +363,7 @@ const CalendarComponent = () => {
     fetchData();
     setSelectedRange(null);
     setShowConfirmation(false);
+    setRecapCraKey(prevKey => prevKey + 1);
   };
 
   const handleSelectEvent = (event) => {
@@ -433,6 +436,7 @@ const CalendarComponent = () => {
 
       setShowConfirmationDelete(false);
       setSelectedEvent(null);
+      setRecapCraKey(prevKey => prevKey + 1);
     } catch (error) {
       console.error('Error deleting:', error);
     }
@@ -534,7 +538,7 @@ const CalendarComponent = () => {
           </div>
         )}
         <div style={{ position: 'absolute', top: '40%', right: '10%', width: '30%' }}>
-        <RecapCraCollab collabId={user} cras={userCras} />
+        <RecapCraCollab key={recapCraKey} collabId={user} cras={userCras} />
         </div >
         <ConfirmationModal
           open={showConfirmationDelete}

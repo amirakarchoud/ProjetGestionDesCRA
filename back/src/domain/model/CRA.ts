@@ -262,7 +262,7 @@ export class CRA {
       const isHoliday = this.checkDateIsHoliday(currentDate);
       const isActivityOrAbsenceExists = this.checkDayIsFull(currentDate);
 
-      if (!isWeekend && !isHoliday && !isActivityOrAbsenceExists) {
+      if (!isWeekend && isHoliday && !isActivityOrAbsenceExists) {
         availableDates.push(new Date(currentDate));
       }
 
