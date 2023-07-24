@@ -14,7 +14,7 @@ const UpdateProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
-  const apiUrl = 'http://localhost:3000';
+  const apiUrl = 'http://localhost:8080';
 
   useEffect(() => {
     const fetchCollabs = async () => {

@@ -34,7 +34,7 @@ const style = {
 
 
 const localizer = momentLocalizer(moment);
-const apiUrl = 'http://localhost:3000';
+const apiUrl = 'http://localhost:8080';
 
 const CalendarComponent = () => {
   const [events, setEvents] = useState([]);
@@ -545,7 +545,7 @@ const CalendarComponent = () => {
           onClose={handleCloseConfirmationModal}
           onConfirm={handleConfirmDelete}
         />
-        
+
       </CardContent>
     </Card>
   );

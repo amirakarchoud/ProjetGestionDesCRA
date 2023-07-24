@@ -1,0 +1,54 @@
+services:
+
+  database:
+    image: mariadb
+    expose:
+      - 3306:3306
+    environment:
+      MARIADB_USER: root
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_ROOT_HOST: backend
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "if [ -f '/run/mysqld/mysqld.sock' ]; then return 0; fi" ]
+      interval: 2s
+      timeout: 1s
+      retries: 10
+      start_period: 2s
+    network_mode: host
+
+  backend:
+    image: node:18-alpine3.17
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ../back:/build
+    environment:
+      NODE_ENV: "docker"
+    expose:
+      - 8080:8080
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /build && \
+        npm i && \
+        npm run start
+    network_mode: host
+
+  frontend:
+    image: node:18-alpine3.17
+    volumes:
+      - ../front:/build
+    expose:
+      - 3000:3000
+    command:
+      - /bin/sh
+      - -c
+      - |
+        cd /build && \
+        npm i && \
+        npm run start
+    network_mode: host

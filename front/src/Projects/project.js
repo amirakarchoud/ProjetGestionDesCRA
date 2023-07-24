@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const apiUrl = 'http://localhost:3000';
+  const apiUrl = 'http://localhost:8080';
 
   useEffect(() => {
     fetchProjects();

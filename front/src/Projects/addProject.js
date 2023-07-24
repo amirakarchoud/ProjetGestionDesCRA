@@ -12,11 +12,11 @@ const AddProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
-  const apiUrl = 'http://localhost:3000';
+  const apiUrl = 'http://localhost:8080';
   useEffect(() => {
     const fetchCollabs = async () => {
       try {
-        const response = await fetch(apiUrl +'/collab/all'); 
+        const response = await fetch(apiUrl +'/collab/all');
         const data = await response.json();
         setAllCollabs(data);
       } catch (error) {
@@ -46,7 +46,7 @@ const AddProject = () => {
         console.log('Project added successfully!');
         toast.success('Project added successfully!');
        /* setTimeout(() => {
-          history.push('/projects'); 
+          history.push('/projects');
         }, 2000);*/
       } else {
         console.error('Error adding project:', response);
@@ -60,7 +60,7 @@ const AddProject = () => {
     <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '60%' }}>
       <h1>Ajouter un Projet</h1>
       <br />
-      <strong>Code du projet:</strong> 
+      <strong>Code du projet:</strong>
       <br />
       <TextField
         label="Code du Projet"
@@ -69,7 +69,7 @@ const AddProject = () => {
         style={{ marginBottom: '16px', width: '60%' }}
       />
       <br />
-      <strong>Les collaborateurs:</strong> 
+      <strong>Les collaborateurs:</strong>
       <br />
       <Autocomplete
         multiple
@@ -97,7 +97,7 @@ const AddProject = () => {
         Ajouter
       </Button>
       <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>
-       
+
     </div>
   );
 };

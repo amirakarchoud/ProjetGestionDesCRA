@@ -13,14 +13,14 @@ import { Button } from '@mui/material';
 
 
 const RecapAdmin = () => {
-  const apiUrl = 'http://localhost:3000';
+  const apiUrl = 'http://localhost:8080';
   const [craData, setCraData] = useState([]);
   const [page, setPage] = useState(0);
   const [businessDays, setbusinessDays] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [allCollabs, setAllCollabs] = useState([]);
   const today = new Date();
-const month = today.getMonth() + 1; 
+const month = today.getMonth() + 1;
 const year = today.getFullYear();
 
   useEffect(() => {
@@ -31,18 +31,18 @@ const year = today.getFullYear();
 
   const fetchCollabs = async () => {
     try {
-      const response = await fetch(apiUrl +'/collab/all'); 
+      const response = await fetch(apiUrl +'/collab/all');
       const data = await response.json();
       setAllCollabs(data);
     } catch (error) {
       console.error('Error fetching collabs:', error);
     }
   };
-  
+
 
   const fetchCraData = async () => {
     try {
-      const response = await fetch(apiUrl + '/cra/monthCra/'+month+'/'+year); 
+      const response = await fetch(apiUrl + '/cra/monthCra/'+month+'/'+year);
       const data = await response.json();
       setCraData(data);
       //calculating les jours ouvres
@@ -52,7 +52,7 @@ const year = today.getFullYear();
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
         const dayOfWeek = currentDate.getDay();
-        if (dayOfWeek !== 0 && dayOfWeek !== 6) { 
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
           i++;
         }
         currentDate.setDate(currentDate.getDate() + 1);
@@ -105,7 +105,7 @@ const year = today.getFullYear();
                   </TableCell>
                 <TableCell>
                     {cra._collab._name}
-                    
+
                 </TableCell>
                 <TableCell>{month}/{year}</TableCell>
                 <TableCell>{cra._etat ? 'Pas Soumis' :'Soumis'} </TableCell>
@@ -118,7 +118,7 @@ const year = today.getFullYear();
               .map((collab) => (
                 <TableRow key={collab._email}>
                   <TableCell><FaSkullCrossbones color="red" /></TableCell>
-                  
+
                   <TableCell>{collab._name}</TableCell>
                   <TableCell>{month}/{year}</TableCell>
                   <TableCell>Pas cree</TableCell>
