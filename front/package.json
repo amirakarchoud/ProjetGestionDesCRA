@@ -36,6 +36,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
+        "start_docker": "HOST=172.28.0.3 react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject"

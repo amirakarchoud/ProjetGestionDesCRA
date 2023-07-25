@@ -52,7 +52,7 @@ services:
       - |
         cd /build && \
         npm i && \
-        npm run start
+        npm run start_docker
     networks:
       - cra_net
 
@@ -61,4 +61,4 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/16
-          ip_range: 172.28.0.2/16
+          ip_range: 172.28.0.3/16
