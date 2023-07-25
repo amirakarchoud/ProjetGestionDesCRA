@@ -12,7 +12,7 @@ const ProjectDetails = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/project/${projectCode}`, { mode: 'cors' });
+        const response = await fetch(`http://localhost:8080/project/${projectCode}`, { mode: 'cors' });
         const data = await response.json();
         setProject(data);
         fetchCollabDetails(data.collabs);
@@ -26,7 +26,7 @@ const ProjectDetails = () => {
 
   const fetchCollabDetails = async (collabIds) => {
     try {
-      const response = await fetch('http://localhost:3000/collab/ids', {
+      const response = await fetch('http://localhost:8080/collab/ids', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

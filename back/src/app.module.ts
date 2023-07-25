@@ -18,24 +18,48 @@ import { ProjectController } from './controllers/Project.controller';
 import { DoaminModule } from './domain/domain.module';
 import { RepoProject } from './data/Repository/RepoProject';
 import { CollabController } from './controllers/Collab.controller';
+import { ConfigModule } from '@nestjs/config';
+import * as process from 'process';
+
+let dotEnvPath = '.env';
+
+if (process.env.NODE_ENV) {
+  dotEnvPath = `.env_${process.env.NODE_ENV}`;
+}
+
+console.log('env is ', dotEnvPath);
 
 @Module({
-  imports: [TypeOrmModule.forRoot({
-    type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'test2',
-    entities: [
-      __dirname + '/**/*.entity{.ts,.js}',
+  imports: [
+    ConfigModule.forRoot(
+      { envFilePath: dotEnvPath },
+    ),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DATABASE_HOST || 'localhost',
+      port: 3306,
+      username: process.env.DATABASE_USER || 'cra_user',
+      password: process.env.DATABASE_PASSWORD || 'proxym',
+      database: process.env.DATABASE_DATABASE || 'proxym_cra',
+      entities: [
+        __dirname + '/**/*.entity{.ts,.js}',
+      ],
+      synchronize: true,
+      // dropSchema: true,
+    }),
+    TypeOrmModule.forFeature([UserDB, AbsenceDB, ActivityDB, CRADB, HolidayDB, ProjectDB]),
+    DoaminModule,
+    ScheduleModule.forRoot(),
   ],
-    synchronize: true,
-   // dropSchema: true,
-  }),ScheduleModule.forRoot(), TypeOrmModule.forFeature([UserDB,AbsenceDB,ActivityDB,CRADB,HolidayDB,ProjectDB]),DoaminModule],
-  controllers: [CraController,ProjectController,CollabController],
-  providers: [AppService,CraApplication,CraService,
-    { provide: 'IRepoCollab', useClass: RepoCollab },{ provide: 'IRepoCra', useClass: RepoCra }
-  ,{ provide: 'IRepoHoliday', useClass: RepoHoliday },{ provide: 'IRepoProject', useClass: RepoProject }]
+  controllers: [CraController, ProjectController, CollabController],
+  providers: [
+    AppService,
+    CraApplication,
+    CraService,
+    { provide: 'IRepoCollab', useClass: RepoCollab },
+    { provide: 'IRepoCra', useClass: RepoCra },
+    { provide: 'IRepoHoliday', useClass: RepoHoliday },
+    { provide: 'IRepoProject', useClass: RepoProject }],
 })
-export class AppModule {}
+export class AppModule {
+}
