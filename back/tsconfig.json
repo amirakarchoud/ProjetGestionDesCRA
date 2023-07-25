@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "paths": {"@app/*":["src/*"]},
+    "paths": {
+      "@app/*": [
+        "src/*"
+      ]
+    },
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -18,5 +22,11 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "exclude": ["node_modules"],
+  "include": [
+    "./src/*",
+    "./test/*",
+    "./test_e2e/*"
+  ]
 }
