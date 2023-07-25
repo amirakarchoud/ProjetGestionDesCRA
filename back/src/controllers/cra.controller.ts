@@ -4,7 +4,7 @@ import { Absence } from "../domain/model/Absence";
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
 import { CreateActivityDto } from "../Dto/CreateActivityDto";
 import { Activity } from "../domain/model/Activity";
-import { deleteActivityAbsenceDto } from "@app/Dto/deleteActivityAbsenceDto";
+import { deleteActivityAbsenceDto } from "../Dto/deleteActivityAbsenceDto";
 
 @Controller('cra')
 export class CraController {
