@@ -1,15 +1,15 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from "typeorm";
-import { CraApplication } from "../../src/domain/application/craApplication";
-import { RepoCollab } from "../../src/data/Repository/RepoCollab";
-import { AppModule } from "../../src/app.module";
-import { Project } from "../../src/domain/model/Project";
-import { RepoProject } from "../../src/data/Repository/RepoProject";
-import { RepoCra } from "../../src/data/Repository/RepoCra";
-import { Raison } from "../../src/domain/model/Raison";
-import { CreateAbsenceDto } from "../../src/Dto/CreateAbsenceDto";
-import { CreateActivityDto } from "../../src/Dto/CreateActivityDto";
+import { CraApplication } from '../src/domain/application/craApplication';
+import { RepoCollab } from "../src/data/Repository/RepoCollab";
+import { AppModule } from "../src/app.module";
+import { Project } from "../src/domain/model/Project";
+import { RepoProject } from "../src/data/Repository/RepoProject";
+import { RepoCra } from "../src/data/Repository/RepoCra";
+import { Raison } from "../src/domain/model/Raison";
+import { CreateAbsenceDto } from "../src/Dto/CreateAbsenceDto";
+import { CreateActivityDto } from "../src/Dto/CreateActivityDto";
 
 describe('APP', () => {
     let app: INestApplication;
