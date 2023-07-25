@@ -19,6 +19,7 @@ export class CraService {
 
     async deleteAbsence(id: number, date: Date, matin: boolean) {
         const cra = await this.repoCra.findById(id);
+        cra.etat=Etat.unsubmitted;
         cra.deleteAbsence(date, matin);
         return await this.repoCra.save(cra);
     }
@@ -35,6 +36,7 @@ export class CraService {
             await this.repoCra.save(cra);
         }
         cra = (await this.repoCra.findByMonthYearCollab(dateAbs.getMonth() + 1, dateAbs.getFullYear(), createAbsenceDto.collabId)) as CRA;
+        console.log('cra etat here = '+cra.etat)
         //create absence
         console.log("before new absence");
         const absence = new Absence(0,cra.id, createAbsenceDto.matin, createAbsenceDto.date, createAbsenceDto.raison);
@@ -61,6 +63,7 @@ export class CraService {
 
     async deleteActivity(id: number, date: Date, matin: boolean) {
         const cra = await this.repoCra.findById(id);
+        cra.etat=Etat.unsubmitted;
         cra.deleteActivity(date, matin);
         return await this.repoCra.save(cra);
     }

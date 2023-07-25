@@ -79,10 +79,13 @@ export class CraController {
 
   @Get('get/:user/:month/:year')
   async getUserCra(@Param('user') idUser: string, @Param('month') month: number, @Param('year') year: number) {
+    console.log("getting user month cra back");
+    console.log("user id: "+idUser);
+    console.log("month= "+month)
     return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
   }
 
-  @Get('submt/:id')
+  @Post('submit/:id')
   async submitCra(@Param('id') idCra: number) {
     return await this.craApp.submitCra(idCra);
   }
@@ -95,6 +98,7 @@ export class CraController {
 
   @Get('userYear/:id/:year')
   async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
+    console.log("user cra by year")
     return await this.craApp.userYearCra(idUser, year);
   }
 

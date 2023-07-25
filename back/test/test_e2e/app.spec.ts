@@ -74,7 +74,7 @@ describe('APP', () => {
         const absence = new CreateAbsenceDto();
         absence.date = date;
         absence.matin = false;
-        absence.raison = Raison.rtt;
+        absence.raison = Raison.RTT;
         absence.craId = 1;
 
         absence.collabId = 'test1';
