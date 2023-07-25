@@ -15,7 +15,7 @@ describe('Un CRA ', () => {
         //given
         const today = new Date();
         const cra = new CRA(1, 3, 2023, new Collab("user", "test", Role.admin), new Date(), Etat.unsubmitted);
-        cra.addAbsence(new Absence(1, true, today, Raison.maladie));
+        cra.addAbsence(new Absence(1,cra.id, true, today, Raison.Maladie));
 
         expect(cra.absences.length).toBe(1);
         //when
@@ -32,8 +32,8 @@ describe('Un CRA ', () => {
         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(), Etat.unsubmitted);
         const projet = new Project("123", []);
         projet.addCollab(collab.email);
-        const activity = new Activity(cra.id, collab, projet, true, new Date(), cra);
-        const absence = new Absence(1, true, date, Raison.maladie)
+        const activity = new Activity(1, collab, projet, true, new Date(),cra.id);
+        const absence = new Absence(2,cra.id, true, date, Raison.Maladie)
 
 
         //When
@@ -53,9 +53,9 @@ describe('Un CRA ', () => {
         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(), Etat.unsubmitted);
         const projet = new Project("123", []);
         projet.addCollab(collab.email);
-        const activity = new Activity(cra.id, collab, projet, true, new Date(), cra);
-        const activity2 = new Activity(cra.id, collab, projet, false, new Date(), cra);
-        const absence = new Absence(1, true, date, Raison.maladie);
+        const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+        const activity2 = new Activity(2, collab, projet, false, new Date(), cra.id);
+        const absence = new Absence(3,cra.id, true, date, Raison.Maladie);
 
 
         //When
@@ -76,7 +76,7 @@ describe('Un CRA ', () => {
         const cra = new CRA(1, 6, date.getFullYear(), collab, new Date(), Etat.unsubmitted);
 
         //When
-        const absence = new Absence(cra.id, true, new Date("02-06-2023"), Raison.maladie);
+        const absence = new Absence(1,cra.id, true, new Date("02-06-2023"), Raison.Maladie);
 
         //Then
         expect(() => { cra.addAbsence(absence) }).toThrow(ForbiddenException);
@@ -92,7 +92,7 @@ describe('Un CRA ', () => {
         //given
         const today = new Date();
         const cra = new CRA(1, 3, 2023, new Collab("user", "test", Role.admin), new Date(), Etat.unsubmitted);
-        cra.addAbsence(new Absence(1, true, today, Raison.maladie));
+        cra.addAbsence(new Absence(1,cra.id, true, today, Raison.Maladie));
 
         expect(cra.absences.length).toBe(1);
         cra.deleteAbsence(today, false);
@@ -109,7 +109,7 @@ describe('Un CRA ', () => {
         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(), Etat.unsubmitted);
         const projet = new Project("123", []);
         projet.addCollab(collab.email);
-        const activity = new Activity(cra.id, collab, projet, true, new Date(), cra);
+        const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
 
 
         //When
@@ -124,7 +124,7 @@ describe('Un CRA ', () => {
         const date = new Date();
         const collab = new Collab("user", "test", Role.admin);
         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(), Etat.unsubmitted);
-        const absence = new Absence(cra.id, true, new Date(), Raison.maladie);
+        const absence = new Absence(1,cra.id, true, new Date(), Raison.Maladie);
 
 
         //When
@@ -140,8 +140,8 @@ describe('Un CRA ', () => {
         const date = new Date();
         const collab = new Collab("user", "test", Role.admin);
         const cra = new CRA(1, date.getMonth(), date.getFullYear(), collab, new Date(), Etat.unsubmitted);
-        const absence = new Absence(cra.id, true, new Date(), Raison.maladie);
-        const absence2 = new Absence(cra.id, false, new Date(), Raison.maladie);
+        const absence = new Absence(1,cra.id, true, new Date(), Raison.Maladie);
+        const absence2 = new Absence(2,cra.id, false, new Date(), Raison.Maladie);
 
         //When
         cra.addAbsence(absence);
@@ -167,13 +167,14 @@ describe('Un CRA ', () => {
         const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
         // Fill all days with activities
-
+        let i=1;
         for (let currentDate = startDate; currentDate <= endDate; currentDate.setDate(currentDate.getDate() + 1)) {
             if (!cra.isWeekend(new Date(currentDate))) {
-                const abs = new Absence(cra.id, true, new Date(currentDate), Raison.maladie);
-                const act = new Activity(cra.id, collab, projet, false, new Date(currentDate), cra);
+                const abs = new Absence(i,cra.id, true, new Date(currentDate), Raison.Maladie);
+                const act = new Activity(i+1, collab, projet, false, new Date(currentDate), cra.id);
                 cra.addAbsence(abs);
                 cra.addActivity(act);
+                i=i+2;
             }
         }
 
@@ -195,9 +196,9 @@ describe('Un CRA ', () => {
         const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
 
 
-        const activity = new Activity(cra.id, collab, projet, false, new Date(startDate), cra);
-        const activity2 = new Activity(cra.id, collab, projet, true, new Date(startDate), cra);
-        const absence = new Absence(cra.id, true, new Date(endDate), Raison.maladie);
+        const activity = new Activity(1, collab, projet, false, new Date(startDate), cra.id);
+        const activity2 = new Activity(2, collab, projet, true, new Date(startDate), cra.id);
+        const absence = new Absence(3,cra.id, true, new Date(endDate), Raison.Maladie);
         cra.addActivity(activity);
         cra.addActivity(activity2);
         cra.addAbsence(absence);

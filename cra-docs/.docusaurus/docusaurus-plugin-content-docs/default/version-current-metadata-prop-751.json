@@ -1,0 +1,40 @@
+{
+  "pluginId": "default",
+  "version": "current",
+  "label": "Next",
+  "banner": null,
+  "badge": false,
+  "noIndex": false,
+  "className": "docs-version-current",
+  "isLast": true,
+  "docsSidebars": {
+    "tutorialSidebar": [
+      {
+        "type": "link",
+        "label": "file2",
+        "href": "/docs/file2",
+        "docId": "file2"
+      },
+      {
+        "type": "link",
+        "label": "intro",
+        "href": "/docs/intro",
+        "docId": "intro"
+      }
+    ]
+  },
+  "docs": {
+    "file2": {
+      "id": "file2",
+      "title": "file2",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "intro": {
+      "id": "intro",
+      "title": "intro",
+      "description": "tttt",
+      "sidebar": "tutorialSidebar"
+    }
+  }
+}
