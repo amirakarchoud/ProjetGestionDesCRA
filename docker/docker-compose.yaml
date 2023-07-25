@@ -16,7 +16,8 @@ services:
       timeout: 1s
       retries: 10
       start_period: 2s
-    network_mode: host
+    networks:
+      - cra_net
 
   backend:
     image: node:18-alpine3.17
@@ -36,7 +37,8 @@ services:
         cd /build && \
         npm i && \
         npm run start
-    network_mode: host
+    networks:
+      - cra_net
 
   frontend:
     image: node:18-alpine3.17
@@ -51,4 +53,12 @@ services:
         cd /build && \
         npm i && \
         npm run start
-    network_mode: host
+    networks:
+      - cra_net
+
+networks:
+  cra_net:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          ip_range: 172.28.0.2/16
