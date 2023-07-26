@@ -1,6 +1,5 @@
 import { Collab } from './Collab';
 import { Project } from './Project';
-import { CRA } from './CRA';
 
 export class Activity {
   private _id: number;
@@ -31,6 +30,12 @@ export class Activity {
     date: Date,
     cra: number,
   ) {
+    if (!(id && collab && projet && date && cra)) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (matin == null) {
+      throw new Error('cannot have a null attribut');
+    }
     this._id = id;
 
     this._collab = collab;

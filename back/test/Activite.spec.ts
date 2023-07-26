@@ -6,6 +6,43 @@ import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 
 describe('Une activite ', () => {
+  it('ne peut pas avoir des attributs null', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    //Then
+    expect(
+      () => new Activity(null, collab, projet, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, null, projet, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, null, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, projet, true, new Date(), null),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, projet, null, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+  });
+
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();
@@ -70,5 +107,26 @@ describe('Une activite ', () => {
 
     //Then
     expect(activity.date).toBe(date);
+  });
+  it('est associee a un cra', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    const activity = new Activity(1, collab, projet, true, date, cra.id);
+
+    //Then
+    expect(activity.cra).toBe(cra.id);
   });
 });

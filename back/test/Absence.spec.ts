@@ -6,6 +6,39 @@ import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 
 describe('Une absence ', () => {
+  it('ne peut pas avoir des attributs null', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+    expect(
+      () => new Absence(null, cra.id, true, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Absence(1, null, true, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Absence(1, cra.id, null, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Absence(1, cra.id, true, null, Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(() => new Absence(1, cra.id, true, new Date(), null)).toThrowError(
+      'cannot have a null attribut',
+    );
+  });
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();

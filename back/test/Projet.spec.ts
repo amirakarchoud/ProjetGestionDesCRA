@@ -6,6 +6,16 @@ describe('Un projet ', () => {
   //Given
   const collab = new Collab('user', 'test', Role.admin);
 
+  it('ne peut pas avoir des attributs null', () => {
+    expect(() => new Project(null, [])).toThrowError(
+      'cannot have a null attribut',
+    );
+
+    expect(() => new Project('111', null)).toThrowError(
+      'cannot have a null attribut',
+    );
+  });
+
   it('peut etre cree ', () => {
     const projet = new Project('123', []);
     expect(projet).toBeDefined();

@@ -326,7 +326,7 @@ describe('Un CRA ', () => {
     }
   });
 
-  it('ne peut pas retourner un jour ferie dans les dates vides', () => {
+  it('un jour férié nest pas considérer comme une date vide', () => {
     // Given
     const date = new Date();
     const collab = new Collab('user', 'test', Role.admin);
