@@ -7,6 +7,7 @@ import { Role } from '@app/domain/model/Role';
 import { Activity } from '@app/domain/model/Activity';
 import { Etat } from '@app/domain/model/etat.enum';
 import { ForbiddenException } from '@nestjs/common';
+import { Holiday } from '@app/domain/model/Holiday';
 
 describe('Un CRA ', () => {
   it('peut supprimer des absences', () => {
@@ -325,106 +326,29 @@ describe('Un CRA ', () => {
     }
   });
 
-  /*
+  it('ne peut pas retourner un jour ferie dans les dates vides', () => {
+    // Given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    cra.holidays = [new Holiday(1, new Date('2023-07-14'), '14 juillet')];
+    const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
+    const absence2 = new Absence(2, cra.id, false, new Date(), Raison.Maladie);
 
-      it('ne peut pas contenir des jours vides :verifier le total absence+activite+ferie==jours ouvre', () => {
-          const collab=new Collab();
-          const projet=new Project();
-          projet.addCollab(collab);
-          const date = new Date();
-          let tomorrow = new Date();
-          tomorrow.setDate(date.getDate() +1);
-          const activite1=new Activity(collab,projet,false,new Date(),[]);
-          const absence=new Absence(collab,true,new Date(),Raison.maladie);
-          const activite3=new Activity(collab,projet,false,tomorrow,[]);
+    //When
+    cra.addAbsence(absence);
+    cra.addAbsence(absence2);
 
+    // When
+    const emptyDates = cra.getAvailableDatesOfCra();
 
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addActivity(activite1);
-          cra.addAbsence(absence);
-          cra.addActivity(activite3);
-
-          //then
-          expect(cra.verifyTotalDays()).toBe(false);
-
-
-      });
-
-      it('peut contenir des jours feries', () => {
-          const cra=new CRA(7,2023);
-          cra.fetchHolidays();
-         // expect(cra.holidays).toHaveLength(1);
-
-
-      });
-
-      it('ne peut contenir des activites ou absences que pour le meme mois', () => {
-
-          const collab = new Collab();
-          const projet = new Project();
-          projet.addCollab(collab);
-          const activity = new Activity(collab, projet, true, new Date(), []);
-          const absence = new Absence(collab, true, new Date("02-04-2023"),Raison.maladie);
-          const cra=new CRA(6,2023);
-      //when
-     // cra.addActivity(activity);
-
-      //then
-
-      //expect(cra.activites).toHaveLength(1);
-
-      expect(()=>{cra.addAbsence(absence)}).toThrowError();
-
-      });
-
-
-
-
-      it('test to fail :peut ajouter une activite que pour le mois courant ou 5 jours après le mois precedent',()=>{
-          //et si modif le 5 du mois?
-          const collab=new Collab();
-          const projet=new Project();
-          projet.addCollab(collab);
-          const oldActivity=new Activity(collab,projet,false,new Date("2023-05-02"),[]);
-
-          const cra=new CRA(5,2023);
-          expect(()=>{cra.addActivity(oldActivity)}).toThrow(ForbiddenException);
-
-
-      });
-
-
-
-
-      it('peut reccuperer les jours vides du mois',()=>{
-          //=jours - (activities + absences)
-          const collab=new Collab();
-          const projet=new Project();
-          projet.addCollab(collab);
-          const date = new Date();
-          let tomorrow = new Date();
-          tomorrow.setDate(date.getDate() +1);
-          const activite1=new Activity(collab,projet,false,new Date(),[]);
-          const absence=new Absence(collab,true,new Date(),Raison.maladie);
-          const activite3=new Activity(collab,projet,false,tomorrow,[]);
-
-
-          //When
-          const cra=new CRA(date.getMonth()+1,date.getFullYear());
-          cra.addActivity(activite1);
-          cra.addAbsence(absence);
-          cra.addActivity(activite3)
-
-          //then
-          const businessDays=cra.calculateBusinessDays(date.getMonth()+1,date.getFullYear());
-         // expect(cra.calculateEmptyDays()).toBe(businessDays-(3 * 0.5));
-
-
-      });
-
-
-
-
-   */
+    expect(emptyDates).not.toContainEqual(new Date('2023-07-14'));
+  });
 });

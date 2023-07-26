@@ -1,3 +1,6 @@
-export enum Raison{
-    RTT,Conges,Maladie,Exceptionnel
+export enum Raison {
+  RTT,
+  Conges,
+  Maladie,
+  Exceptionnel,
 }
