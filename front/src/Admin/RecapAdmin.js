@@ -8,8 +8,9 @@ import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { toast } from 'react-toastify';
-import { FaCheckCircle, FaDownload, FaExclamationTriangle, FaSkullCrossbones } from 'react-icons/fa';
-import { Button } from '@mui/material';
+import { FaCalendar, FaCheckCircle, FaDownload, FaExclamationTriangle, FaSkullCrossbones } from 'react-icons/fa';
+import { Button, MenuItem, Select, TextField } from '@mui/material';
+
 
 
 const RecapAdmin = () => {
@@ -20,8 +21,12 @@ const RecapAdmin = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [allCollabs, setAllCollabs] = useState([]);
   const today = new Date();
-const month = today.getMonth() + 1;
-const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const [selectedFilter, setSelectedFilter] = useState('Tous');
+  const [showNotCreated, setShowNotCreated] = useState(1);
+  const [filteredCraData, setFilteredCraData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchCraData();
@@ -31,7 +36,7 @@ const year = today.getFullYear();
 
   const fetchCollabs = async () => {
     try {
-      const response = await fetch(apiUrl +'/collab/all');
+      const response = await fetch(apiUrl + '/collab/all');
       const data = await response.json();
       setAllCollabs(data);
     } catch (error) {
@@ -42,13 +47,14 @@ const year = today.getFullYear();
 
   const fetchCraData = async () => {
     try {
-      const response = await fetch(apiUrl + '/cra/monthCra/'+month+'/'+year);
+      const response = await fetch(`${apiUrl}/cra/monthCra/${month}/${year}`);
       const data = await response.json();
       setCraData(data);
+      setFilteredCraData(data);
       //calculating les jours ouvres
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0);
-      let i=0;
+      let i = 0;
       const currentDate = new Date(startDate);
       while (currentDate <= endDate) {
         const dayOfWeek = currentDate.getDay();
@@ -76,19 +82,102 @@ const year = today.getFullYear();
     setPage(0);
   };
 
+  const getRowColor = (craetat) => {
+    const etat = craetat ? 'Pas Soumis' : 'Soumis'
+    switch (etat) {
+      case "Pas Soumis":
+        return "#E8F4FD";
+      case "Soumis":
+        return "#CCFFCC";
+      default:
+        return "#FFCCCC";
+    }
+  };
+
+  const filterOptions = [
+    'Tous',
+    'Pas soumis',
+    'Soumis',
+    'Pas cree',
+  ];
+
+  const handleFilterChange = (event) => {
+    const selectedValue = event.target.value;
+  
+    if (selectedValue === 'Tous') {
+      setShowNotCreated(1);
+      setFilteredCraData(craData);
+    } else if (selectedValue === 'Pas soumis') {
+      const filteredData = craData.filter((cra) => {
+        return cra._etat === 1;
+      });
+      setShowNotCreated(0);
+      setFilteredCraData(filteredData);
+    } else if (selectedValue === 'Soumis') {
+      const filteredData = craData.filter((cra) => {
+        return cra._etat === 0;
+      });
+      setShowNotCreated(0);
+      setFilteredCraData(filteredData);
+    } else if (selectedValue === 'Pas cree') {
+      setShowNotCreated(1);
+      setFilteredCraData([]);
+    }
+    setSelectedFilter(event.target.value);
+  };
+  
+
+  const filteredCollabs = allCollabs.filter((collab) =>
+    collab._name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '90%' }}>
       <div style={{ marginLeft: '10%', marginRight: '10%' }}>
         <h1 >Recap du mois </h1>
-        <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{left:'90%'}}>
-            Exporter
-          </Button>
+        <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{ left: '90%' }}>
+          Exporter
+        </Button>
+
       </div>
+      <div style={{ marginLeft: '10%', marginRight: '10%' ,marginTop:'2%'}}>
+        <Button variant="contained" color="primary" startIcon={<FaCalendar />} style={{ left: '90%' }}>
+          Cloturer le mois
+        </Button>
+      </div>
+      <div style={{ display: 'flex', marginBottom: '14px' }}>
+        <div style={{ marginRight: '40%' }}>
+          <Typography>Filtrer par Etat:</Typography>
+          <Select style={{ width: '100%' }}
+            value={selectedFilter}
+            onChange={handleFilterChange}
+          >
+            {filterOptions.map((opt) => (
+              <MenuItem key={opt} value={opt}>
+                {opt}
+              </MenuItem>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Typography>Recherche par nom :</Typography>
+          <TextField
+            label="Rechercher"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+
       <TableContainer>
-        <Table  aria-label="collapsible table">
+
+        <Table aria-label="collapsible table">
           <TableHead>
             <TableRow>
-            <TableCell></TableCell>
+              <TableCell></TableCell>
               <TableCell><Typography>Collaborateur</Typography></TableCell>
               <TableCell>Peridoe</TableCell>
               <TableCell>Etat du Cra</TableCell>
@@ -96,32 +185,37 @@ const year = today.getFullYear();
             </TableRow>
           </TableHead>
           <TableBody>
-            {craData
+            {filteredCraData
+              .filter(cra => cra._collab._name.toLowerCase().includes(searchTerm.toLowerCase()))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((cra) => (
-                <TableRow key={cra._id}>
-                     <TableCell>
-                    {cra._etat ?  <FaExclamationTriangle color="orange" />:<FaCheckCircle color="green" />}
+                <TableRow
+                  key={cra._id}
+                  style={{ backgroundColor: getRowColor(cra._etat) }}
+                >
+
+                  <TableCell>
+                    {cra._etat ? <FaExclamationTriangle color="orange" /> : <FaCheckCircle color="green" />}
                   </TableCell>
-                <TableCell>
+                  <TableCell>
                     {cra._collab._name}
 
-                </TableCell>
-                <TableCell>{month}/{year}</TableCell>
-                <TableCell>{cra._etat ? 'Pas Soumis' :'Soumis'} </TableCell>
-                <TableCell>{(cra._activites.length+cra._absences.length)/2} /{businessDays-cra._holidays.length} </TableCell>
+                  </TableCell>
+                  <TableCell>{month}/{year}</TableCell>
+                  <TableCell>{cra._etat ? 'Pas Soumis' : 'Soumis'} </TableCell>
+                  <TableCell>{(cra._activites.length + cra._absences.length) / 2} /{businessDays - cra._holidays.length} </TableCell>
                 </TableRow>
               ))}
-               {allCollabs
+            {showNotCreated && filteredCollabs
               .filter((collab) => !craData.some((cra) => cra._collab._email === collab._email))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((collab) => (
-                <TableRow key={collab._email}>
+                <TableRow key={collab._email} style={{ backgroundColor: '#FFCCCC' }}>
                   <TableCell><FaSkullCrossbones color="red" /></TableCell>
 
                   <TableCell>{collab._name}</TableCell>
                   <TableCell>{month}/{year}</TableCell>
-                  <TableCell>Pas cree</TableCell>
+                  <TableCell>Pas crée</TableCell>
                   <TableCell>0 /0</TableCell>
                 </TableRow>
               ))}

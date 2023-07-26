@@ -31,9 +31,7 @@ console.log('env is ', dotEnvPath);
 
 @Module({
   imports: [
-    ConfigModule.forRoot(
-      { envFilePath: dotEnvPath },
-    ),
+    ConfigModule.forRoot({ envFilePath: dotEnvPath }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: process.env.DATABASE_HOST || 'localhost',
@@ -41,13 +39,18 @@ console.log('env is ', dotEnvPath);
       username: process.env.DATABASE_USER || 'cra_user',
       password: process.env.DATABASE_PASSWORD || 'proxym',
       database: process.env.DATABASE_DATABASE || 'proxym_cra',
-      entities: [
-        __dirname + '/**/*.entity{.ts,.js}',
-      ],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       // dropSchema: true,
     }),
-    TypeOrmModule.forFeature([UserDB, AbsenceDB, ActivityDB, CRADB, HolidayDB, ProjectDB]),
+    TypeOrmModule.forFeature([
+      UserDB,
+      AbsenceDB,
+      ActivityDB,
+      CRADB,
+      HolidayDB,
+      ProjectDB,
+    ]),
     DoaminModule,
     ScheduleModule.forRoot(),
   ],
@@ -59,7 +62,7 @@ console.log('env is ', dotEnvPath);
     { provide: 'IRepoCollab', useClass: RepoCollab },
     { provide: 'IRepoCra', useClass: RepoCra },
     { provide: 'IRepoHoliday', useClass: RepoHoliday },
-    { provide: 'IRepoProject', useClass: RepoProject }],
+    { provide: 'IRepoProject', useClass: RepoProject },
+  ],
 })
-export class AppModule {
-}
+export class AppModule {}
