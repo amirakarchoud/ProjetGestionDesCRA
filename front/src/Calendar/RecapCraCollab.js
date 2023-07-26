@@ -13,7 +13,7 @@ const RecapCraCollab = ({ collabId }) => {
     const [currentDate, setCurrentDate] = useState(today);
     const [businessDays, setBusinessDays] = useState(0);
     const [userCras, setUserCras] = useState([]);
-    const apiUrl = 'http://localhost:3000';
+    const apiUrl = 'http://localhost:8080';
     const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
     const [etat, setEtat] = useState('');
     const [etatChangeTrigger, setEtatChangeTrigger] = useState(0);
@@ -53,7 +53,7 @@ const RecapCraCollab = ({ collabId }) => {
           const currentMonthCra = getCurrentMonthCra();
     
           if (Object.keys(currentMonthCra).length === 0) {
-            setEtat('Pas cree'); // If CRA doesn't exist, set etat to 'Pas cree'
+            setEtat('Pas cree'); 
           } else {
             setIsSubmitButtonDisabled(() => {
               return (
