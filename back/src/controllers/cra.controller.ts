@@ -1,87 +1,116 @@
-import { CraApplication } from "../domain/application/craApplication";
-import { CreateAbsenceDto } from "../Dto/CreateAbsenceDto";
-import { Absence } from "../domain/model/Absence";
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from "@nestjs/common";
-import { CreateActivityDto } from "../Dto/CreateActivityDto";
-import { Activity } from "../domain/model/Activity";
-import { deleteActivityAbsenceDto } from "../Dto/deleteActivityAbsenceDto";
+import { CraApplication } from '../domain/application/craApplication';
+import { CreateAbsenceDto } from '../Dto/CreateAbsenceDto';
+import { Absence } from '../domain/model/Absence';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
+import { CreateActivityDto } from '../Dto/CreateActivityDto';
+import { Activity } from '../domain/model/Activity';
+import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
 
 @Controller('cra')
 export class CraController {
-  constructor(private readonly craApp: CraApplication) { }
-  /*
-      @Post()
-      async createCra(@Body() createCraDto: CreateCraDto): Promise<CRA> {
-        try {
-          const createdCra = await this.craService.createCra(createCraDto);
-          return createdCra;
-        } catch (error) {
-          console.error('Error creating CRA:', error);
-          throw new Error('Failed to create CRA');
-        }
-      }
-      */
-
+  constructor(private readonly craApp: CraApplication) {}
   @Post('absence')
-  async addAbsence(@Body() createAbsenceDto: CreateAbsenceDto): Promise<Absence> {
+  async addAbsence(
+    @Body() createAbsenceDto: CreateAbsenceDto,
+  ): Promise<Absence> {
     try {
       const result = await this.craApp.addAbsence(createAbsenceDto);
       return result;
-    }  catch (error) {
+    } catch (error) {
       if (error.message.includes('it is a holiday')) {
-        throw new HttpException({ message: "C'est un jour ferie!" }, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          { message: "C'est un jour ferie!" },
+          HttpStatus.BAD_REQUEST,
+        );
       } else if (error.message === 'FULL day or period') {
-        throw new HttpException({ message: "La journee est deja remplie" }, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          { message: 'La journee est deja remplie' },
+          HttpStatus.BAD_REQUEST,
+        );
       } else if (error.message === 'Forbidden') {
-        throw new HttpException({ message: "ce n'est pas le moment de dresser ce compte rendu" }, HttpStatus.FORBIDDEN);
+        throw new HttpException(
+          { message: "ce n'est pas le moment de dresser ce compte rendu" },
+          HttpStatus.FORBIDDEN,
+        );
       } else {
-        throw new HttpException({ message: 'Internal server error' }, HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(
+          { message: 'Internal server error' },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     }
-
   }
 
-
   @Delete('absence')
-  async deleteAbsence(@Body() delAbsenceDto:deleteActivityAbsenceDto)  {
-    console.log("deleting absence");
-    return await this.craApp.deleteAbsence(delAbsenceDto.id,new Date( delAbsenceDto.date), delAbsenceDto.matin);
-
+  async deleteAbsence(@Body() delAbsenceDto: deleteActivityAbsenceDto) {
+    console.log('deleting absence');
+    return await this.craApp.deleteAbsence(
+      delAbsenceDto.id,
+      new Date(delAbsenceDto.date),
+      delAbsenceDto.matin,
+    );
   }
 
   @Post('activity')
-  async addActivity(@Body() createActivityDto: CreateActivityDto): Promise<Activity> {
-    
+  async addActivity(
+    @Body() createActivityDto: CreateActivityDto,
+  ): Promise<Activity> {
     try {
       const result = await this.craApp.addActivity(createActivityDto);
       return result;
     } catch (error) {
       if (error.message.includes('it is a holiday')) {
-        throw new HttpException({ message: "C'est un jour ferie!" }, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          { message: "C'est un jour ferie!" },
+          HttpStatus.BAD_REQUEST,
+        );
       } else if (error.message === 'FULL day or period') {
-        throw new HttpException({ message: "La journee est deja remplie" }, HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          { message: 'La journee est deja remplie' },
+          HttpStatus.BAD_REQUEST,
+        );
       } else if (error.message === 'Forbidden') {
-        throw new HttpException({ message: "ce n'est pas le moment de dresser ce compte rendu" }, HttpStatus.FORBIDDEN);
+        throw new HttpException(
+          { message: "ce n'est pas le moment de dresser ce compte rendu" },
+          HttpStatus.FORBIDDEN,
+        );
       } else {
-        throw new HttpException({ message: 'Internal server error' }, HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(
+          { message: 'Internal server error' },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
     }
-
   }
 
-
   @Delete('activity')
-  async deleteActivity(@Body() delActivityDto:deleteActivityAbsenceDto) {
-    console.log("deleting activity");
-    return await this.craApp.deleteActivity(delActivityDto.id, delActivityDto.date, delActivityDto.matin);
-
+  async deleteActivity(@Body() delActivityDto: deleteActivityAbsenceDto) {
+    console.log('deleting activity');
+    return await this.craApp.deleteActivity(
+      delActivityDto.id,
+      delActivityDto.date,
+      delActivityDto.matin,
+    );
   }
 
   @Get('get/:user/:month/:year')
-  async getUserCra(@Param('user') idUser: string, @Param('month') month: number, @Param('year') year: number) {
-    console.log("getting user month cra back");
-    console.log("user id: "+idUser);
-    console.log("month= "+month)
+  async getUserCra(
+    @Param('user') idUser: string,
+    @Param('month') month: number,
+    @Param('year') year: number,
+  ) {
+    console.log('getting user month cra back');
+    console.log('user id: ' + idUser);
+    console.log('month= ' + month);
     return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
   }
 
@@ -95,19 +124,17 @@ export class CraController {
     return await this.craApp.getEmptyDates(idCra);
   }
 
-
   @Get('userYear/:id/:year')
   async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
-    console.log("user cra by year")
+    console.log('user cra by year');
     return await this.craApp.userYearCra(idUser, year);
   }
 
   @Get('monthCra/:month/:year')
-  async getMonthCra(@Param('month') month: number, @Param('year') year: number) {
-    return await this.craApp.getMonthCra(month,year);
+  async getMonthCra(
+    @Param('month') month: number,
+    @Param('year') year: number,
+  ) {
+    return await this.craApp.getMonthCra(month, year);
   }
-
-
-
-
 }

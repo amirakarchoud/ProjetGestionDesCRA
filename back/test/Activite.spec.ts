@@ -1,65 +1,132 @@
+import { Activity } from '@app/domain/model/Activity';
+import { CRA } from '@app/domain/model/CRA';
+import { Collab } from '@app/domain/model/Collab';
+import { Project } from '@app/domain/model/Project';
+import { Role } from '@app/domain/model/Role';
+import { Etat } from '@app/domain/model/etat.enum';
 
-describe('Une activite ',()=>{
-  it('peut contenir des collaborateurs',()=>{
+describe('Une activite ', () => {
+  it('ne peut pas avoir des attributs null', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
 
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    //Then
+    expect(
+      () => new Activity(null, collab, projet, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
 
+    expect(
+      () => new Activity(1, null, projet, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, null, true, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, projet, true, new Date(), null),
+    ).toThrowError('cannot have a null attribut');
+
+    expect(
+      () => new Activity(1, collab, projet, null, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
   });
-/*
-    it('ne peut pas tomber sur un jour ferie',()=>{
-        const holidayAdapter = new HolidayAdapter();
 
-holidayAdapter.getHolidays()
-  .then((holidays) => {
-    const collab= new Collab();
-   const myProject =new Project();
-    const dateHoliday=new Date(holidays[0].date);
-   //when
-   myProject.addCollab(collab);
-   //then
-   
-   expect(()=>{new Activity(collab,myProject,false,dateHoliday,holidays)}).toThrow(ForbiddenException);
+  it('peut etre cree par un collab', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
 
-  })
-  .catch((error) => {
-    console.error(error);
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    //When
+    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+
+    //Then
+    expect(activity).toBeDefined();
   });
-   
 
-        
-    });
+  it('est associee a un projet', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
 
-    it('peut etre cree par un collab',()=>{
-         //given 
-        
-         const collab= new Collab();
-         const collab2= new Collab();
-        
-         const myProject =new Project()
- 
-         //when
-         myProject.addCollab(collab);
-         myProject.addCollab(collab2);
-         //then
- 
-         expect(new Activity(collab,myProject,false,new Date(),[])).toBeDefined();
-    });
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
 
-    it('ne peut pas etre associee que au projet du son collab',()=>{
-        //given 
-       
-        const collab= new Collab();
-        const collab2= new Collab();
-       
-        const otherProject =new Project()
+    //Then
+    expect(activity.project).toBe(projet);
+  });
 
-        //when
-        otherProject.addCollab(collab2);
+  it('est associee a une date', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
 
-        //then
-        expect(()=>{new Activity(collab,otherProject,false,new Date(),[])}).toThrow(ForbiddenException);
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    const activity = new Activity(1, collab, projet, true, date, cra.id);
 
-   });
+    //Then
+    expect(activity.date).toBe(date);
+  });
+  it('est associee a un cra', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
 
-*/
-})
+    const projet = new Project('123', []);
+    projet.addCollab(collab.email);
+    const activity = new Activity(1, collab, projet, true, date, cra.id);
 
+    //Then
+    expect(activity.cra).toBe(cra.id);
+  });
+});

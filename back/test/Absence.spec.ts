@@ -1,32 +1,98 @@
+import { Absence } from '@app/domain/model/Absence';
+import { CRA } from '@app/domain/model/CRA';
+import { Collab } from '@app/domain/model/Collab';
+import { Raison } from '@app/domain/model/Raison';
+import { Role } from '@app/domain/model/Role';
+import { Etat } from '@app/domain/model/etat.enum';
 
+describe('Une absence ', () => {
+  it('ne peut pas avoir des attributs null', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+    expect(
+      () => new Absence(null, cra.id, true, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
 
-describe('Une absence ',()=>{
-         it('peut contenir des collaborateurs',()=>{
+    expect(
+      () => new Absence(1, null, true, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
 
+    expect(
+      () => new Absence(1, cra.id, null, new Date(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
 
-    });
-/*
+    expect(
+      () => new Absence(1, cra.id, true, null, Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
 
-    it('peut etre cree par un collab',()=>{
-         //given 
-        
-         const collab= new Collab();
- 
-         expect(new Absence(collab,false,new Date(),Raison.maladie)).toBeDefined();
-    });
+    expect(() => new Absence(1, cra.id, true, new Date(), null)).toThrowError(
+      'cannot have a null attribut',
+    );
+  });
+  it('peut etre cree par un collab', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+    const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
 
-    it('peut avoir un raison',()=>{
-        //given 
-       
-        const collab= new Collab();
+    //Then
+    expect(absence).toBeDefined();
+  });
 
-        const absence=new Absence(collab,false,new Date(),Raison.maladie);
+  it('peut avoir un raison', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+    const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
 
-        expect(absence.raison).toBe(Raison.maladie);
-   });
+    //Then
+    expect(absence.raison).toBe(Raison.Maladie);
+  });
 
+  it('est associee a une date', () => {
+    //given
+    const date = new Date();
+    const collab = new Collab('user', 'test', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+    );
+    //When
+    const absence = new Absence(1, cra.id, true, date, Raison.Maladie);
 
-*/
-
-})
-
+    //Then
+    expect(absence.date).toBe(date);
+  });
+});

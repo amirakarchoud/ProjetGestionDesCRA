@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { CRADB } from "./cra.entity";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { CRADB } from './cra.entity';
 
 @Entity('holiday')
 export class HolidayDB {
@@ -12,7 +12,6 @@ export class HolidayDB {
   @Column()
   name: string;
 
-  @ManyToMany(() => CRADB, cra => cra.holidays)
+  @ManyToMany(() => CRADB, (cra) => cra.holidays)
   cras: CRADB;
-  
 }
