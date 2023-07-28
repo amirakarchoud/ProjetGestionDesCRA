@@ -1,0 +1,3 @@
+[submodule "flutter"]
+	path = flutter
+	url = https://github.com/proxym-france/proxym-compte-rendu-activite-flutter.git
