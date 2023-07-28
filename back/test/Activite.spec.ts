@@ -24,17 +24,14 @@ describe('Une activite ', () => {
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
     //Then
-    expect(
-      () => new Activity(1, null, projet, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
 
-    expect(
-      () => new Activity(1, collab, null, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Activity(null, true, new Date(), cra.id)).toThrowError(
+      'cannot have a null attribut',
+    );
 
-    expect(
-      () => new Activity(1, collab, projet, null, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Activity(projet, null, new Date(), cra.id)).toThrowError(
+      'cannot have a null attribut',
+    );
   });
 
   it('peut etre cree par un collab', () => {
@@ -54,7 +51,7 @@ describe('Une activite ', () => {
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
     //When
-    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+    const activity = new Activity(projet, true, new Date(), cra.id);
 
     //Then
     expect(activity).toBeDefined();
@@ -77,7 +74,7 @@ describe('Une activite ', () => {
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+    const activity = new Activity(projet, true, new Date(), cra.id);
 
     //Then
     expect(activity.project).toBe(projet);
@@ -100,7 +97,7 @@ describe('Une activite ', () => {
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, date, cra.id);
+    const activity = new Activity(projet, true, date, cra.id);
 
     //Then
     expect(activity.date).toBe(date);
@@ -122,7 +119,7 @@ describe('Une activite ', () => {
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, date, cra.id);
+    const activity = new Activity(projet, true, date, cra.id);
 
     //Then
     expect(activity.cra).toBe(cra.id);

@@ -109,8 +109,6 @@ export class CraController {
     @Param('year') year: number,
   ) {
     console.log('getting user month cra back');
-    console.log('user id: ' + idUser);
-    console.log('month= ' + month);
     return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
   }
 
@@ -136,5 +134,13 @@ export class CraController {
     @Param('year') year: number,
   ) {
     return await this.craApp.getMonthCra(month, year);
+  }
+
+  @Get('closeCras/:month/:year')
+  async closeAllMonthCra(
+    @Param('month') month: number,
+    @Param('year') year: number,
+  ) {
+    return await this.craApp.closeAllMonthCra(month, year);
   }
 }

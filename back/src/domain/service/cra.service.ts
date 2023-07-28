@@ -28,6 +28,7 @@ export class CraService {
   }
 
   async addAbsence(createAbsenceDto: CreateAbsenceDto) {
+    console.log('adding absence');
     const dateAbs = new Date(createAbsenceDto.date);
     const user = await this.repoCollab.findById(createAbsenceDto.collabId);
     // Check if the specified CRA exists
@@ -59,18 +60,7 @@ export class CraService {
     )) as CRA;
     console.log('cra etat here = ' + cra.etat);
     //create absence
-    console.log(
-      'create absence craid=' +
-        cra.id +
-        ' matin= ' +
-        createAbsenceDto.matin +
-        ' date= ' +
-        createAbsenceDto.date +
-        ' raison= ' +
-        createAbsenceDto.raison,
-    );
     const absence = new Absence(
-      0,
       cra.id,
       createAbsenceDto.matin,
       createAbsenceDto.date,
@@ -126,20 +116,28 @@ export class CraService {
     )) as CRA;
     //create absence
     const activity = new Activity(
-      0,
-      user,
       project,
       createActivityDto.matin,
       dateAct,
       cra.id,
     );
-    console.log('activities len before add = ' + cra.activities.length);
     // add absence to the cra
     cra.addActivity(activity);
-    console.log('activities len after add = ' + cra.activities.length);
     //save cra and done
     await this.repoCra.save(cra);
 
     return activity;
+  }
+
+  async closeAllMonthCra(month: number, year: number) {
+    const cras = await this.repoCra.findByMonthYear(month, year);
+    const crasUnsubmitted = cras.filter((cra) => cra.etat == Etat.unsubmitted);
+    if (crasUnsubmitted.length > 0) {
+      throw new Error('cannot close month: there is an unsubmitted cra');
+    }
+    cras.forEach((cra) => {
+      cra.closeCra();
+      this.repoCra.save(cra);
+    });
   }
 }

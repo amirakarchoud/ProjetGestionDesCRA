@@ -9,8 +9,6 @@ import {
 } from 'typeorm';
 import { UserDB } from './user.entity';
 import { Etat } from '@app/domain/model/etat.enum';
-import { AbsenceDB } from './absence.entity';
-import { ActivityDB } from './activity.entity';
 import { HolidayDB } from './holiday.entity';
 import { RegulDB } from './regul.entity';
 import { Status } from '@app/domain/model/Status';
@@ -33,12 +31,6 @@ export class CRADB {
 
   @ManyToOne(() => UserDB)
   collab: UserDB;
-
-  @OneToMany(() => AbsenceDB, (absence) => absence.cra, { cascade: true })
-  absences: AbsenceDB[];
-
-  @OneToMany(() => ActivityDB, (activity) => activity.cra, { cascade: true })
-  activities: ActivityDB[];
 
   @OneToMany(() => RegulDB, (regul) => regul.cra, { cascade: true })
   history: RegulDB[];

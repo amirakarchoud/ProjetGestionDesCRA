@@ -24,12 +24,6 @@ export class UserDB {
   @Column('enum', { default: 'collab', enum: ['admin', 'collab'] })
   role: Role;
 
-  @OneToMany(() => AbsenceDB, (absence) => absence.collab)
-  absences: AbsenceDB[];
-
-  @OneToMany(() => ActivityDB, (activity) => activity.collab)
-  activities: ActivityDB[];
-
   @ManyToMany(() => ProjectDB, (project) => project.collabs)
   @JoinTable()
   projects: ProjectDB[];

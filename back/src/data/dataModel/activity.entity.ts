@@ -1,25 +1,17 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserDB } from './user.entity';
-import { CRADB } from './cra.entity';
+import { Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ProjectDB } from './project.entity';
 
 @Entity('activity')
 export class ActivityDB {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   date: Date;
 
-  @Column()
+  @PrimaryColumn()
   matin: boolean;
 
-  @ManyToOne(() => UserDB)
-  collab: UserDB;
-
-  @ManyToOne(() => ProjectDB)
+  @ManyToOne(() => ProjectDB, { cascade: false })
   project: ProjectDB;
 
-  @ManyToOne(() => CRADB, (cra) => cra.activities)
-  cra: CRADB;
+  @PrimaryColumn()
+  craId: number;
 }

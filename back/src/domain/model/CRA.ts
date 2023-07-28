@@ -46,6 +46,9 @@ export class CRA {
   public get history(): Regul[] {
     return this._history;
   }
+  public set history(reguls: Regul[]) {
+    this._history = reguls;
+  }
 
   public get status(): Status {
     return this._status;
@@ -162,7 +165,7 @@ export class CRA {
 
     //check if regul
     if (this._status == Status.Closed) {
-      this._history.push(new Regul(new Date(), Action.Add, activity));
+      this._history.push(new Regul(0, new Date(), Action.Add, activity));
     }
 
     this._activites.push(activity);
@@ -197,7 +200,7 @@ export class CRA {
 
     //check if regul
     if (this._status == Status.Closed) {
-      this._history.push(new Regul(new Date(), Action.Add, absence));
+      this._history.push(new Regul(0, new Date(), Action.Add, absence));
     }
 
     this._absences.push(absence);
@@ -282,7 +285,7 @@ export class CRA {
       ) {
         //check if regul
         if (this._status == Status.Closed) {
-          this._history.push(new Regul(new Date(), Action.Delete, abs));
+          this._history.push(new Regul(0, new Date(), Action.Delete, abs));
         }
         this.absences.splice(index, 1);
       }
@@ -297,7 +300,7 @@ export class CRA {
         act.matin === matin
       ) {
         if (this._status == Status.Closed) {
-          this._history.push(new Regul(new Date(), Action.Delete, act));
+          this._history.push(new Regul(0, new Date(), Action.Delete, act));
         }
         this.activities.splice(index, 1);
       }

@@ -1,21 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserDB } from './user.entity';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { Raison } from '@app/domain/model/Raison';
-import { CRADB } from './cra.entity';
 
 @Entity('absence')
 export class AbsenceDB {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn()
   date: Date;
 
-  @Column()
+  @PrimaryColumn()
   matin: boolean;
-
-  @ManyToOne(() => UserDB)
-  collab: UserDB;
 
   @Column('enum', {
     default: 'Conges',
@@ -23,6 +15,6 @@ export class AbsenceDB {
   })
   raison: Raison;
 
-  @ManyToOne(() => CRADB, (cra) => cra.absences)
-  cra: CRADB;
+  @PrimaryColumn()
+  craId: number;
 }

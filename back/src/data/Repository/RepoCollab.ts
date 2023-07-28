@@ -1,33 +1,33 @@
-import { Injectable } from "@nestjs/common";
-import { Collab } from "../../domain/model/Collab";
-import { IRepoCollab } from "../../domain/IRepository/IRepoCollab";
-import { In, Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { Collab } from '../../domain/model/Collab';
+import { IRepoCollab } from '../../domain/IRepository/IRepoCollab';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserDB } from "../dataModel/user.entity";
-import { Role } from "../../domain/model/Role";
-import { Project } from "../../domain/model/Project";
-import { classToPlain } from "class-transformer";
-import { ProjectDB } from "../dataModel/project.entity";
-import { ActivityDB } from "../dataModel/activity.entity";
+import { UserDB } from '../dataModel/user.entity';
+import { Role } from '../../domain/model/Role';
+import { Project } from '../../domain/model/Project';
+import { classToPlain } from 'class-transformer';
+import { ProjectDB } from '../dataModel/project.entity';
+import { ActivityDB } from '../dataModel/activity.entity';
 
 @Injectable()
 export class RepoCollab implements IRepoCollab {
   constructor(
     @InjectRepository(UserDB)
     private userRepository: Repository<UserDB>,
-  ) { }
+  ) {}
 
-  
   async findById(id: string): Promise<Collab> {
-    const user= (await this.userRepository.findOne({where:{email:id}}));
-    return new Collab(user.email,user.name,user.role);
+    const user = await this.userRepository.findOne({ where: { email: id } });
+    return new Collab(user.email, user.name, user.role);
   }
 
   async findAll(): Promise<Collab[]> {
-    let collabs: Collab[]=[];
-    (await this.userRepository.find()).map(user => { collabs.push(new Collab(user.email, user.name, user.role)) });
+    const collabs: Collab[] = [];
+    (await this.userRepository.find()).map((user) => {
+      collabs.push(new Collab(user.email, user.name, user.role));
+    });
     return collabs;
-
   }
 
   async save(user: Collab): Promise<Collab> {
@@ -42,7 +42,7 @@ export class RepoCollab implements IRepoCollab {
     return user;
   }
 
-/*
+  /*
   async addProject(project: Project): Promise<Project> {
     for (const user of project.collabs) {
       user.addProject(project);
@@ -60,17 +60,18 @@ export class RepoCollab implements IRepoCollab {
     return project;
   }
   */
-  
-  
-
 
   async findByIds(ids: string[]): Promise<Collab[]> {
-    let collabs: Collab[]=[];
-    const users= (await this.userRepository.findBy({email:In(ids)})).map(user => { collabs.push(new Collab(user.email, user.name, user.role)) });;
+    const collabs: Collab[] = [];
+    const users = (await this.userRepository.findBy({ email: In(ids) })).map(
+      (user) => {
+        collabs.push(new Collab(user.email, user.name, user.role));
+      },
+    );
     if (users) {
       return collabs;
     }
-  
+
     return null;
   }
 }
