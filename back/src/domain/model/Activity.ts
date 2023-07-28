@@ -30,7 +30,7 @@ export class Activity {
     date: Date,
     cra: number,
   ) {
-    if (!(id && collab && projet && date && cra)) {
+    if (!(collab && projet && date)) {
       throw new Error('cannot have a null attribut');
     }
     if (matin == null) {

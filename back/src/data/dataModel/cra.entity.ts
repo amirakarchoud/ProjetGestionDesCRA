@@ -8,10 +8,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserDB } from './user.entity';
-import { Etat } from '../../domain/model/etat.enum';
+import { Etat } from '@app/domain/model/etat.enum';
 import { AbsenceDB } from './absence.entity';
 import { ActivityDB } from './activity.entity';
 import { HolidayDB } from './holiday.entity';
+import { RegulDB } from './regul.entity';
+import { Status } from '@app/domain/model/Status';
 
 @Entity('cra')
 export class CRADB {
@@ -26,6 +28,8 @@ export class CRADB {
   year: number;
   @Column()
   etat: Etat;
+  @Column('enum', { default: 'Open', enum: ['Open', 'Closed'] })
+  status: Status;
 
   @ManyToOne(() => UserDB)
   collab: UserDB;
@@ -35,6 +39,9 @@ export class CRADB {
 
   @OneToMany(() => ActivityDB, (activity) => activity.cra, { cascade: true })
   activities: ActivityDB[];
+
+  @OneToMany(() => RegulDB, (regul) => regul.cra, { cascade: true })
+  history: RegulDB[];
 
   @ManyToMany(() => HolidayDB, (holiday) => holiday.cras)
   @JoinTable()

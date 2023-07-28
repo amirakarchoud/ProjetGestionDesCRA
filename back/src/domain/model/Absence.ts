@@ -22,7 +22,16 @@ export class Absence {
     date: Date,
     raison: Raison,
   ) {
-    if (!(id && raison && date && cra)) {
+    if (id == null) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (raison == null) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (date == null) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (cra == null) {
       throw new Error('cannot have a null attribut');
     }
     if (matin == null) {

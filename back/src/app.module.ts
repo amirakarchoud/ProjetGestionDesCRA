@@ -20,6 +20,7 @@ import { RepoProject } from './data/Repository/RepoProject';
 import { CollabController } from './controllers/Collab.controller';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
+import { RegulDB } from './data/dataModel/regul.entity';
 
 let dotEnvPath = '.env';
 
@@ -36,9 +37,9 @@ console.log('env is ', dotEnvPath);
       type: 'mysql',
       host: process.env.DATABASE_HOST || 'localhost',
       port: 3306,
-      username: process.env.DATABASE_USER || 'cra_user',
-      password: process.env.DATABASE_PASSWORD || 'proxym',
-      database: process.env.DATABASE_DATABASE || 'proxym_cra',
+      username: process.env.DATABASE_USER || 'root',
+      password: process.env.DATABASE_PASSWORD || '',
+      database: process.env.DATABASE_DATABASE || 'test2',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       // dropSchema: true,
@@ -50,6 +51,7 @@ console.log('env is ', dotEnvPath);
       CRADB,
       HolidayDB,
       ProjectDB,
+      RegulDB,
     ]),
     DoaminModule,
     ScheduleModule.forRoot(),

@@ -6,6 +6,7 @@ import { Project } from '@app/domain/model/Project';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
+import { Status } from '@app/domain/model/Status';
 
 describe('Collaborateur ', () => {
   //Given
@@ -18,6 +19,7 @@ describe('Collaborateur ', () => {
     collab,
     new Date(),
     Etat.unsubmitted,
+    Status.Open,
   );
 
   const projet = new Project('123', []);

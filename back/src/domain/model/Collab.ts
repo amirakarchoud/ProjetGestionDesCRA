@@ -1,4 +1,3 @@
-import { Exclude } from 'class-transformer';
 import { Absence } from './Absence';
 import { Activity } from './Activity';
 import { CRA } from './CRA';

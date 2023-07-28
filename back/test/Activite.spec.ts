@@ -4,6 +4,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
+import { Status } from '@app/domain/model/Status';
 
 describe('Une activite ', () => {
   it('ne peut pas avoir des attributs null', () => {
@@ -17,25 +18,18 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
     //Then
     expect(
-      () => new Activity(null, collab, projet, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(
       () => new Activity(1, null, projet, true, new Date(), cra.id),
     ).toThrowError('cannot have a null attribut');
 
     expect(
       () => new Activity(1, collab, null, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(
-      () => new Activity(1, collab, projet, true, new Date(), null),
     ).toThrowError('cannot have a null attribut');
 
     expect(
@@ -54,6 +48,7 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
 
     const projet = new Project('123', []);
@@ -76,6 +71,7 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 
@@ -98,6 +94,7 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 
@@ -119,6 +116,7 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 

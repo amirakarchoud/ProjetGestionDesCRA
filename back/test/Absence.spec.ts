@@ -4,6 +4,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
+import { Status } from '@app/domain/model/Status';
 
 describe('Une absence ', () => {
   it('ne peut pas avoir des attributs null', () => {
@@ -17,6 +18,7 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
     expect(
@@ -50,6 +52,7 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
     const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
@@ -69,6 +72,7 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
     const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
@@ -88,6 +92,7 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
     const absence = new Absence(1, cra.id, true, date, Raison.Maladie);

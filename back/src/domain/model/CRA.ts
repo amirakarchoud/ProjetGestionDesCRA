@@ -3,7 +3,10 @@ import { Absence } from './Absence';
 import { Activity } from './Activity';
 import { Collab } from './Collab';
 import { Etat } from './etat.enum';
+import { Status } from './Status';
 import { Holiday } from './Holiday';
+import { Regul } from './Regul';
+import { Action } from './action.enum';
 
 export class CRA {
   private _id: number;
@@ -15,7 +18,8 @@ export class CRA {
   private _collab: Collab;
   private _date: Date;
   private _etat: Etat = Etat.unsubmitted;
-
+  private _status: Status = Status.Open;
+  private _history: Regul[] = [];
   constructor(
     id: number,
     month: number,
@@ -23,6 +27,7 @@ export class CRA {
     collab: Collab,
     date: Date,
     etat: Etat,
+    status: Status,
   ) {
     this._id = id;
     this._month = month;
@@ -31,7 +36,24 @@ export class CRA {
     this._collab = collab;
     this._holidays = [];
     this._etat = etat;
+    this._status = status;
   }
+
+  public closeCra() {
+    this._status = Status.Closed;
+  }
+
+  public get history(): Regul[] {
+    return this._history;
+  }
+
+  public get status(): Status {
+    return this._status;
+  }
+  public set status(stat: Status) {
+    this._status = stat;
+  }
+
   public get etat(): Etat {
     return this._etat;
   }
@@ -138,6 +160,11 @@ export class CRA {
       throw new ForbiddenException();
     }
 
+    //check if regul
+    if (this._status == Status.Closed) {
+      this._history.push(new Regul(new Date(), Action.Add, activity));
+    }
+
     this._activites.push(activity);
   }
 
@@ -166,6 +193,11 @@ export class CRA {
       beforeFiveDays.getMonth() != absDate.getMonth()
     ) {
       throw new ForbiddenException();
+    }
+
+    //check if regul
+    if (this._status == Status.Closed) {
+      this._history.push(new Regul(new Date(), Action.Add, absence));
     }
 
     this._absences.push(absence);
@@ -248,6 +280,10 @@ export class CRA {
         this.formatDate(abs.date) === this.formatDate(date) &&
         abs.matin === matin
       ) {
+        //check if regul
+        if (this._status == Status.Closed) {
+          this._history.push(new Regul(new Date(), Action.Delete, abs));
+        }
         this.absences.splice(index, 1);
       }
     });
@@ -260,6 +296,9 @@ export class CRA {
           this.formatDate(new Date(date)) &&
         act.matin === matin
       ) {
+        if (this._status == Status.Closed) {
+          this._history.push(new Regul(new Date(), Action.Delete, act));
+        }
         this.activities.splice(index, 1);
       }
     });

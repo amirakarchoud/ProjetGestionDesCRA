@@ -110,4 +110,33 @@ describe('APP', () => {
   afterAll(async () => {
     await app.close();
   });
+
+  it(`create regul`, async () => {
+    const date = new Date();
+    const repo: RepoCra = app.get('IRepoCra');
+    const application = app.get(CraApplication);
+    //get cra
+    let cra = await repo.findByMonthYearCollab(
+      date.getMonth() + 1,
+      date.getFullYear(),
+      'test1',
+    );
+
+    //creation absence
+    const absence = new CreateAbsenceDto();
+    absence.date = date;
+    absence.matin = false;
+    absence.raison = Raison.RTT;
+    absence.craId = 1;
+    absence.collabId = 'test1';
+    await application.deleteAbsence(cra.id, date, absence.matin);
+    cra.closeCra();
+    await application.addAbsence(absence);
+    cra = await repo.findByMonthYearCollab(
+      date.getMonth() + 1,
+      date.getFullYear(),
+      'test1',
+    );
+    expect(cra.history).toHaveLength(1);
+  });
 });
