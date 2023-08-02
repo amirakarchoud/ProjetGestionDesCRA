@@ -15,7 +15,7 @@ import moment from 'moment';
 
 
 const RecapAdmin = () => {
-  const apiUrl = 'http://localhost:8080';
+  const apiUrl = process.env.REACT_APP_API_URL;
   const [craData, setCraData] = useState([]);
   const [page, setPage] = useState(0);
   const [businessDays, setbusinessDays] = useState(0);

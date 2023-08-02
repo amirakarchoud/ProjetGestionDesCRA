@@ -13,7 +13,7 @@ import SearchIcon from '@mui/icons-material/Search';
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const apiUrl = 'http://localhost:8080';
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchProjects();
@@ -21,7 +21,7 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(apiUrl + '/project/all', { mode: 'cors' });
+      const response = await fetch(`${apiUrl}/project/all`, { mode: 'cors' });
       const data = await response.json();
       setProjects(data);
     } catch (error) {

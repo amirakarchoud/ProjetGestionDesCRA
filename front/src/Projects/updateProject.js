@@ -14,7 +14,7 @@ const UpdateProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
-  const apiUrl = 'http://localhost:8080';
+  const apiUrl = process.env.REACT_APP_API_URL;;
 
   useEffect(() => {
     const fetchCollabs = async () => {
@@ -22,7 +22,7 @@ const UpdateProject = () => {
         const response = await fetch(apiUrl + '/collab/all');
         const data = await response.json();
         setAllCollabs(data);
-        const projectResponse = await fetch(apiUrl + `/project/${projectCode}`, { mode: 'cors' });
+        const projectResponse = await fetch(`${apiUrl}/project/${projectCode}`, { mode: 'cors' });
         const projectData = await projectResponse.json();
         setProject(projectData);
 
@@ -45,7 +45,7 @@ const UpdateProject = () => {
     };
 
     try {
-      const response = await fetch(apiUrl + '/project/update', {
+      const response = await fetch(`${apiUrl}/project/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

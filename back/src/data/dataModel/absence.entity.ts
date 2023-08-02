@@ -11,7 +11,7 @@ export class AbsenceDB {
 
   @Column('enum', {
     default: 'Conges',
-    enum: ['RTT', 'Conges', 'Maladie', 'Exceptionnel'],
+    enum: ['RTT', 'Conges', 'Maladie', 'Exceptionnelle', 'Formation'],
   })
   raison: Raison;
 
