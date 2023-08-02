@@ -20,7 +20,7 @@ export class CraApplication {
 
   async addUser(jwtToken: string) {
     console.log('craqpp add user');
-    const collab = new Collab('test1', 'test', Role.admin);
+    const collab = new Collab('test1', 'test', 'last name test', Role.admin);
     console.log('collab' + collab.email);
     await this.collabRepository.save(collab);
   }

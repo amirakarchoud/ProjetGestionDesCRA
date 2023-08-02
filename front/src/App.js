@@ -17,6 +17,7 @@ function Home() {
 }
 
 function App() {
+  const user = 'user1';
   return (
     <Router>
       <div>
@@ -29,7 +30,7 @@ function App() {
               <Link to="/projects">Projects</Link>
             </li>
             <li>
-              <Link to="/calendar">Calendar</Link>
+              <Link to={`/calendar/${user}`}>Calendar</Link>
             </li>
             <li>
               <Link to="/recap-admin">Admin</Link>
@@ -40,7 +41,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
-          <Route path="/calendar" element={<CalendarComponent />} />
+          <Route path="/calendar/:user" element={<CalendarComponent />} />
           <Route exact path="/project/:projectCode" element={<ProjectDetails/>} />
           <Route exact path="/projectUpdate/:projectCode" element={<UpdateProject/>} />
           <Route path="/add-project" element={<AddProject />} />

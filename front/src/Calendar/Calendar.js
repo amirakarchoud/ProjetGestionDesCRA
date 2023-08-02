@@ -18,6 +18,7 @@ import ConfirmationModal from './ConfirmationDelete'
 import { toast } from 'react-toastify';
 import './custom-calendar.css';
 import RecapCraCollab from './RecapCraCollab';
+import { useLocation, useParams } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -49,14 +50,13 @@ const CalendarComponent = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showCard, setShowCard] = useState(false);
   const [showConfirmationDelete, setShowConfirmationDelete] = useState(false);
-  const [recapCraKey, setRecapCraKey] = useState(0); 
+  const [recapCraKey, setRecapCraKey] = useState(0);
 
   const formattedStartDate = selectedRange && selectedRange.start ? selectedRange.start.toDateString() : '';
   const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
 
 
-  const user = 'user1';
-
+  const { user } = useParams();
   const raisonOptions = [
     { value: 'RTT', label: 'RTT' },
     { value: 'Conges', label: 'Congés' },
@@ -402,7 +402,7 @@ const CalendarComponent = () => {
         });
 
         if (response.ok) {
-          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin!==selectedEvent.matin));
+          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin !== selectedEvent.matin));
           setEvents([...updatedEvents]);
 
           toast.success('Activity successfully deleted!');
@@ -426,7 +426,7 @@ const CalendarComponent = () => {
         });
 
         if (response.ok) {
-          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin!==selectedEvent.matin));
+          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin !== selectedEvent.matin));
           setEvents([...updatedEvents]);
           toast.success('Absence successfully deleted!');
 
@@ -539,7 +539,7 @@ const CalendarComponent = () => {
           </div>
         )}
         <div style={{ position: 'absolute', top: '40%', right: '10%', width: '30%' }}>
-        <RecapCraCollab key={recapCraKey} collabId={user} cras={userCras} />
+          <RecapCraCollab key={recapCraKey} collabId={user} cras={userCras} />
         </div >
         <ConfirmationModal
           open={showConfirmationDelete}

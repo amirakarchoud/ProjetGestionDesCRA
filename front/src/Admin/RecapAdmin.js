@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { FaCalendar, FaCheckCircle, FaDownload, FaExclamationTriangle, FaSkullCrossbones } from 'react-icons/fa';
 import { Button, MenuItem, Select, TextField } from '@mui/material';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 
 
@@ -150,8 +151,7 @@ const RecapAdmin = () => {
   );
 
   const handleCloturerMois = async () => {
-    if(monthClosed)
-    {
+    if (monthClosed) {
       toast.warning('le mois est deja cloturé!');
 
     }
@@ -190,7 +190,7 @@ const RecapAdmin = () => {
         </div>
         <div style={{ marginLeft: '10%', marginRight: '10%', marginTop: '2%' }}>
           <Button variant="contained" color="primary" startIcon={<FaCalendar />} style={{ left: '88%' }} onClick={handleCloturerMois} disabled={!buttonEnabled || monthClosed}>
-             {monthClosed?'Mois cloturé!':'Cloturer le mois'}
+            {monthClosed ? 'Mois cloturé!' : 'Cloturer le mois'}
           </Button>
         </div>
         <div style={{ display: 'flex', marginBottom: '14px' }}>
@@ -228,6 +228,7 @@ const RecapAdmin = () => {
                 <TableCell>Periode</TableCell>
                 <TableCell>Etat du Cra</TableCell>
                 <TableCell>Recap</TableCell>
+                <TableCell>Calendrier</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -244,12 +245,19 @@ const RecapAdmin = () => {
                       {cra._etat ? <FaExclamationTriangle color="orange" /> : <FaCheckCircle color="green" />}
                     </TableCell>
                     <TableCell>
-                      {cra._collab._name}
+                      {cra._collab._name} {cra._collab._lastname}
 
                     </TableCell>
                     <TableCell>{month}/{year}</TableCell>
                     <TableCell>{cra._etat ? 'Pas Soumis' : 'Soumis'} </TableCell>
                     <TableCell>{(cra._activites.length + cra._absences.length) / 2} /{businessDays - cra._holidays.length} </TableCell>
+                    <TableCell>
+                      <Link to={`/calendar/${cra._collab._email}`}>
+                        <Button variant="contained" color="primary">
+                          Details
+                        </Button>
+                      </Link>
+                    </TableCell>
                   </TableRow>
                 ))}
               {showNotCreated && filteredCollabs
@@ -259,10 +267,17 @@ const RecapAdmin = () => {
                   <TableRow key={collab._email} style={{ backgroundColor: '#FFCCCC' }}>
                     <TableCell><FaSkullCrossbones color="red" /></TableCell>
 
-                    <TableCell>{collab._name}</TableCell>
+                    <TableCell>{collab._name} {collab._lastname}</TableCell>
                     <TableCell>{month}/{year}</TableCell>
                     <TableCell>Pas crée</TableCell>
                     <TableCell>0 /0</TableCell>
+                    <TableCell>
+                      <Link to={`/calendar/${collab._email}`}>
+                        <Button variant="contained" color="primary">
+                          Details
+                        </Button>
+                      </Link>
+                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>

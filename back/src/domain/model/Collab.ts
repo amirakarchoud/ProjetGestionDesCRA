@@ -7,6 +7,7 @@ import { Role } from './Role';
 export class Collab {
   private _role: Role;
   private _name: string;
+  private _lastname: string;
   private _email: string;
   private _cras: CRA[] = [];
   private _projects: Project[] = [];
@@ -14,10 +15,15 @@ export class Collab {
   private _activities: Activity[] = [];
   private _absences: Absence[] = [];
 
-  constructor(email: string, name: string, role: Role) {
+  constructor(email: string, name: string, lastname: string, role: Role) {
+    this._lastname = lastname;
     this._name = name;
     this._email = email;
     this._role = role;
+  }
+
+  public get lastname(): string {
+    return this._lastname;
   }
 
   public get email(): string {
