@@ -12,11 +12,11 @@ const AddProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
-  const apiUrl = 'http://localhost:8080';
+  const apiUrl = process.env.REACT_APP_API_URL;
   useEffect(() => {
     const fetchCollabs = async () => {
       try {
-        const response = await fetch(apiUrl +'/collab/all');
+        const response = await fetch(`${apiUrl}/collab/all`);
         const data = await response.json();
         setAllCollabs(data);
       } catch (error) {
@@ -34,7 +34,7 @@ const AddProject = () => {
     };
 
     try {
-      const response = await fetch(apiUrl +'/project/add', {
+      const response = await fetch(`${apiUrl}/project/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

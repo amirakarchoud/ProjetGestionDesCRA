@@ -8,11 +8,12 @@ const ProjectDetails = () => {
   const { projectCode } = useParams();
   const [project, setProject] = useState(null);
   const [collabs, setCollabs] = useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/project/${projectCode}`, { mode: 'cors' });
+        const response = await fetch(`${apiUrl}/project/${projectCode}`, { mode: 'cors' });
         const data = await response.json();
         setProject(data);
         fetchCollabDetails(data.collabs);
@@ -26,7 +27,7 @@ const ProjectDetails = () => {
 
   const fetchCollabDetails = async (collabIds) => {
     try {
-      const response = await fetch('http://localhost:8080/collab/ids', {
+      const response = await fetch(`${apiUrl}/collab/ids`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

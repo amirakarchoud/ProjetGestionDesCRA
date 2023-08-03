@@ -34,7 +34,7 @@ const style = {
 
 
 const localizer = momentLocalizer(moment);
-const apiUrl = 'http://localhost:8080';
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const CalendarComponent = () => {
   const [events, setEvents] = useState([]);
@@ -61,13 +61,14 @@ const CalendarComponent = () => {
     { value: 'RTT', label: 'RTT' },
     { value: 'Conges', label: 'Congés' },
     { value: 'Maladie', label: 'Maladie' },
-    { value: 'Exceptionnel', label: 'Exceptionnelle' },
+    { value: 'Exceptionnelle', label: 'Exceptionnelle' },
+    { value: 'Formation', label: 'Formation' },
   ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(apiUrl + '/cra/userYear/' + user + '/2023', { mode: 'cors' });
+        const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' });
         const data = await response.json();
         setUserCras(data);
         const processedEvents = processData(data);
@@ -81,7 +82,7 @@ const CalendarComponent = () => {
 
     const fetchUserProjects = async () => {
       try {
-        const response = await fetch(apiUrl + '/project/user/' + user);
+        const response = await fetch(`${apiUrl}/project/user/${user}`);
         const data = await response.json();
         setUserProjects(data);
       } catch (error) {
@@ -94,7 +95,7 @@ const CalendarComponent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(apiUrl + '/cra/userYear/' + user + '/2023', { mode: 'cors' });
+      const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' });
       const data = await response.json();
       setUserCras(data);
       const processedEvents = processData(data);
@@ -249,7 +250,7 @@ const CalendarComponent = () => {
         };
 
         try {
-          const response = await fetch(apiUrl + '/cra/activity', {
+          const response = await fetch(`${apiUrl}/cra/activity`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -282,7 +283,7 @@ const CalendarComponent = () => {
         };
 
         try {
-          const response = await fetch(apiUrl + '/cra/absence', {
+          const response = await fetch(`${apiUrl}/cra/absence`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -323,7 +324,7 @@ const CalendarComponent = () => {
           };
 
           try {
-            const response = await fetch(apiUrl + '/cra/activity', {
+            const response = await fetch(`${apiUrl}/cra/activity`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -345,7 +346,7 @@ const CalendarComponent = () => {
           };
 
           try {
-            const response = await fetch(apiUrl + '/cra/absence', {
+            const response = await fetch(`${apiUrl}/cra/absence`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
