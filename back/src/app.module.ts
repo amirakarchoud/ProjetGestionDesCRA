@@ -20,6 +20,7 @@ import { RepoProject } from './data/Repository/RepoProject';
 import { CollabController } from './controllers/Collab.controller';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
+import { RegulDB } from './data/dataModel/regul.entity';
 
 let dotEnvPath = '.env';
 
@@ -50,6 +51,7 @@ console.log('env is ', dotEnvPath);
       CRADB,
       HolidayDB,
       ProjectDB,
+      RegulDB,
     ]),
     DoaminModule,
     ScheduleModule.forRoot(),

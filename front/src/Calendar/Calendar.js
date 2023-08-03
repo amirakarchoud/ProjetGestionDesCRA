@@ -55,7 +55,7 @@ const CalendarComponent = () => {
   const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
 
 
-  const user = 'user2';
+  const user = 'user1';
 
   const raisonOptions = [
     { value: 'RTT', label: 'RTT' },
@@ -401,7 +401,7 @@ const CalendarComponent = () => {
         });
 
         if (response.ok) {
-          const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
+          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin!==selectedEvent.matin));
           setEvents([...updatedEvents]);
 
           toast.success('Activity successfully deleted!');
@@ -425,7 +425,7 @@ const CalendarComponent = () => {
         });
 
         if (response.ok) {
-          const updatedEvents = events.filter((event) => event.id !== selectedEvent.id);
+          const updatedEvents = events.filter((event) => (event.start !== selectedEvent.start || event.matin!==selectedEvent.matin));
           setEvents([...updatedEvents]);
           toast.success('Absence successfully deleted!');
 

@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { toast } from 'react-toastify';
 import { FaCalendar, FaCheckCircle, FaDownload, FaExclamationTriangle, FaSkullCrossbones } from 'react-icons/fa';
 import { Button, MenuItem, Select, TextField } from '@mui/material';
+import moment from 'moment';
 
 
 
@@ -27,11 +28,28 @@ const RecapAdmin = () => {
   const [showNotCreated, setShowNotCreated] = useState(1);
   const [filteredCraData, setFilteredCraData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [soumisCraCount, setSoumisCraCount] = useState(0);
+  const [buttonEnabled, setButtonEnabled] = useState(false);
+  const [monthClosed, setMonthClosed] = useState(false);
+
+
+
+  useEffect(() => {
+    fetchCollabs();
+  }, []);
 
   useEffect(() => {
     fetchCraData();
-    fetchCollabs();
-  }, []);
+  }, [allCollabs]);
+
+  useEffect(() => {
+    const soumisCras = craData.filter((cra) => cra._etat === 0);
+    setSoumisCraCount(soumisCras.length);
+    const isButtonEnabled = soumisCras.length === allCollabs.length;
+    setButtonEnabled(isButtonEnabled);
+    const isMonthClosed = craData.some((cra) => cra._status === 'Closed');
+    setMonthClosed(isMonthClosed);
+  }, [craData, allCollabs]);
 
 
   const fetchCollabs = async () => {
@@ -103,7 +121,7 @@ const RecapAdmin = () => {
 
   const handleFilterChange = (event) => {
     const selectedValue = event.target.value;
-  
+
     if (selectedValue === 'Tous') {
       setShowNotCreated(1);
       setFilteredCraData(craData);
@@ -125,112 +143,161 @@ const RecapAdmin = () => {
     }
     setSelectedFilter(event.target.value);
   };
-  
+
 
   const filteredCollabs = allCollabs.filter((collab) =>
     collab._name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleCloturerMois = async () => {
+    if(monthClosed)
+    {
+      toast.warning('le mois est deja cloturé!');
+
+    }
+    else if (buttonEnabled && !monthClosed) {
+      try {
+        const response = await fetch(`${apiUrl}/cra/closeCras/${month}/${year}`, {
+          method: 'GET',
+        });
+        if (response.ok) {
+          toast.success('Mois cloturé avec succès!');
+          setMonthClosed(true);
+        } else {
+          toast.error('Erreur lors de la cloture du mois.');
+        }
+      } catch (error) {
+        console.error('Error closing month CRAs:', error);
+        toast.error('Erreur lors de la cloture du mois.');
+      }
+    } else {
+      toast.warning('Il existe des cra non soumis!');
+    }
+  };
+
+
 
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '90%' }}>
-      <div style={{ marginLeft: '10%', marginRight: '10%' }}>
-        <h1 >Recap du mois </h1>
-        <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{ left: '90%' }}>
-          Exporter
-        </Button>
+    <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '70%', marginRight: '10px' }}>
+        <h1 style={{ marginLeft: '40%' }}>Recap du mois </h1>
+        <div style={{ marginLeft: '10%', marginRight: '10%' }}>
+          <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{ left: '90%' }}>
+            Exporter
+          </Button>
 
-      </div>
-      <div style={{ marginLeft: '10%', marginRight: '10%' ,marginTop:'2%'}}>
-        <Button variant="contained" color="primary" startIcon={<FaCalendar />} style={{ left: '90%' }}>
-          Cloturer le mois
-        </Button>
-      </div>
-      <div style={{ display: 'flex', marginBottom: '14px' }}>
-        <div style={{ marginRight: '40%' }}>
-          <Typography>Filtrer par Etat:</Typography>
-          <Select style={{ width: '100%' }}
-            value={selectedFilter}
-            onChange={handleFilterChange}
-          >
-            {filterOptions.map((opt) => (
-              <MenuItem key={opt} value={opt}>
-                {opt}
-              </MenuItem>
-            ))}
-          </Select>
         </div>
-        <div>
-          <Typography>Recherche par nom :</Typography>
-          <TextField
-            label="Rechercher"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div style={{ marginLeft: '10%', marginRight: '10%', marginTop: '2%' }}>
+          <Button variant="contained" color="primary" startIcon={<FaCalendar />} style={{ left: '88%' }} onClick={handleCloturerMois} disabled={!buttonEnabled || monthClosed}>
+             {monthClosed?'Mois cloturé!':'Cloturer le mois'}
+          </Button>
         </div>
+        <div style={{ display: 'flex', marginBottom: '14px' }}>
+          <div style={{ marginRight: '40%' }}>
+            <Typography>Filtrer par Etat:</Typography>
+            <Select style={{ width: '100%' }}
+              value={selectedFilter}
+              onChange={handleFilterChange}
+            >
+              {filterOptions.map((opt) => (
+                <MenuItem key={opt} value={opt}>
+                  {opt}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography>Recherche par nom :</Typography>
+            <TextField
+              label="Rechercher"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+
+
+        <TableContainer>
+
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow>
+                <TableCell></TableCell>
+                <TableCell><Typography>Collaborateur</Typography></TableCell>
+                <TableCell>Periode</TableCell>
+                <TableCell>Etat du Cra</TableCell>
+                <TableCell>Recap</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredCraData
+                .filter(cra => cra._collab._name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((cra) => (
+                  <TableRow
+                    key={cra._id}
+                    style={{ backgroundColor: getRowColor(cra._etat) }}
+                  >
+
+                    <TableCell>
+                      {cra._etat ? <FaExclamationTriangle color="orange" /> : <FaCheckCircle color="green" />}
+                    </TableCell>
+                    <TableCell>
+                      {cra._collab._name}
+
+                    </TableCell>
+                    <TableCell>{month}/{year}</TableCell>
+                    <TableCell>{cra._etat ? 'Pas Soumis' : 'Soumis'} </TableCell>
+                    <TableCell>{(cra._activites.length + cra._absences.length) / 2} /{businessDays - cra._holidays.length} </TableCell>
+                  </TableRow>
+                ))}
+              {showNotCreated && filteredCollabs
+                .filter((collab) => !craData.some((cra) => cra._collab._email === collab._email))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((collab) => (
+                  <TableRow key={collab._email} style={{ backgroundColor: '#FFCCCC' }}>
+                    <TableCell><FaSkullCrossbones color="red" /></TableCell>
+
+                    <TableCell>{collab._name}</TableCell>
+                    <TableCell>{month}/{year}</TableCell>
+                    <TableCell>Pas crée</TableCell>
+                    <TableCell>0 /0</TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={allCollabs.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </div>
 
 
-      <TableContainer>
-
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow>
-              <TableCell></TableCell>
-              <TableCell><Typography>Collaborateur</Typography></TableCell>
-              <TableCell>Peridoe</TableCell>
-              <TableCell>Etat du Cra</TableCell>
-              <TableCell>Recap</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCraData
-              .filter(cra => cra._collab._name.toLowerCase().includes(searchTerm.toLowerCase()))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((cra) => (
-                <TableRow
-                  key={cra._id}
-                  style={{ backgroundColor: getRowColor(cra._etat) }}
-                >
-
-                  <TableCell>
-                    {cra._etat ? <FaExclamationTriangle color="orange" /> : <FaCheckCircle color="green" />}
-                  </TableCell>
-                  <TableCell>
-                    {cra._collab._name}
-
-                  </TableCell>
-                  <TableCell>{month}/{year}</TableCell>
-                  <TableCell>{cra._etat ? 'Pas Soumis' : 'Soumis'} </TableCell>
-                  <TableCell>{(cra._activites.length + cra._absences.length) / 2} /{businessDays - cra._holidays.length} </TableCell>
-                </TableRow>
+      <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '20%' }}>
+        <h3 style={{ marginLeft: '20%' }}>Les Reguls du mois </h3>
+        {craData
+          .map((cra) => (
+            <ul>
+              {cra._history.map((reg) => (
+                <li>
+                  le {moment(reg._date).format('L')} , {cra._collab._name} a {reg._action === 'Delete' ? 'supprimé' : 'ajouté'} une {reg._target.project ? 'activité : ' : 'absence : '} {reg._target.project ? reg._target.project.code : reg._target.raison} pour le {moment(reg._target.date).format('L')}
+                </li>
               ))}
-            {showNotCreated && filteredCollabs
-              .filter((collab) => !craData.some((cra) => cra._collab._email === collab._email))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((collab) => (
-                <TableRow key={collab._email} style={{ backgroundColor: '#FFCCCC' }}>
-                  <TableCell><FaSkullCrossbones color="red" /></TableCell>
 
-                  <TableCell>{collab._name}</TableCell>
-                  <TableCell>{month}/{year}</TableCell>
-                  <TableCell>Pas crée</TableCell>
-                  <TableCell>0 /0</TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={allCollabs.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+
+            </ul>
+          ))}
+
+
+      </div>
+
     </div>
   );
 };

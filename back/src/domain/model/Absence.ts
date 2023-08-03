@@ -1,42 +1,35 @@
 import { Raison } from './Raison';
 
 export class Absence {
-  private _id: number;
   private _matin: boolean;
   private _date: Date;
   private _raison: Raison;
   private _craId: number;
   toJSON(): object {
     return {
-      id: this._id,
       matin: this._matin,
       date: this._date,
       raison: this._raison,
     };
   }
 
-  constructor(
-    id: number,
-    cra: number,
-    matin: boolean,
-    date: Date,
-    raison: Raison,
-  ) {
-    if (!(id && raison && date && cra)) {
+  constructor(cra: number, matin: boolean, date: Date, raison: Raison) {
+    if (raison == null) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (date == null) {
+      throw new Error('cannot have a null attribut');
+    }
+    if (cra == null) {
       throw new Error('cannot have a null attribut');
     }
     if (matin == null) {
       throw new Error('cannot have a null attribut');
     }
-    this._id = id;
     this._craId = cra;
     this._matin = matin;
     this._date = date;
     this._raison = raison;
-  }
-
-  public get id(): number {
-    return this._id;
   }
 
   public get cra(): number {

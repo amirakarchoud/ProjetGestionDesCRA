@@ -1,3 +1,4 @@
-export enum Etat{
-    submitted,unsubmitted
+export enum Etat {
+  submitted,
+  unsubmitted,
 }

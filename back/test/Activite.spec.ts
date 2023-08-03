@@ -4,6 +4,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
+import { Status } from '@app/domain/model/Status';
 
 describe('Une activite ', () => {
   it('ne peut pas avoir des attributs null', () => {
@@ -17,30 +18,20 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
     //Then
-    expect(
-      () => new Activity(null, collab, projet, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
 
-    expect(
-      () => new Activity(1, null, projet, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Activity(null, true, new Date(), cra.id)).toThrowError(
+      'cannot have a null attribut',
+    );
 
-    expect(
-      () => new Activity(1, collab, null, true, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(
-      () => new Activity(1, collab, projet, true, new Date(), null),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(
-      () => new Activity(1, collab, projet, null, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Activity(projet, null, new Date(), cra.id)).toThrowError(
+      'cannot have a null attribut',
+    );
   });
 
   it('peut etre cree par un collab', () => {
@@ -54,12 +45,13 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
     //When
-    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+    const activity = new Activity(projet, true, new Date(), cra.id);
 
     //Then
     expect(activity).toBeDefined();
@@ -76,12 +68,13 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, new Date(), cra.id);
+    const activity = new Activity(projet, true, new Date(), cra.id);
 
     //Then
     expect(activity.project).toBe(projet);
@@ -98,12 +91,13 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, date, cra.id);
+    const activity = new Activity(projet, true, date, cra.id);
 
     //Then
     expect(activity.date).toBe(date);
@@ -119,12 +113,13 @@ describe('Une activite ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
 
     const projet = new Project('123', []);
     projet.addCollab(collab.email);
-    const activity = new Activity(1, collab, projet, true, date, cra.id);
+    const activity = new Activity(projet, true, date, cra.id);
 
     //Then
     expect(activity.cra).toBe(cra.id);

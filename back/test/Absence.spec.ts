@@ -4,6 +4,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
+import { Status } from '@app/domain/model/Status';
 
 describe('Une absence ', () => {
   it('ne peut pas avoir des attributs null', () => {
@@ -17,25 +18,22 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
     expect(
-      () => new Absence(null, cra.id, true, new Date(), Raison.Maladie),
+      () => new Absence(null, true, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
     expect(
-      () => new Absence(1, null, true, new Date(), Raison.Maladie),
+      () => new Absence(cra.id, null, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
-    expect(
-      () => new Absence(1, cra.id, null, new Date(), Raison.Maladie),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Absence(cra.id, true, null, Raison.Maladie)).toThrowError(
+      'cannot have a null attribut',
+    );
 
-    expect(
-      () => new Absence(1, cra.id, true, null, Raison.Maladie),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(() => new Absence(1, cra.id, true, new Date(), null)).toThrowError(
+    expect(() => new Absence(cra.id, true, new Date(), null)).toThrowError(
       'cannot have a null attribut',
     );
   });
@@ -50,9 +48,10 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
-    const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
+    const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
 
     //Then
     expect(absence).toBeDefined();
@@ -69,9 +68,10 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
-    const absence = new Absence(1, cra.id, true, new Date(), Raison.Maladie);
+    const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
 
     //Then
     expect(absence.raison).toBe(Raison.Maladie);
@@ -88,9 +88,10 @@ describe('Une absence ', () => {
       collab,
       new Date(),
       Etat.unsubmitted,
+      Status.Open,
     );
     //When
-    const absence = new Absence(1, cra.id, true, date, Raison.Maladie);
+    const absence = new Absence(cra.id, true, date, Raison.Maladie);
 
     //Then
     expect(absence.date).toBe(date);

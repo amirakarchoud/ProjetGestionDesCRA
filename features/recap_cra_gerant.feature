@@ -22,3 +22,7 @@ Feature: Recap cra admin
     Example: le tableu est filtre en cra soumis/pas soumis/pas cree
     Example: recherche par nom du collab
     Example: acceder au detail du cra d'un collab
+    Example: cloturer le mois
+        Given tous les cra du moi sont soumis
+        When le gerant cloture le mois
+        Then tous les cras deviennent fermés
