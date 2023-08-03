@@ -7,9 +7,7 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { AbsenceDB } from './absence.entity';
 import { CRADB } from './cra.entity';
-import { ActivityDB } from './activity.entity';
 import { ProjectDB } from './project.entity';
 
 @Entity('user')
@@ -20,6 +18,8 @@ export class UserDB {
 
   @Column()
   name: string;
+  @Column()
+  lastname: string;
 
   @Column('enum', { default: 'collab', enum: ['admin', 'collab'] })
   role: Role;
