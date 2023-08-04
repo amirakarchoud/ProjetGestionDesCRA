@@ -1,11 +1,10 @@
-import { CRA } from "../model/CRA";
+import { CRA } from '../model/CRA';
 
 export interface IRepoCra {
-    //findAll(): Promise<CRA[]>;
-    save(cra: CRA): Promise<CRA>;
-    findById(id: number): Promise<CRA>;
-    findByMonthYearCollab(month: number, year: number, collab: string);
-    findByYearUser(idUser:string,year:number):Promise<CRA[]>;
-    findByMonthYear(month: number, year: number):Promise<CRA[]>;
-
+  //findAll(): Promise<CRA[]>;
+  save(cra: CRA): Promise<CRA>;
+  findById(id: number): Promise<CRA>;
+  findByMonthYearCollab(month: number, year: number, collab: string);
+  findByYearUser(idUser: string, year: number): Promise<CRA[]>;
+  findByMonthYear(month: number, year: number): Promise<CRA[]>;
 }

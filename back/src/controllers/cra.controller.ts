@@ -10,14 +10,20 @@ import {
   HttpStatus,
   Param,
   Post,
+  Res,
 } from '@nestjs/common';
 import { CreateActivityDto } from '../Dto/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
 import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
+import { ExportService } from '@app/domain/service/export.service';
+import { Response } from 'express';
 
 @Controller('cra')
 export class CraController {
-  constructor(private readonly craApp: CraApplication) {}
+  constructor(
+    private readonly craApp: CraApplication,
+    private readonly exportService: ExportService,
+  ) {}
   @Post('absence')
   async addAbsence(
     @Body() createAbsenceDto: CreateAbsenceDto,
@@ -142,5 +148,29 @@ export class CraController {
     @Param('year') year: number,
   ) {
     return await this.craApp.closeAllMonthCra(month, year);
+  }
+
+  @Get('export/:month/:year')
+  async exportToExcel(
+    @Res() res: Response,
+    @Param('month') month: number,
+    @Param('year') year: number,
+  ) {
+    try {
+      const buffer = await this.exportService.generateExcel(month, year);
+      const filename = 'Recap_Du_Mois.xlsx';
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+      res.status(HttpStatus.OK).send(buffer);
+    } catch (error) {
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Error generating Excel file' });
+    }
   }
 }

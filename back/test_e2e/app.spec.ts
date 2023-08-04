@@ -9,6 +9,11 @@ import { RepoCra } from '../src/data/Repository/RepoCra';
 import { Raison } from '../src/domain/model/Raison';
 import { CreateAbsenceDto } from '../src/Dto/CreateAbsenceDto';
 import { CreateActivityDto } from '../src/Dto/CreateActivityDto';
+import { ExportService } from '../src/domain/service/export.service';
+import * as ExcelJS from 'exceljs';
+import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
+import { CRA } from '@app/domain/model/CRA';
+import { TestModule } from '@app/test.module';
 
 describe('APP', () => {
   let app: INestApplication;
@@ -16,7 +21,7 @@ describe('APP', () => {
 
   beforeEach(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [TestModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -201,3 +206,64 @@ async function prepareAbsence(app: INestApplication) {
   await application.addAbsence(absence);
   return absence;
 }
+
+class MockRepoCra implements IRepoCra {
+  save(cra: CRA): Promise<CRA> {
+    throw new Error('Method not implemented.');
+  }
+  findById(id: number): Promise<CRA> {
+    throw new Error('Method not implemented.');
+  }
+  findByMonthYearCollab(month: number, year: number, collab: string) {
+    throw new Error('Method not implemented.');
+  }
+  findByYearUser(idUser: string, year: number): Promise<CRA[]> {
+    throw new Error('Method not implemented.');
+  }
+  async findByMonthYear(month: number, year: number): Promise<any[]> {
+    return [
+      {
+        collab: {
+          name: 'amira',
+          lastname: 'karchoud',
+        },
+        absences: [{}, {}],
+        activities: [{}, {}, {}],
+        calculateBusinessDays: jest.fn().mockReturnValue(20),
+        holidays: [],
+      },
+    ];
+  }
+}
+
+describe('ExportService', () => {
+  let exportService: ExportService;
+  let mockRepoCra: MockRepoCra;
+
+  beforeEach(() => {
+    mockRepoCra = new MockRepoCra();
+
+    exportService = new ExportService(mockRepoCra);
+  });
+
+  it(' generate Excel file with correct data', async () => {
+    const month = 7;
+    const year = 2023;
+    const excelBuffer = await exportService.generateExcel(month, year);
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(excelBuffer);
+
+    const worksheet = workbook.getWorksheet('Recap du mois');
+
+    const headerRow = worksheet.getRow(1);
+    expect(headerRow.getCell(1).value).toBe('Collaborateur');
+    expect(headerRow.getCell(2).value).toBe('Période');
+    expect(headerRow.getCell(3).value).toBe("Nombre d'absences");
+    const dataRows = worksheet.getRows(3, worksheet.rowCount);
+    expect(dataRows[0].getCell(1).value).toBe('amira karchoud');
+    expect(dataRows[0].getCell(2).value).toBe('7/2023');
+    expect(dataRows[0].getCell(8).value).toBe(1.5);
+    expect(dataRows[0].getCell(9).value).toBe('2.5/20');
+  });
+});

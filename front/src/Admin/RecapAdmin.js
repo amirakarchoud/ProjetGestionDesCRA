@@ -175,6 +175,33 @@ const RecapAdmin = () => {
     }
   };
 
+  const exportToExcel = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/cra/export/${month}/${year}`, {
+        method: 'GET',
+        responseType: 'arraybuffer',
+      });
+
+      if (response.ok) {
+        const buffer = await response.arrayBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Recap_mois_${month}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        toast.error('Error exporting to Excel.');
+      }
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      toast.error('Error exporting to Excel.');
+    }
+  };
+
 
 
 
@@ -183,7 +210,7 @@ const RecapAdmin = () => {
       <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '70%', marginRight: '10px' }}>
         <h1 style={{ marginLeft: '40%' }}>Recap du mois </h1>
         <div style={{ marginLeft: '10%', marginRight: '10%' }}>
-          <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{ left: '90%' }}>
+          <Button variant="contained" color="primary" endIcon={<FaDownload />} style={{ left: '90%' }} onClick={exportToExcel}>
             Exporter
           </Button>
 

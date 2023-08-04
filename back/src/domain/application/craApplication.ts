@@ -8,6 +8,8 @@ import { IRepoCra } from '../IRepository/IRepoCra';
 import { CraService } from '../service/cra.service';
 import { CreateAbsenceDto } from '../../Dto/CreateAbsenceDto';
 import { CreateActivityDto } from '@app/Dto/CreateActivityDto';
+import { Holiday } from '../model/Holiday';
+import { IRepoHoliday } from '../IRepository/IRepoHoliday';
 
 @Injectable()
 export class CraApplication {
@@ -15,8 +17,13 @@ export class CraApplication {
     @Inject('IRepoCollab') private collabRepository: IRepoCollab,
     @Inject('IRepoProject') private projectRepository: IRepoProject,
     @Inject('IRepoCra') private craRepository: IRepoCra,
+    @Inject('IRepoHoliday') private holidayRepository: IRepoHoliday,
     private readonly craService: CraService,
   ) {}
+
+  async getAllHolidays(): Promise<Holiday[]> {
+    return await this.holidayRepository.findAll();
+  }
 
   async addUser(jwtToken: string) {
     console.log('craqpp add user');

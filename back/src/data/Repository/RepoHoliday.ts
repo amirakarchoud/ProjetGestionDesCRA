@@ -14,6 +14,13 @@ export class RepoHoliday implements IRepoHoliday {
     @InjectRepository(HolidayDB)
     private holidayRepository: Repository<HolidayDB>,
   ) {}
+  async findAll(): Promise<Holiday[]> {
+    const holidaysDB = await this.holidayRepository.find();
+
+    return holidaysDB.map((holidayDB) => {
+      return new Holiday(holidayDB.id, holidayDB.date, holidayDB.name);
+    });
+  }
 
   @Cron('0 0 1 1 *')
   async fetchAndStoreHolidays(): Promise<HolidayDB[]> {

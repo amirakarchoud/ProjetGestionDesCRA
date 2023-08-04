@@ -4,7 +4,7 @@ import { Role } from '@app/domain/model/Role';
 
 describe('Un projet ', () => {
   //Given
-  const collab = new Collab('user', 'test', Role.admin);
+  const collab = new Collab('user', 'test', 'last name', Role.admin);
 
   it('ne peut pas avoir des attributs null', () => {
     expect(() => new Project(null, [])).toThrowError(
