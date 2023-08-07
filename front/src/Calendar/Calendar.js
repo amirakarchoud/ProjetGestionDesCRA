@@ -18,7 +18,7 @@ import ConfirmationModal from './ConfirmationDelete'
 import { toast } from 'react-toastify';
 import './custom-calendar.css';
 import RecapCraCollab from './RecapCraCollab';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -91,7 +91,7 @@ const CalendarComponent = () => {
     };
 
     fetchUserProjects();
-  }, []);
+  }, [user]);
 
   const fetchData = async () => {
     try {
@@ -225,21 +225,22 @@ const CalendarComponent = () => {
 
   const handleConfirm = async () => {
     const matin = selectedAbsenceOption === 'half-day' ? (selectedAmPm === 'am' ? true : false) : true;
-
+  
     const dateRange = [];
     let currentDate = moment(selectedRange.start);
     const endDate = moment(selectedRange.end);
-
+  
     while (currentDate <= endDate) {
       if (currentDate.day() !== 0 && currentDate.day() !== 6) {
         dateRange.push(currentDate.toDate());
       }
       currentDate = currentDate.clone().add(1, 'day');
     }
-
-
+  
+    const absenceDtos = [];
+    const activityDtos = [];
+  
     for (const date of dateRange) {
-      console.log('creating');
       if (selectedOption === 'activity') {
         const createActivityDto = {
           date,
@@ -248,31 +249,7 @@ const CalendarComponent = () => {
           projectId: selectedReason,
           craId: 0,
         };
-
-        try {
-          const response = await fetch(`${apiUrl}/cra/activity`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(createActivityDto),
-          });
-
-          if (response.ok) {
-            toast.success('Activite ajoutee avec succes!');
-            fetchData();
-          } else {
-            const errorData = await response.json();
-            console.error('Error adding activity:', errorData);
-            if (errorData.message) {
-              toast.error(errorData.message);
-            } else {
-              toast.error('Failed to add activity');
-            }
-          }
-        } catch (error) {
-          console.error('Error adding activity:', error);
-        }
+        activityDtos.push(createActivityDto);
       } else if (selectedOption === 'absence') {
         const createAbsenceDto = {
           date,
@@ -281,39 +258,12 @@ const CalendarComponent = () => {
           raison: selectedReason,
           craId: 0,
         };
-
-        try {
-          const response = await fetch(`${apiUrl}/cra/absence`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(createAbsenceDto),
-          });
-          const data = await response.json();
-          console.log('Added absence:', data);
-          if (response.ok) {
-            toast.success('Absence ajoutee avec succes!');
-            fetchData();
-          } else {
-            const errorData = await response.json();
-            console.error('Error adding absence:', errorData);
-            if (errorData.message) {
-              toast.error(errorData.message);
-            } else {
-              toast.error('Failed to add absence');
-            }
-          }
-        } catch (error) {
-          console.error('Error adding absence:', error);
-        }
+        absenceDtos.push(createAbsenceDto);
       }
-
+  
       if (selectedAbsenceOption === 'full-day') {
         const secondMatinValue = !matin;
-        console.log("matin value before= " + matin);
-        console.log("full day , matin value here= " + secondMatinValue);
-
+  
         if (selectedOption === 'activity') {
           const createActivityDto = {
             date,
@@ -322,20 +272,7 @@ const CalendarComponent = () => {
             projectId: selectedReason,
             craId: 0,
           };
-
-          try {
-            const response = await fetch(`${apiUrl}/cra/activity`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(createActivityDto),
-            });
-            const data = await response.json();
-            console.log('Added activity:', data);
-          } catch (error) {
-            console.error('Error adding activity:', error);
-          }
+          activityDtos.push(createActivityDto);
         } else if (selectedOption === 'absence') {
           const createAbsenceDto = {
             date,
@@ -344,28 +281,65 @@ const CalendarComponent = () => {
             raison: selectedReason,
             craId: 0,
           };
-
-          try {
-            const response = await fetch(`${apiUrl}/cra/absence`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(createAbsenceDto),
-            });
-            const data = await response.json();
-            console.log('Added absence:', data);
-          } catch (error) {
-            console.error('Error adding absence:', error);
-          }
+          absenceDtos.push(createAbsenceDto);
         }
       }
     }
+  
+    try {
+      if (absenceDtos.length > 0) {
+        const response = await fetch(`${apiUrl}/cra/absences`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(absenceDtos),
+        });
+        if (response.ok) {
+          toast.success('Absences ajoutées avec succès!');
+          fetchData();
+        } else {
+          const errorData = await response.json();
+          console.error('Error adding absences:', errorData);
+          if (errorData.message) {
+            toast.error(errorData.message);
+          } else {
+            toast.error('Failed to add absences');
+          }
+        }
+      }
+  
+      if (activityDtos.length > 0) {
+        const response = await fetch(`${apiUrl}/cra/activities`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(activityDtos),
+        });
+        if (response.ok) {
+          toast.success('Activités ajoutées avec succès!');
+          fetchData();
+        } else {
+          const errorData = await response.json();
+          console.error('Error adding activities:', errorData);
+          if (errorData.message) {
+            toast.error(errorData.message);
+          } else {
+            toast.error('Failed to add activities');
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error adding absences and activities:', error);
+    }
+  
     fetchData();
     setSelectedRange(null);
     setShowConfirmation(false);
     setRecapCraKey(prevKey => prevKey + 1);
   };
+  
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);

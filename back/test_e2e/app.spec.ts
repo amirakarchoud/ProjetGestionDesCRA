@@ -170,7 +170,6 @@ async function prepareActivity(app: INestApplication, date: Date) {
   activity.date = date;
   activity.matin = true;
   activity.projectId = project.code;
-  activity.craId = 1;
   activity.collabId = 'test1';
   await application.addActivity(activity);
   return activity;
@@ -200,7 +199,6 @@ async function prepareAbsence(app: INestApplication) {
   absence.date = date;
   absence.matin = false;
   absence.raison = Raison.Maladie;
-  absence.craId = 1;
 
   absence.collabId = 'test1';
   await application.addAbsence(absence);

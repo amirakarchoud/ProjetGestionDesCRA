@@ -56,6 +56,20 @@ export class CraController {
     }
   }
 
+  @Post('absences')
+  async addAbsences(@Body() createAbsencesDtos: CreateAbsenceDto[]) {
+    for (const createAbsenceDto of createAbsencesDtos) {
+      try {
+        await this.craApp.addAbsence(createAbsenceDto);
+      } catch (error) {
+        throw new HttpException(
+          { message: 'Internal server error' },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   @Delete('absence')
   async deleteAbsence(@Body() delAbsenceDto: deleteActivityAbsenceDto) {
     console.log('deleting absence');
@@ -64,6 +78,17 @@ export class CraController {
       new Date(delAbsenceDto.date),
       delAbsenceDto.matin,
     );
+  }
+
+  @Delete('absences')
+  async deleteAbsences(@Body() delAbsencesDtos: deleteActivityAbsenceDto[]) {
+    for (const delAbsenceDto of delAbsencesDtos) {
+      await this.craApp.deleteAbsence(
+        delAbsenceDto.id,
+        new Date(delAbsenceDto.date),
+        delAbsenceDto.matin,
+      );
+    }
   }
 
   @Post('activity')
@@ -98,6 +123,20 @@ export class CraController {
     }
   }
 
+  @Post('activities')
+  async addActivities(@Body() createActivitiesDtos: CreateActivityDto[]) {
+    for (const createActivityDto of createActivitiesDtos) {
+      try {
+        await this.craApp.addActivity(createActivityDto);
+      } catch (error) {
+        throw new HttpException(
+          { message: 'Internal server error' },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+
   @Delete('activity')
   async deleteActivity(@Body() delActivityDto: deleteActivityAbsenceDto) {
     console.log('deleting activity');
@@ -106,6 +145,19 @@ export class CraController {
       delActivityDto.date,
       delActivityDto.matin,
     );
+  }
+
+  @Delete('activities')
+  async deleteActivities(
+    @Body() delActivitiesDtos: deleteActivityAbsenceDto[],
+  ) {
+    for (const delActivityDto of delActivitiesDtos) {
+      await this.craApp.deleteActivity(
+        delActivityDto.id,
+        delActivityDto.date,
+        delActivityDto.matin,
+      );
+    }
   }
 
   @Get('get/:user/:month/:year')

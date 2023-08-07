@@ -5,5 +5,4 @@ export class CreateAbsenceDto {
   matin: boolean;
   collabId: string;
   raison: Raison;
-  craId: number;
 }
