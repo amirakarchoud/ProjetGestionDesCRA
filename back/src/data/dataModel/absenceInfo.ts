@@ -8,7 +8,7 @@ export class AbsenceInfo {
   matin: boolean;
 
   @Column('enum', {
-    enum: ['RTT', 'Conges', 'Maladie', 'Exceptionnel'],
+    enum: ['RTT', 'Conges', 'Maladie', 'Exceptionnelle', 'Formation'],
     nullable: true,
   })
   raison!: Raison;

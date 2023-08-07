@@ -10,7 +10,7 @@ describe('Une absence ', () => {
   it('ne peut pas avoir des attributs null', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -40,7 +40,7 @@ describe('Une absence ', () => {
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -60,7 +60,7 @@ describe('Une absence ', () => {
   it('peut avoir un raison', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -80,7 +80,7 @@ describe('Une absence ', () => {
   it('est associee a une date', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,

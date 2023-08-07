@@ -10,7 +10,7 @@ describe('Une activite ', () => {
   it('ne peut pas avoir des attributs null', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -37,7 +37,7 @@ describe('Une activite ', () => {
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -60,7 +60,7 @@ describe('Une activite ', () => {
   it('est associee a un projet', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -83,7 +83,7 @@ describe('Une activite ', () => {
   it('est associee a une date', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
@@ -105,7 +105,7 @@ describe('Une activite ', () => {
   it('est associee a un cra', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', Role.admin);
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       1,
       date.getMonth() + 1,
