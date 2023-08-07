@@ -28,7 +28,6 @@ export class CraService {
   }
 
   async addAbsence(createAbsenceDto: CreateAbsenceDto) {
-    console.log('adding absence');
     const dateAbs = new Date(createAbsenceDto.date);
     const user = await this.repoCollab.findById(createAbsenceDto.collabId);
     // Check if the specified CRA exists

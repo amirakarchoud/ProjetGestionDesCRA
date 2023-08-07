@@ -12,6 +12,7 @@ import { FaCalendar, FaCheckCircle, FaDownload, FaExclamationTriangle, FaSkullCr
 import { Button, MenuItem, Select, TextField } from '@mui/material';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import {Delete as DeleteIcon, Add as AddIcon} from '@mui/icons-material';
 
 
 
@@ -32,6 +33,8 @@ const RecapAdmin = () => {
   const [soumisCraCount, setSoumisCraCount] = useState(0);
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [monthClosed, setMonthClosed] = useState(false);
+  const [pageSize, setPageSize] = useState(4);
+  const [currentPage, setCurrentPage] = useState(1);
 
 
 
@@ -323,22 +326,32 @@ const RecapAdmin = () => {
 
 
       <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '20%' }}>
-        <h3 style={{ marginLeft: '20%' }}>Les Reguls du mois </h3>
-        {craData
-          .map((cra) => (
-            <ul>
-              {cra._history.map((reg) => (
-                <li>
-                  le {moment(reg._date).format('L')} , {cra._collab._name} a {reg._action === 'Delete' ? 'supprimé' : 'ajouté'} une {reg._target.project ? 'activité : ' : 'absence : '} {reg._target.project ? reg._target.project.code : reg._target.raison} pour le {moment(reg._target.date).format('L')}
-                </li>
-              ))}
-
-
-            </ul>
-          ))}
-
-
-      </div>
+      <h3 style={{ marginLeft: '20%' }}>Les Reguls du mois </h3>
+      {craData.map((cra) => (
+        <div key={cra.id}>
+          {cra._history.length > 0 && (
+            <div style={{ marginBottom: '8px' }}>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {cra._history.map((reg, index) => (
+                  <div>
+                  <li key={index} style={{ display: 'flex', alignItems: 'center' , paddingBottom: '8px'}}>
+                    <div style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '8px' }}>
+                      {reg._action === 'Delete' ? <DeleteIcon color="error" fontSize="small" /> : <AddIcon color="primary" fontSize="small" />}
+                    </div>
+                    <div style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+                      {`le ${moment(reg._date).format('L')}, ${cra._collab._name} a ${reg._action === 'Delete' ? 'supprimé' : 'ajouté'} une ${reg._target.project ? 'activité : ' : 'absence : '} ${reg._target.project ? reg._target.project.code : reg._target.raison} pour le ${moment(reg._target.date).format('L')}`}
+                    </div>
+                    
+                  </li>
+                  <hr style={{ borderTop: '1px solid #999', width: '70%', margin: '4px auto' }} />
+                  </div>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
 
     </div>
   );

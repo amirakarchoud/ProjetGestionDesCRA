@@ -1,5 +1,5 @@
-export class deleteActivityAbsenceDto{
-    id:number;
-    date:Date;
-    matin:boolean;
+export class deleteActivityAbsenceDto {
+  id: number;
+  date: Date;
+  matin: boolean;
 }
