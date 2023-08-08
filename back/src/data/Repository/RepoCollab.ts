@@ -14,7 +14,9 @@ export class RepoCollab implements IRepoCollab {
 
   async findById(id: string): Promise<Collab> {
     const user = await this.userRepository.findOne({ where: { email: id } });
-    return new Collab(user.email, user.name, user.lastname, user.role);
+    const collab = new Collab(user.email, user.name, user.lastname, user.role);
+    collab.password = user.password;
+    return collab;
   }
 
   async findAll(): Promise<Collab[]> {
@@ -31,6 +33,7 @@ export class RepoCollab implements IRepoCollab {
     collab.name = user.name;
     collab.role = user.role;
     collab.lastname = user.lastname;
+    collab.password = user.password;
     await this.userRepository.save(collab);
 
     return user;

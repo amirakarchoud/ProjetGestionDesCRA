@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -18,7 +18,8 @@ import ConfirmationModal from './ConfirmationDelete'
 import { toast } from 'react-toastify';
 import './custom-calendar.css';
 import RecapCraCollab from './RecapCraCollab';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AuthContext } from '../Auth/AuthProvider';
 
 const style = {
   position: 'absolute',
@@ -54,6 +55,7 @@ const CalendarComponent = () => {
 
   const formattedStartDate = selectedRange && selectedRange.start ? selectedRange.start.toDateString() : '';
   const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
+  const navigate=useNavigate();
 
 
   const { user } = useParams();
@@ -64,16 +66,34 @@ const CalendarComponent = () => {
     { value: 'Exceptionnelle', label: 'Exceptionnelle' },
     { value: 'Formation', label: 'Formation' },
   ];
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const { logout } = useContext(AuthContext);
+  const token = getTokenFromLocalStorage();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' });
+        const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' ,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }, );
         const data = await response.json();
+        if(response.status === 401)
+        {
+          logout();
+          navigate('/login');
+
+        }
         setUserCras(data);
         const processedEvents = processData(data);
         setEvents(processedEvents);
       } catch (error) {
+        console.log(error);
+       
         console.error('Error fetching data:', error);
       }
     };
@@ -82,7 +102,11 @@ const CalendarComponent = () => {
 
     const fetchUserProjects = async () => {
       try {
-        const response = await fetch(`${apiUrl}/project/user/${user}`);
+        const response = await fetch(`${apiUrl}/project/user/${user}`,
+       { headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
         const data = await response.json();
         setUserProjects(data);
       } catch (error) {
@@ -91,11 +115,13 @@ const CalendarComponent = () => {
     };
 
     fetchUserProjects();
-  }, [user]);
+  }, []);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' });
+      const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' ,headers: {
+        'Authorization': `Bearer ${token}`,
+      },});
       const data = await response.json();
       setUserCras(data);
       const processedEvents = processData(data);
@@ -292,6 +318,7 @@ const CalendarComponent = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(absenceDtos),
         });
@@ -314,6 +341,7 @@ const CalendarComponent = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(activityDtos),
         });
@@ -371,6 +399,7 @@ const CalendarComponent = () => {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(deleteActivityDto),
         });
@@ -395,6 +424,7 @@ const CalendarComponent = () => {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify(deleteAbsenceDto),
         });
@@ -418,7 +448,6 @@ const CalendarComponent = () => {
   };
 
   const handleCloseConfirmationModal = () => {
-    // setSelectedEventToDelete(null);
     setShowConfirmationDelete(false);
   };
 

@@ -23,6 +23,8 @@ import * as process from 'process';
 import { RegulDB } from './data/dataModel/regul.entity';
 import { ExportService } from './domain/service/export.service';
 import { HolidayController } from './controllers/Holiday.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './constants';
 
 let dotEnvPath = '.env';
 
@@ -57,6 +59,11 @@ console.log('env is ', dotEnvPath);
     ]),
     DoaminModule,
     ScheduleModule.forRoot(),
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '30s' },
+    }),
   ],
   controllers: [
     CraController,

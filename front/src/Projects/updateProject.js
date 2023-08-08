@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 
@@ -14,15 +14,25 @@ const UpdateProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
-  const apiUrl = process.env.REACT_APP_API_URL;;
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const token = getTokenFromLocalStorage();
+  const navigate=useNavigate();
 
   useEffect(() => {
     const fetchCollabs = async () => {
       try {
-        const response = await fetch(apiUrl + '/collab/all');
+        const response = await fetch(`${apiUrl}/collab/all`,{headers: {
+          'Authorization': `Bearer ${token}`,
+        },});
         const data = await response.json();
         setAllCollabs(data);
-        const projectResponse = await fetch(`${apiUrl}/project/${projectCode}`, { mode: 'cors' });
+        const projectResponse = await fetch(`${apiUrl}/project/${projectCode}`, { mode: 'cors', headers: {
+          'Authorization': `Bearer ${token}`,
+        },});
         const projectData = await projectResponse.json();
         setProject(projectData);
 
@@ -49,16 +59,19 @@ const UpdateProject = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(projectData),
       });
 
       if (response.ok) {
         toast.success('Project updated successfully!');
-        /* setTimeout(() => {
-          history.push('/projects');
-        }, 2000);*/
       } else {
+        if(response.status === 401)
+            {
+              navigate('/login');
+    
+            }
         console.error('Error updating project:', response);
       }
     } catch (error) {

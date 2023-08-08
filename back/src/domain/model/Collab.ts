@@ -14,12 +14,21 @@ export class Collab {
 
   private _activities: Activity[] = [];
   private _absences: Absence[] = [];
+  private _password: string;
 
   constructor(email: string, name: string, lastname: string, role: Role) {
     this._lastname = lastname;
     this._name = name;
     this._email = email;
     this._role = role;
+  }
+
+  public get password(): string {
+    return this._password;
+  }
+
+  public set password(em: string) {
+    this._password = em;
   }
 
   public get lastname(): string {

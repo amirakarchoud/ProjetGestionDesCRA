@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
 
@@ -13,11 +13,26 @@ const AddProject = () => {
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
   const apiUrl = process.env.REACT_APP_API_URL;
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const token = getTokenFromLocalStorage();
+  const navigate=useNavigate();
   useEffect(() => {
     const fetchCollabs = async () => {
       try {
-        const response = await fetch(`${apiUrl}/collab/all`);
+        const response = await fetch(`${apiUrl}/collab/all`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
+        if(response.status === 401)
+            {
+              navigate('/login');
+    
+            }
         setAllCollabs(data);
       } catch (error) {
         console.error('Error fetching collabs:', error);
@@ -38,6 +53,7 @@ const AddProject = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(projectData),
       });
@@ -45,9 +61,9 @@ const AddProject = () => {
       if (response.ok) {
         console.log('Project added successfully!');
         toast.success('Project added successfully!');
-       /* setTimeout(() => {
-          history.push('/projects');
-        }, 2000);*/
+        /* setTimeout(() => {
+           history.push('/projects');
+         }, 2000);*/
       } else {
         console.error('Error adding project:', response);
       }
@@ -93,7 +109,7 @@ const AddProject = () => {
         )}
       />
       <br />
-      <Button variant="contained" color="primary" onClick={handleAddProject} style={{ marginTop: '16px' , width: '50%'}}>
+      <Button variant="contained" color="primary" onClick={handleAddProject} style={{ marginTop: '16px', width: '50%' }}>
         Ajouter
       </Button>
       <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>

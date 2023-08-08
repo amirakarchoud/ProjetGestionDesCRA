@@ -7,16 +7,23 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TodayIcon from '@mui/icons-material/Today';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const RecapCraCollab = ({ collabId }) => {
     const today = new Date();
     const [currentDate, setCurrentDate] = useState(today);
     const [businessDays, setBusinessDays] = useState(0);
     const [userCras, setUserCras] = useState([]);
-    const apiUrl = 'http://localhost:8080';
+    const apiUrl = process.env.REACT_APP_API_URL;
     const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true);
     const [etat, setEtat] = useState('');
     const [etatChangeTrigger, setEtatChangeTrigger] = useState(0);
+    const getTokenFromLocalStorage = () => {
+        const token = localStorage.getItem('token');
+        return token;
+      };
+      const token = getTokenFromLocalStorage();
+      const navigate=useNavigate();
 
     useEffect(() => {
         fetchData();
@@ -37,8 +44,15 @@ const RecapCraCollab = ({ collabId }) => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(apiUrl + '/cra/userYear/' + collabId + '/2023', { mode: 'cors' });
+            const response = await fetch(apiUrl + '/cra/userYear/' + collabId + '/2023', { mode: 'cors' ,headers: {
+                'Authorization': `Bearer ${token}`,
+              },});
             const data = await response.json();
+            if(response.status === 401)
+            {
+              navigate('/login');
+    
+            }
             console.log("getting cras in recap")
             setUserCras(data);
         } catch (error) {

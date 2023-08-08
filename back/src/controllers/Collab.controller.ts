@@ -12,9 +12,13 @@ export class CollabController {
     return await this.craApplication.getAllCollabs();
   }
 
-  @Post('ids')
+  @Get('ids')
   async getCollabsByIds(@Body() ids: string[]): Promise<Collab[]> {
-    console.log('getting collabs back by ids');
     return await this.craApplication.getAllCollabsByIds(ids);
+  }
+
+  @Post('')
+  async addCollab(@Body() collab: Collab): Promise<Collab> {
+    return await this.craApplication.addCollab(collab);
   }
 }

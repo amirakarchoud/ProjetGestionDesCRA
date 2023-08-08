@@ -21,6 +21,9 @@ export class UserDB {
   @Column()
   lastname: string;
 
+  @Column()
+  password: string;
+
   @Column('enum', { default: 'collab', enum: ['admin', 'collab'] })
   role: Role;
 
