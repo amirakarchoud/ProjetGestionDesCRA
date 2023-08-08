@@ -19,7 +19,7 @@ import { RegulDB } from '../dataModel/regul.entity';
 import { AbsenceInfo } from '../dataModel/absenceInfo';
 
 @Injectable()
-export class RepoCra implements IRepoCra {
+export class CraRepository implements IRepoCra {
   constructor(
     @Inject(DataSource) private dataSource: DataSource,
     @InjectRepository(CRADB)

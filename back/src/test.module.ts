@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CraApplication } from './domain/application/craApplication';
-import { RepoCollab } from './data/Repository/RepoCollab';
+import { CollabRepository } from './data/Repository/CollabRepository';
 import { UserDB } from './data/dataModel/user.entity';
 import { AbsenceDB } from './data/dataModel/absence.entity';
 import { ActivityDB } from './data/dataModel/activity.entity';
@@ -11,12 +11,11 @@ import { HolidayDB } from './data/dataModel/holiday.entity';
 import { ProjectDB } from './data/dataModel/project.entity';
 import { CraService } from './domain/service/cra.service';
 import { CraController } from './controllers/cra.controller';
-import { RepoCra } from './data/Repository/RepoCra';
-import { RepoHoliday } from './data/Repository/RepoHoliday';
+import { CraRepository } from './data/Repository/CraRepository';
+import { HolidayRepository } from './data/Repository/HolidayRepository';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ProjectController } from './controllers/Project.controller';
-import { DoaminModule } from './domain/domain.module';
-import { RepoProject } from './data/Repository/RepoProject';
+import { ProjectRepository } from './data/Repository/ProjectRepository';
 import { CollabController } from './controllers/Collab.controller';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
@@ -57,7 +56,6 @@ console.log('env is ', dotEnvPath);
       ProjectDB,
       RegulDB,
     ]),
-    DoaminModule,
     ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,
@@ -76,10 +74,10 @@ console.log('env is ', dotEnvPath);
     CraApplication,
     CraService,
     ExportService,
-    { provide: 'IRepoCollab', useClass: RepoCollab },
-    { provide: 'IRepoCra', useClass: RepoCra },
-    { provide: 'IRepoHoliday', useClass: RepoHoliday },
-    { provide: 'IRepoProject', useClass: RepoProject },
+    { provide: 'IRepoCollab', useClass: CollabRepository },
+    { provide: 'IRepoCra', useClass: CraRepository },
+    { provide: 'IRepoHoliday', useClass: HolidayRepository },
+    { provide: 'IRepoProject', useClass: ProjectRepository },
   ],
 })
 export class TestModule {}

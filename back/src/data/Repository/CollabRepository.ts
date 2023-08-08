@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserDB } from '../dataModel/user.entity';
 
 @Injectable()
-export class RepoCollab implements IRepoCollab {
+export class CollabRepository implements IRepoCollab {
   constructor(
     @InjectRepository(UserDB)
     private userRepository: Repository<UserDB>,

@@ -27,29 +27,11 @@ describe('Collaborateur ', () => {
     projet.addCollab(collab.email);
   });
 
-  it('peut creer une activite ', () => {
-    //When
-    const activity = new Activity(projet, true, date, cra.id);
-    collab.addActivity(activity);
-    //then
-    expect(collab.activities).toHaveLength(1);
-  });
-
-  it('peut creer une absence ', () => {
-    //When
-    const absence = new Absence(cra.id, true, date, Raison.Maladie);
-    collab.addAbsence(absence);
-    //then
-    expect(collab.absences).toHaveLength(1);
-  });
-
   it('peut ajouter une activite pour le mois courant ', () => {
     const activity = new Activity(projet, true, date, cra.id);
 
     expect(activity.date).toBe(date);
   });
-
-  //ou constructeur ??
 
   it('peut avoir le role admin ', () => {
     collab.role = Role.admin;

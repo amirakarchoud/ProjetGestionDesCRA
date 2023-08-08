@@ -1,17 +1,17 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CraApplication } from '../src/domain/application/craApplication';
-import { RepoCollab } from '../src/data/Repository/RepoCollab';
+import { CollabRepository } from '../src/data/Repository/CollabRepository';
 import { AppModule } from '../src/app.module';
 import { Project } from '../src/domain/model/Project';
-import { RepoProject } from '../src/data/Repository/RepoProject';
-import { RepoCra } from '../src/data/Repository/RepoCra';
+import { ProjectRepository } from '../src/data/Repository/ProjectRepository';
+import { CraRepository } from '../src/data/Repository/CraRepository';
 import { Raison } from '../src/domain/model/Raison';
 import { CreateAbsenceDto } from '../src/Dto/CreateAbsenceDto';
 import { CreateActivityDto } from '../src/Dto/CreateActivityDto';
 import { ExportService } from '../src/domain/service/export.service';
 import * as ExcelJS from 'exceljs';
-import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
+import { IRepoCra } from '../src/domain/IRepository/IRepoCra';
 import { CRA } from '@app/domain/model/CRA';
 import { TestModule } from '@app/test.module';
 
@@ -30,7 +30,7 @@ describe('APP', () => {
   });
 
   it(`create user from token`, async () => {
-    const repo: RepoCollab = await createUser(app);
+    const repo: CollabRepository = await createUser(app);
     const createdUser = await repo.findById('test1');
     expect(createdUser).toBeDefined();
   });
@@ -41,7 +41,7 @@ describe('APP', () => {
   });
 
   it(`delete project`, async () => {
-    const repo: RepoProject = app.get('IRepoProject');
+    const repo: ProjectRepository = app.get('IRepoProject');
     const application = app.get(CraApplication);
     const project = new Project('projetTest', []);
     await repo.save(project);
@@ -66,7 +66,7 @@ describe('APP', () => {
 
   it(`delete absence`, async () => {
     const date = new Date();
-    const repo: RepoCra = app.get('IRepoCra');
+    const repo: CraRepository = app.get('IRepoCra');
     const absence = await prepareAbsence(app);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
@@ -85,7 +85,7 @@ describe('APP', () => {
 
   it(`create activity`, async () => {
     const date = new Date();
-    const repo: RepoCra = app.get('IRepoCra');
+    const repo: CraRepository = app.get('IRepoCra');
     await prepareActivity(app, date);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
@@ -101,7 +101,7 @@ describe('APP', () => {
 
   it(`delete activity`, async () => {
     const date = new Date();
-    const repo: RepoCra = app.get('IRepoCra');
+    const repo: CraRepository = app.get('IRepoCra');
     const activity = await prepareActivity(app, date);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
@@ -121,7 +121,7 @@ describe('APP', () => {
   it(`create regul for absence creation`, async () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
-    const repo: RepoCra = app.get('IRepoCra');
+    const repo: CraRepository = app.get('IRepoCra');
     await prepareActivity(app, date);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
@@ -143,7 +143,7 @@ describe('APP', () => {
   it(`create regul pour creation activite`, async () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
-    const repo: RepoCra = app.get('IRepoCra');
+    const repo: CraRepository = app.get('IRepoCra');
     await prepareAbsence(app);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
@@ -176,8 +176,8 @@ async function prepareActivity(app: INestApplication, date: Date) {
 }
 
 async function createProject(app: INestApplication) {
-  const repo: RepoProject = app.get('IRepoProject');
-  const repoCollab: RepoCollab = app.get('IRepoCollab');
+  const repo: ProjectRepository = app.get('IRepoProject');
+  const repoCollab: CollabRepository = app.get('IRepoCollab');
   const createdUser = await repoCollab.findById('test1');
   const project = new Project('code', [createdUser.email]);
   await repo.save(project);
@@ -185,7 +185,7 @@ async function createProject(app: INestApplication) {
 }
 
 async function createUser(app: INestApplication) {
-  const repo: RepoCollab = app.get('IRepoCollab');
+  const repo: CollabRepository = app.get('IRepoCollab');
   const application = app.get(CraApplication);
 
   await application.addUser('token');
