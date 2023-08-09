@@ -7,7 +7,7 @@ import { Like, Repository } from 'typeorm';
 import { UserDB } from '../dataModel/user.entity';
 
 @Injectable()
-export class RepoProject implements IRepoProject {
+export class ProjectRepository implements IRepoProject {
   constructor(
     @InjectRepository(ProjectDB)
     private projectRepository: Repository<ProjectDB>,

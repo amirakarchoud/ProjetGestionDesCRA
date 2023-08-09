@@ -9,7 +9,7 @@ import { environment } from '../../environment/environment';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
-export class RepoHoliday implements IRepoHoliday {
+export class HolidayRepository implements IRepoHoliday {
   constructor(
     @InjectRepository(HolidayDB)
     private holidayRepository: Repository<HolidayDB>,

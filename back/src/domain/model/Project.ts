@@ -1,9 +1,6 @@
-import { Activity } from './Activity';
-
 export class Project {
   private _collabs: string[] = [];
   private _code: string;
-  private _activities: Activity[] = [];
   toJSON(): object {
     return {
       code: this._code,
@@ -27,8 +24,5 @@ export class Project {
 
   public get code(): string {
     return this._code;
-  }
-  public get activities(): Activity[] {
-    return this._activities;
   }
 }
