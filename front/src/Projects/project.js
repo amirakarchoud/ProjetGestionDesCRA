@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaProjectDiagram } from 'react-icons/fa'; 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,6 +14,12 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const apiUrl = process.env.REACT_APP_API_URL;
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const token = getTokenFromLocalStorage();
+  const navigate=useNavigate();
 
   useEffect(() => {
     fetchProjects();
@@ -21,8 +27,16 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${apiUrl}/project/all`, { mode: 'cors' });
+      const response = await fetch(`${apiUrl}/project/all`, { mode: 'cors', headers: {
+        'Authorization': `Bearer ${token}`,
+      },});
       const data = await response.json();
+      if(response.status === 401)
+            {
+              console.log('401')
+              navigate('/login');
+    
+            }
       setProjects(data);
     } catch (error) {
       console.error('Error fetching projects:', error);

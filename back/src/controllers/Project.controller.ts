@@ -1,8 +1,18 @@
 import { Project } from '../domain/model/Project';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateProjectDto } from '../Dto/CreateProjectDto';
 import { CraApplication } from '../domain/application/craApplication';
+import { AuthGuard } from '@app/guards/auth.guard';
 
+//@UseGuards(AuthGuard)
 @Controller('project')
 export class ProjectController {
   constructor(private readonly craApplication: CraApplication) {}

@@ -11,13 +11,16 @@ import {
   Param,
   Post,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateActivityDto } from '../Dto/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
 import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
 import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
+import { AuthGuard } from '@app/guards/auth.guard';
 
+//@UseGuards(AuthGuard)
 @Controller('cra')
 export class CraController {
   constructor(
@@ -62,10 +65,14 @@ export class CraController {
       try {
         await this.craApp.addAbsence(createAbsenceDto);
       } catch (error) {
-        throw new HttpException(
-          { message: 'Internal server error' },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        if (error.message.includes('it is a holiday')) {
+          continue;
+        } else {
+          throw new HttpException(
+            { message: 'Internal server error' },
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
       }
     }
   }
@@ -129,10 +136,14 @@ export class CraController {
       try {
         await this.craApp.addActivity(createActivityDto);
       } catch (error) {
-        throw new HttpException(
-          { message: 'Internal server error' },
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        if (error.message.includes('it is a holiday')) {
+          continue;
+        } else {
+          throw new HttpException(
+            { message: 'Internal server error' },
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
       }
     }
   }
@@ -194,7 +205,7 @@ export class CraController {
     return await this.craApp.getMonthCra(month, year);
   }
 
-  @Get('closeCras/:month/:year')
+  @Post('closeCras/:month/:year')
   async closeAllMonthCra(
     @Param('month') month: number,
     @Param('year') year: number,

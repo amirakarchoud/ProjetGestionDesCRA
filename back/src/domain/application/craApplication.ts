@@ -28,6 +28,7 @@ export class CraApplication {
   async addUser(jwtToken: string) {
     console.log('craqpp add user');
     const collab = new Collab('test1', 'test', 'last name test', Role.admin);
+    collab.password = '123';
     console.log('collab' + collab.email);
     await this.collabRepository.save(collab);
   }
@@ -108,5 +109,9 @@ export class CraApplication {
 
   async closeAllMonthCra(month: number, year: number) {
     return await this.craService.closeAllMonthCra(month, year);
+  }
+
+  async addCollab(collab: Collab): Promise<Collab> {
+    return await this.collabRepository.save(collab);
   }
 }

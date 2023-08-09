@@ -33,8 +33,11 @@ const RecapAdmin = () => {
   const [soumisCraCount, setSoumisCraCount] = useState(0);
   const [buttonEnabled, setButtonEnabled] = useState(false);
   const [monthClosed, setMonthClosed] = useState(false);
-  const [pageSize, setPageSize] = useState(4);
-  const [currentPage, setCurrentPage] = useState(1);
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const token = getTokenFromLocalStorage();
 
 
 
@@ -47,18 +50,24 @@ const RecapAdmin = () => {
   }, [allCollabs]);
 
   useEffect(() => {
+    if(craData?.length>0)
+    {
     const soumisCras = craData.filter((cra) => cra._etat === 0);
     setSoumisCraCount(soumisCras.length);
     const isButtonEnabled = soumisCras.length === allCollabs.length;
     setButtonEnabled(isButtonEnabled);
+   
     const isMonthClosed = craData.some((cra) => cra._status === 'Closed');
     setMonthClosed(isMonthClosed);
+    }
   }, [craData, allCollabs]);
 
 
   const fetchCollabs = async () => {
     try {
-      const response = await fetch(apiUrl + '/collab/all');
+      const response = await fetch(`${apiUrl}/collab/all`,{ headers: {
+        'Authorization': `Bearer ${token}`,
+      },});
       const data = await response.json();
       setAllCollabs(data);
     } catch (error) {
@@ -69,7 +78,9 @@ const RecapAdmin = () => {
 
   const fetchCraData = async () => {
     try {
-      const response = await fetch(`${apiUrl}/cra/monthCra/${month}/${year}`);
+      const response = await fetch(`${apiUrl}/cra/monthCra/${month}/${year}`,{ headers: {
+        'Authorization': `Bearer ${token}`,
+      },});
       const data = await response.json();
       setCraData(data);
       setFilteredCraData(data);
@@ -161,7 +172,10 @@ const RecapAdmin = () => {
     else if (buttonEnabled && !monthClosed) {
       try {
         const response = await fetch(`${apiUrl}/cra/closeCras/${month}/${year}`, {
-          method: 'GET',
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         });
         if (response.ok) {
           toast.success('Mois cloturé avec succès!');
@@ -183,6 +197,9 @@ const RecapAdmin = () => {
       const response = await fetch(`${apiUrl}/cra/export/${month}/${year}`, {
         method: 'GET',
         responseType: 'arraybuffer',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -262,7 +279,7 @@ const RecapAdmin = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCraData
+              { filteredCraData?.length > 0 ? (filteredCraData
                 .filter(cra => cra._collab._name.toLowerCase().includes(searchTerm.toLowerCase()))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((cra) => (
@@ -289,8 +306,11 @@ const RecapAdmin = () => {
                       </Link>
                     </TableCell>
                   </TableRow>
-                ))}
-              {showNotCreated && filteredCollabs
+                  ))
+                ) : (
+                  <p></p>
+                )}
+              {craData?.length>0 && showNotCreated && filteredCollabs
                 .filter((collab) => !craData.some((cra) => cra._collab._email === collab._email))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((collab) => (
@@ -327,7 +347,7 @@ const RecapAdmin = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', padding: '16px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', borderRadius: '10px', backgroundColor: '#E8F4FD', width: '20%' }}>
       <h3 style={{ marginLeft: '20%' }}>Les Reguls du mois </h3>
-      {craData.map((cra) => (
+      {craData?.length>0 && craData.map((cra) => (
         <div key={cra.id}>
           {cra._history.length > 0 && (
             <div style={{ marginBottom: '8px' }}>

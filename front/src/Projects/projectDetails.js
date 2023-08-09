@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Typography, Button } from '@mui/material';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -9,12 +9,27 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [collabs, setCollabs] = useState([]);
   const apiUrl = process.env.REACT_APP_API_URL;
+  const getTokenFromLocalStorage = () => {
+    const token = localStorage.getItem('token');
+    return token;
+  };
+  const token = getTokenFromLocalStorage();
+  const navigate=useNavigate();
 
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await fetch(`${apiUrl}/project/${projectCode}`, { mode: 'cors' });
+        const response = await fetch(`${apiUrl}/project/${projectCode}`, {
+          mode: 'cors', headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
+        if(response.status === 401)
+            {
+              navigate('/login');
+    
+            }
         setProject(data);
         fetchCollabDetails(data.collabs);
       } catch (error) {
@@ -31,10 +46,16 @@ const ProjectDetails = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(collabIds),
       });
       const data = await response.json();
+      if(response.status === 401)
+            {
+              navigate('/login');
+    
+            }
       setCollabs(data);
     } catch (error) {
       console.error('Error fetching collab details:', error);
@@ -56,7 +77,7 @@ const ProjectDetails = () => {
               </li>
             ))}
           </ul>
-          <Link to={`/projectUpdate/${project.code}`} ><Button  variant="contained" color="primary" startIcon={<FaEdit />} style={{ marginTop: '16px', width: '50%' }}>Modifier</Button></Link>
+          <Link to={`/projectUpdate/${project.code}`} ><Button variant="contained" color="primary" startIcon={<FaEdit />} style={{ marginTop: '16px', width: '50%' }}>Modifier</Button></Link>
           <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>
         </>
       ) : (
