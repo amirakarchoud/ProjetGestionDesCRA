@@ -19,8 +19,10 @@ import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
 import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
 import { AuthGuard } from '@app/guards/auth.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 //@UseGuards(AuthGuard)
+@ApiTags('Gestion des cra')
 @Controller('cra')
 export class CraController {
   constructor(
@@ -28,6 +30,10 @@ export class CraController {
     private readonly exportService: ExportService,
   ) {}
   @Post('absence')
+  @ApiOperation({
+    summary: 'Ajouter une seule absence',
+    description: 'Ajoute une nouvelle absence .',
+  })
   async addAbsence(
     @Body() createAbsenceDto: CreateAbsenceDto,
   ): Promise<Absence> {
@@ -60,6 +66,10 @@ export class CraController {
   }
 
   @Post('absences')
+  @ApiOperation({
+    summary: 'Ajouter des absences',
+    description: 'Ajoute plusieurs absences à la base de données en lot.',
+  })
   async addAbsences(@Body() createAbsencesDtos: CreateAbsenceDto[]) {
     for (const createAbsenceDto of createAbsencesDtos) {
       try {
@@ -78,6 +88,10 @@ export class CraController {
   }
 
   @Delete('absence')
+  @ApiOperation({
+    summary: 'Supprimer une seule absence',
+    description: 'Supprimer une seule absence de la base de données.',
+  })
   async deleteAbsence(@Body() delAbsenceDto: deleteActivityAbsenceDto) {
     console.log('deleting absence');
     return await this.craApp.deleteAbsence(
@@ -88,6 +102,10 @@ export class CraController {
   }
 
   @Delete('absences')
+  @ApiOperation({
+    summary: 'Supprimer des absences en lot',
+    description: 'Supprimer plusieurs absences de la base de données en lot.',
+  })
   async deleteAbsences(@Body() delAbsencesDtos: deleteActivityAbsenceDto[]) {
     for (const delAbsenceDto of delAbsencesDtos) {
       await this.craApp.deleteAbsence(
@@ -99,6 +117,10 @@ export class CraController {
   }
 
   @Post('activity')
+  @ApiOperation({
+    summary: 'Ajouter une seule activite',
+    description: 'Ajoute une nouvelle activite .',
+  })
   async addActivity(
     @Body() createActivityDto: CreateActivityDto,
   ): Promise<Activity> {
@@ -131,6 +153,10 @@ export class CraController {
   }
 
   @Post('activities')
+  @ApiOperation({
+    summary: 'Ajouter des activites',
+    description: 'Ajoute plusieurs activites à la base de données en lot.',
+  })
   async addActivities(@Body() createActivitiesDtos: CreateActivityDto[]) {
     for (const createActivityDto of createActivitiesDtos) {
       try {
@@ -149,6 +175,10 @@ export class CraController {
   }
 
   @Delete('activity')
+  @ApiOperation({
+    summary: 'Supprimer une seule activite',
+    description: 'Supprimer une seule activite de la base de données.',
+  })
   async deleteActivity(@Body() delActivityDto: deleteActivityAbsenceDto) {
     console.log('deleting activity');
     return await this.craApp.deleteActivity(
@@ -159,6 +189,10 @@ export class CraController {
   }
 
   @Delete('activities')
+  @ApiOperation({
+    summary: 'Supprimer des activites en lot',
+    description: 'Supprimer plusieurs activites de la base de données en lot.',
+  })
   async deleteActivities(
     @Body() delActivitiesDtos: deleteActivityAbsenceDto[],
   ) {
@@ -172,32 +206,56 @@ export class CraController {
   }
 
   @Get('get/:user/:month/:year')
+  @ApiOperation({
+    summary: "CRA du mois d'un utilisateur",
+    description:
+      "Récupère les comptes rendus d'activité (CRA) d'un utilisateur pour un mois donné (et année).",
+  })
   async getUserCra(
     @Param('user') idUser: string,
     @Param('month') month: number,
     @Param('year') year: number,
   ) {
-    console.log('getting user month cra back');
     return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
   }
 
   @Post('submit/:id')
+  @ApiOperation({
+    summary: 'Soumettre un CRA',
+    description:
+      "Soumet le compte rendu d'activité avec l'ID spécifié. La soumission n'est possible que si le compte rendu est entièrement rempli, c'est-à-dire s'il n'y a pas de jours vides ",
+  })
   async submitCra(@Param('id') idCra: number) {
     return await this.craApp.submitCra(idCra);
   }
 
   @Get('availableDates/:id')
+  @ApiOperation({
+    summary: 'Récupère les dates disponibles',
+    description:
+      "Récupère les dates disponibles pour un compte rendu d'activité (CRA) avec l'ID spécifié. Donc les jours encore vides. Les jours feries non comptés",
+  })
   async availableDates(@Param('id') idCra: number) {
     return await this.craApp.getEmptyDates(idCra);
   }
 
   @Get('userYear/:id/:year')
+  @ApiOperation({
+    summary: "CRA d'un utilisateur par année",
+    description:
+      "Récupère tous les comptes rendus d'activité (CRA) d'un utilisateur pour une année donnée.",
+  })
   async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
     console.log('user cra by year');
     return await this.craApp.userYearCra(idUser, year);
   }
 
   @Get('monthCra/:month/:year')
+  @ApiOperation({
+    summary: 'CRA du mois',
+    description:
+      "Récupère tous les comptes rendus d'activité de tous les collaborateurs pour un mois donnée.",
+  })
   async getMonthCra(
     @Param('month') month: number,
     @Param('year') year: number,
@@ -206,6 +264,11 @@ export class CraController {
   }
 
   @Post('closeCras/:month/:year')
+  @ApiOperation({
+    summary: 'Clôturer les CRA du mois',
+    description:
+      "Clôture tous les comptes rendus d'activité (CRA) pour un mois et une année donnés. permet de créer une regularisation apres chaque future modification du CRA",
+  })
   async closeAllMonthCra(
     @Param('month') month: number,
     @Param('year') year: number,
@@ -214,6 +277,11 @@ export class CraController {
   }
 
   @Get('export/:month/:year')
+  @ApiOperation({
+    summary: 'Exporter en Excel',
+    description:
+      "Exporte les données des comptes rendus d'activité (CRA) au format Excel pour un mois et une année donnés.",
+  })
   async exportToExcel(
     @Res() res: Response,
     @Param('month') month: number,
