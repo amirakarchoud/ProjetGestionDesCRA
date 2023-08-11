@@ -4,4 +4,5 @@ export enum Raison {
   Maladie = 'Maladie',
   Exceptionnelle = 'Exceptionnelle',
   Formation = 'Formation',
+  Conges_sans_solde = 'Conges sans solde',
 }
