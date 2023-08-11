@@ -14,6 +14,10 @@ const UpdateProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
+  const [name, setName] = useState('');
+  const [client, setClient] = useState('');
+  const [date, setDate] = useState(new Date()); 
+  const [status, setStatus] = useState('');
   const apiUrl = process.env.REACT_APP_API_URL;
   const getTokenFromLocalStorage = () => {
     const token = localStorage.getItem('token');
@@ -35,9 +39,13 @@ const UpdateProject = () => {
         },});
         const projectData = await projectResponse.json();
         setProject(projectData);
+        setName(projectData._name);
+        setClient(projectData._client);
+        setDate(new Date(projectData._date));
+        setStatus(projectData._status);
 
         const selectedCollabsInProject = data.filter((collab) =>
-          projectData.collabs.includes(collab._email)
+          projectData._collabs.includes(collab._email)
         );
         setSelectedCollabs(selectedCollabsInProject);
       } catch (error) {
@@ -52,6 +60,10 @@ const UpdateProject = () => {
     const projectData = {
         code:projectCode,
       collabs: selectedCollabs.map((collab) => collab._email),
+      name,
+      client, 
+      date:date.toISOString(),
+      status,
     };
 
     try {
@@ -89,10 +101,49 @@ const UpdateProject = () => {
       <TextField
         disabled
         label="Code du Projet"
-        value={project ? project.code : ''}
+        value={project ? project._code : ''}
         onChange={(e) => setCode(e.target.value)}
         style={{ marginBottom: '16px', width: '60%', marginTop: '16px' }}
       />
+      <br />
+      <strong>Nom du projet:</strong>
+      <br />
+      <TextField
+        
+        label="Nom du Projet"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        style={{ marginBottom: '16px', width: '60%', marginTop: '16px' }}
+      />
+      <br />
+      <strong>Nom du client:</strong>
+      <br />
+      <TextField
+        
+        label="Nom du client"
+        value={client}
+        onChange={(e) => setClient(e.target.value)}
+        style={{ marginBottom: '16px', width: '60%', marginTop: '16px' }}
+      />
+       <br />
+        <strong>Date du projet:</strong>
+        <br />
+        <TextField
+          label="Date du Projet"
+          type="date"
+          value={date.toISOString().split('T')[0]} 
+          onChange={(e) => setDate(new Date(e.target.value))}
+          style={{ marginBottom: '16px', width: '60%' }}
+        />
+        <br />
+        <strong>Status:</strong>
+        <br />
+        <TextField
+          label="Status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          style={{ marginBottom: '16px', width: '60%' }}
+        />
       <br />
       <strong>Les collaborateurs:</strong>
       <br />

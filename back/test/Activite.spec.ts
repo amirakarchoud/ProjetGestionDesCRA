@@ -5,6 +5,7 @@ import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
+import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('Une activite ', () => {
   it('ne peut pas avoir des attributs null', () => {
@@ -21,7 +22,14 @@ describe('Une activite ', () => {
       Status.Open,
     );
 
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     //Then
 
@@ -48,7 +56,14 @@ describe('Une activite ', () => {
       Status.Open,
     );
 
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     //When
     const activity = new Activity(projet, true, new Date(), cra.id);
@@ -72,7 +87,14 @@ describe('Une activite ', () => {
     );
     //When
 
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
 
@@ -95,7 +117,14 @@ describe('Une activite ', () => {
     );
     //When
 
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, date, cra.id);
 
@@ -117,7 +146,14 @@ describe('Une activite ', () => {
     );
     //When
 
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, date, cra.id);
 

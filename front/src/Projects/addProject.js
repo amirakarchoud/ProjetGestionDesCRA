@@ -12,6 +12,9 @@ const AddProject = () => {
   const [code, setCode] = useState('');
   const [selectedCollabs, setSelectedCollabs] = useState([]);
   const [allCollabs, setAllCollabs] = useState([]);
+  const [name, setName] = useState(''); 
+  const [client, setClient] = useState(''); 
+  const [date, setDate] = useState(new Date());
   const apiUrl = process.env.REACT_APP_API_URL;
   const getTokenFromLocalStorage = () => {
     const token = localStorage.getItem('token');
@@ -43,9 +46,14 @@ const AddProject = () => {
   }, []);
 
   const handleAddProject = async () => {
+    const status='Active';
     const projectData = {
       code,
       collabs: selectedCollabs.map((collab) => collab._email),
+      name,
+      client, 
+      date:date.toISOString(),
+      status,
     };
 
     try {
@@ -83,6 +91,37 @@ const AddProject = () => {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         style={{ marginBottom: '16px', width: '60%' }}
+      />
+      <br />
+      <strong>Nom du projet:</strong> {/* New attribute */}
+      <br />
+      <TextField
+        label="Nom du Projet"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        style={{ marginBottom: '16px', width: '60%' }}
+      />
+      <br />
+      <strong>Client:</strong> {/* New attribute */}
+      <br />
+      <TextField
+        label="Client"
+        value={client}
+        onChange={(e) => setClient(e.target.value)}
+        style={{ marginBottom: '16px', width: '60%' }}
+      />
+      <br />
+      <strong>Date du projet:</strong> {/* New attribute */}
+      <br />
+      <TextField
+        label="Date"
+        type="date" // Use "date" type for date input
+        value={date.toISOString().substr(0, 10)} // Format the date
+        onChange={(e) => setDate(new Date(e.target.value))}
+        style={{ marginBottom: '16px', width: '60%' }}
+        InputLabelProps={{
+          shrink: true,
+        }}
       />
       <br />
       <strong>Les collaborateurs:</strong>

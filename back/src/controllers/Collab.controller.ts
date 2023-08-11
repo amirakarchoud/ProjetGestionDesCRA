@@ -17,7 +17,7 @@ export class CollabController {
     return await this.craApplication.getAllCollabs();
   }
 
-  @Get('ids')
+  @Post('ids')
   @ApiOperation({
     summary: 'Liste de collaborateurs par emails',
     description:

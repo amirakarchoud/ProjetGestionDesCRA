@@ -10,6 +10,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
 import { Status } from '@app/domain/model/Status';
 import { Action } from '@app/domain/model/action.enum';
+import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('Un CRA ', () => {
   it('peut supprimer des absences', () => {
@@ -46,7 +47,14 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
     const absence = new Absence(cra.id, true, date, Raison.Maladie);
@@ -74,7 +82,14 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
     const activity2 = new Activity(projet, false, new Date(), cra.id);
@@ -153,7 +168,14 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
 
@@ -211,7 +233,14 @@ describe('Un CRA ', () => {
 
   it('peut être soumis si tous les jours sont remplis', () => {
     // Given
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
 
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
@@ -258,7 +287,14 @@ describe('Un CRA ', () => {
 
   it('peut retourner les dates vides', () => {
     // Given
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
@@ -402,7 +438,14 @@ describe('Un CRA ', () => {
     // Given
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const cra = new CRA(
       1,
@@ -425,7 +468,14 @@ describe('Un CRA ', () => {
     // Given
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
-    const projet = new Project('123', []);
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     projet.addCollab(collab.email);
     const cra = new CRA(
       1,

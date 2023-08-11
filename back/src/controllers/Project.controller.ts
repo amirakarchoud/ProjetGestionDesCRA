@@ -30,6 +30,10 @@ export class ProjectController {
     const project = new Project(
       createProjectDto.code,
       createProjectDto.collabs,
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
     );
     return await this.craApplication.addProject(project);
   }
@@ -75,6 +79,10 @@ export class ProjectController {
     const project = new Project(
       createProjectDto.code,
       createProjectDto.collabs,
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
     );
     return await this.craApplication.updateProject(project);
   }
