@@ -65,6 +65,7 @@ const CalendarComponent = () => {
     { value: 'Maladie', label: 'Maladie' },
     { value: 'Exceptionnelle', label: 'Exceptionnelle' },
     { value: 'Formation', label: 'Formation' },
+    { value: 'Conges sans solde', label: 'Congés sans solde' },
   ];
   const getTokenFromLocalStorage = () => {
     const token = localStorage.getItem('token');
