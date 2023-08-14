@@ -52,4 +52,8 @@ export class Project {
   public get status(): ProjetStatus {
     return this._status;
   }
+
+  public desctivateProject() {
+    this._status = ProjetStatus.Desactive;
+  }
 }

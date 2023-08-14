@@ -4,6 +4,7 @@ import { Typography, Button } from '@mui/material';
 import { FaArrowLeft, FaEdit } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { toast } from 'react-toastify';
 
 const ProjectDetails = () => {
   const { projectCode } = useParams();
@@ -17,30 +18,51 @@ const ProjectDetails = () => {
   const token = getTokenFromLocalStorage();
   const navigate=useNavigate();
 
-  useEffect(() => {
-    const fetchProjectDetails = async () => {
-      try {
-        console.log('project code: '+projectCode);
-        const response = await fetch(`${apiUrl}/project/${projectCode}`, {
-          mode: 'cors', headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        const data = await response.json();
-        if(response.status === 401)
-            {
-              navigate('/login');
-    
-            }
-        setProject(data);
-        fetchCollabDetails(data._collabs);
-      } catch (error) {
-        console.error('Error fetching project details:', error);
-      }
-    };
+  const fetchProjectDetails = async () => {
+    try {
+      console.log('project code: '+projectCode);
+      const response = await fetch(`${apiUrl}/project/${projectCode}`, {
+        mode: 'cors', headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if(response.status === 401)
+          {
+            navigate('/login');
+  
+          }
+      setProject(data);
+      fetchCollabDetails(data._collabs);
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchProjectDetails();
   }, [projectCode]);
+
+  const handleDesactivateProject = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/project/desactivate/${project._code}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        fetchProjectDetails();
+        toast.success('Projet desactive avec succes!');
+      } else {
+        toast.error('erreur!');
+        console.error('Error desactivating project:', response);
+      }
+    } catch (error) {
+      console.error('Error desactivating project:', error);
+    }
+  };
 
   const fetchCollabDetails = async (collabIds) => {
     try {
@@ -88,6 +110,9 @@ const ProjectDetails = () => {
             ))}
           </ul>
           <Link to={`/projectUpdate/${project._code}`} ><Button variant="contained" color="primary" startIcon={<FaEdit />} style={{ marginTop: '16px', width: '50%' }}>Modifier</Button></Link>
+          {project._status === 'Active' && (
+            <Button variant="contained" color="secondary" style={{ marginTop: '16px', width: '50%' }} onClick={handleDesactivateProject}>Desactiver</Button>
+          )}
           <Link to="/projects" ><Button variant="outlined" startIcon={<FaArrowLeft />} style={{ marginTop: '16px' }}>Annuler</Button></Link>
         </>
       ) : (

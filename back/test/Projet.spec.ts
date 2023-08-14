@@ -29,6 +29,23 @@ describe('Un projet ', () => {
     expect(projet).toBeDefined();
   });
 
+  it('doit etre coorrectement creé ', () => {
+    const date = new Date();
+    const projet = new Project(
+      '123',
+      [],
+      'name of project',
+      'client 112',
+      date,
+      ProjetStatus.Active,
+    );
+    expect(projet.code).toBe('123');
+    expect(projet.name).toBe('name of project');
+    expect(projet.client).toBe('client 112');
+    expect(projet.date).toBe(date);
+    expect(projet.status).toBe(ProjetStatus.Active);
+  });
+
   it('peut contenir des collaborateurs', () => {
     //given
     const projet = new Project(
@@ -59,5 +76,22 @@ describe('Un projet ', () => {
 
     //then
     expect(projet.collabs).toHaveLength(1);
+  });
+
+  it('peut etre desactive', () => {
+    //given
+    const projet = new Project(
+      '123',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+    //when
+    projet.desctivateProject();
+
+    //then
+    expect(projet.status).toBe(ProjetStatus.Desactive);
   });
 });

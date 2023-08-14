@@ -144,7 +144,7 @@ const CalendarComponent = () => {
           type: 'Activity',
           cra: entry._id,
           matin: activity.matin,
-          title: activity.project.code,
+          title: activity.project._code,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
         };
@@ -519,8 +519,8 @@ const CalendarComponent = () => {
                 </MenuItem>
                 {selectedOption === 'activity'
                   ? userProjects.map((project) => (
-                    <MenuItem key={project.code} value={project.code}>
-                      {project.code}
+                    <MenuItem key={project._code} value={project._code}>
+                      {project._code}
                     </MenuItem>
                   ))
                   : (

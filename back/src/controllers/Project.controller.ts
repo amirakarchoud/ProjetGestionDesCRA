@@ -96,4 +96,13 @@ export class ProjectController {
   async getProjectsSearch(@Param('id') id: string): Promise<Project[]> {
     return await this.craApplication.getProjectsLikeId(id);
   }
+
+  @Post('desactivate/:id')
+  @ApiOperation({
+    summary: 'Desactiver un projet par code(id)',
+    description: "Desactiver un projet en fonction de l'identifiant fourni.",
+  })
+  async desactivateProject(@Param('id') projectId: string): Promise<Project> {
+    return await this.craApplication.desactivateProject(projectId);
+  }
 }

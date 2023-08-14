@@ -359,7 +359,7 @@ const RecapAdmin = () => {
                       {reg._action === 'Delete' ? <DeleteIcon color="error" fontSize="small" /> : <AddIcon color="primary" fontSize="small" />}
                     </div>
                     <div style={{ display: 'inline-block', verticalAlign: 'middle' }}>
-                      {`le ${moment(reg._date).format('L')}, ${cra._collab._name} a ${reg._action === 'Delete' ? 'supprimé' : 'ajouté'} une ${reg._target.project ? 'activité : ' : 'absence : '} ${reg._target.project ? reg._target.project.code : reg._target.raison} pour le ${moment(reg._target.date).format('L')}`}
+                      {`le ${moment(reg._date).format('L')}, ${cra._collab._name} a ${reg._action === 'Delete' ? 'supprimé' : 'ajouté'} une ${reg._target.project ? 'activité : ' : 'absence : '} ${reg._target.project ? reg._target.project._code : reg._target.raison} pour le ${moment(reg._target.date).format('L')}`}
                     </div>
                     
                   </li>
