@@ -114,4 +114,10 @@ export class CraApplication {
   async addCollab(collab: Collab): Promise<Collab> {
     return await this.collabRepository.save(collab);
   }
+
+  async desactivateProject(code: string) {
+    const project = await this.projectRepository.findById(code);
+    project.desctivateProject();
+    return await this.projectRepository.save(project);
+  }
 }

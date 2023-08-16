@@ -7,6 +7,7 @@ import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
+import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('Collaborateur ', () => {
   //Given
@@ -22,7 +23,14 @@ describe('Collaborateur ', () => {
     Status.Open,
   );
 
-  const projet = new Project('123', []);
+  const projet = new Project(
+    '123',
+    [],
+    '',
+    '',
+    new Date(),
+    ProjetStatus.Active,
+  );
   beforeAll(() => {
     projet.addCollab(collab.email);
   });

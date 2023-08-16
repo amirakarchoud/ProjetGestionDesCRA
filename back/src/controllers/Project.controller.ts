@@ -30,6 +30,10 @@ export class ProjectController {
     const project = new Project(
       createProjectDto.code,
       createProjectDto.collabs,
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
     );
     return await this.craApplication.addProject(project);
   }
@@ -75,6 +79,10 @@ export class ProjectController {
     const project = new Project(
       createProjectDto.code,
       createProjectDto.collabs,
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
     );
     return await this.craApplication.updateProject(project);
   }
@@ -87,5 +95,14 @@ export class ProjectController {
   })
   async getProjectsSearch(@Param('id') id: string): Promise<Project[]> {
     return await this.craApplication.getProjectsLikeId(id);
+  }
+
+  @Post('desactivate/:id')
+  @ApiOperation({
+    summary: 'Desactiver un projet par code(id)',
+    description: "Desactiver un projet en fonction de l'identifiant fourni.",
+  })
+  async desactivateProject(@Param('id') projectId: string): Promise<Project> {
+    return await this.craApplication.desactivateProject(projectId);
   }
 }

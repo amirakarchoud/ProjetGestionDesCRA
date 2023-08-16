@@ -14,6 +14,7 @@ import * as ExcelJS from 'exceljs';
 import { IRepoCra } from '../src/domain/IRepository/IRepoCra';
 import { CRA } from '@app/domain/model/CRA';
 import { TestModule } from '@app/test.module';
+import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('APP', () => {
   let app: INestApplication;
@@ -43,7 +44,14 @@ describe('APP', () => {
   it(`delete project`, async () => {
     const repo: ProjectRepository = app.get('IRepoProject');
     const application = app.get(CraApplication);
-    const project = new Project('projetTest', []);
+    const project = new Project(
+      'projetTest',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
     await repo.save(project);
     expect(project).toBeDefined();
     await application.deleteProject('projetTest');
@@ -179,7 +187,14 @@ async function createProject(app: INestApplication) {
   const repo: ProjectRepository = app.get('IRepoProject');
   const repoCollab: CollabRepository = app.get('IRepoCollab');
   const createdUser = await repoCollab.findById('test1');
-  const project = new Project('code', [createdUser.email]);
+  const project = new Project(
+    'code',
+    [createdUser.email],
+    '',
+    '',
+    new Date(),
+    ProjetStatus.Active,
+  );
   await repo.save(project);
   return project;
 }

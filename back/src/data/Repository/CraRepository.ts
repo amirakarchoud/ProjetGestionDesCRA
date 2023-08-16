@@ -17,6 +17,7 @@ import { ProjectDB } from '../dataModel/project.entity';
 import { Regul } from '@app/domain/model/Regul';
 import { RegulDB } from '../dataModel/regul.entity';
 import { AbsenceInfo } from '../dataModel/absenceInfo';
+import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 @Injectable()
 export class CraRepository implements IRepoCra {
@@ -104,7 +105,14 @@ export class CraRepository implements IRepoCra {
     });
     const craActivities: Activity[] = activities.map((abs) => {
       const absf = new Activity(
-        new Project(abs.project.code, []),
+        new Project(
+          abs.project.code,
+          [],
+          abs.project.name,
+          abs.project.client,
+          new Date(abs.project.date),
+          abs.project.status,
+        ),
         abs.matin,
         abs.date,
         foundcra.id,
@@ -123,7 +131,14 @@ export class CraRepository implements IRepoCra {
       let target = null;
       if (abs.target.code != null) {
         target = new Activity(
-          new Project(abs.target.code, []),
+          new Project(
+            abs.target.code,
+            [],
+            '',
+            '',
+            new Date(),
+            ProjetStatus.Active,
+          ),
           abs.target.matin,
           abs.target.date,
           foundcra.id,
@@ -190,6 +205,8 @@ export class CraRepository implements IRepoCra {
       activityDB.matin = activity.matin;
       activityDB.project = new ProjectDB();
       activityDB.project.code = activity.project.code;
+      activityDB.project.status = activity.project.status;
+      activityDB.project.date = new Date(activity.project.date);
 
       return activityDB;
     });

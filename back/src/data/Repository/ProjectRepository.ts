@@ -20,11 +20,19 @@ export class ProjectRepository implements IRepoProject {
     });
     return projectsDB.map((projectDB) => {
       const collabs: string[] = projectDB.collabs.map((collab) => collab.email);
-      return new Project(projectDB.code, collabs);
+      return new Project(
+        projectDB.code,
+        collabs,
+        projectDB.name,
+        projectDB.client,
+        new Date(projectDB.date),
+        projectDB.status,
+      );
     });
   }
 
   async findById(id: string): Promise<Project> {
+    console.log(id);
     const projectDB = await this.projectRepository.findOne({
       where: { code: id },
       relations: ['collabs'],
@@ -36,7 +44,14 @@ export class ProjectRepository implements IRepoProject {
 
     const collabs: string[] = projectDB.collabs.map((collab) => collab.email);
 
-    return new Project(projectDB.code, collabs);
+    return new Project(
+      projectDB.code,
+      collabs,
+      projectDB.name,
+      projectDB.client,
+      new Date(projectDB.date),
+      projectDB.status,
+    );
   }
 
   async findAll(): Promise<Project[]> {
@@ -46,13 +61,24 @@ export class ProjectRepository implements IRepoProject {
 
     return projectsDB.map((projectDB) => {
       const collabs: string[] = projectDB.collabs.map((collab) => collab.email);
-      return new Project(projectDB.code, collabs);
+      return new Project(
+        projectDB.code,
+        collabs,
+        projectDB.name,
+        projectDB.client,
+        new Date(projectDB.date),
+        projectDB.status,
+      );
     });
   }
 
   async save(project: Project): Promise<Project> {
     const projectDB = new ProjectDB();
     projectDB.code = project.code;
+    projectDB.name = project.name;
+    projectDB.client = project.client;
+    projectDB.date = new Date(project.date);
+    projectDB.status = project.status;
 
     const collabs: UserDB[] = [];
     for (const email of project.collabs) {
@@ -62,12 +88,7 @@ export class ProjectRepository implements IRepoProject {
     }
     projectDB.collabs = collabs;
 
-    const savedProject = await this.projectRepository.save(projectDB);
-
-    const savedCollabs: string[] = savedProject.collabs.map(
-      (collab) => collab.email,
-    );
-    //return new Project(savedProject.code, savedCollabs);
+    await this.projectRepository.save(projectDB);
     return project;
   }
 
@@ -85,6 +106,10 @@ export class ProjectRepository implements IRepoProject {
     }
 
     project.code = updatedProject.code;
+    project.name = updatedProject.name;
+    project.client = updatedProject.client;
+    project.date = new Date(updatedProject.date);
+    project.status = updatedProject.status;
     const collabs: UserDB[] = [];
     for (const email of updatedProject.collabs) {
       const collab = new UserDB();
@@ -95,7 +120,14 @@ export class ProjectRepository implements IRepoProject {
 
     const updatedProjectDB = await this.projectRepository.save(project);
 
-    return new Project(updatedProjectDB.code, updatedProject.collabs);
+    return new Project(
+      updatedProjectDB.code,
+      updatedProject.collabs,
+      updatedProject.name,
+      updatedProject.client,
+      new Date(updatedProject.date),
+      updatedProject.status,
+    );
   }
 
   async findByUser(idUser: string): Promise<Project[]> {
@@ -109,7 +141,14 @@ export class ProjectRepository implements IRepoProject {
 
     return filteredProjects.map((projectDB) => {
       const collabs: string[] = projectDB.collabs.map((collab) => collab.email);
-      return new Project(projectDB.code, collabs);
+      return new Project(
+        projectDB.code,
+        collabs,
+        projectDB.name,
+        projectDB.client,
+        new Date(projectDB.date),
+        projectDB.status,
+      );
     });
   }
 }

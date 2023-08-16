@@ -90,9 +90,9 @@ const Projects = () => {
                 <div style={{ textAlign: 'center' }}>
                   {/* img*/}
                   <FaProjectDiagram style={{ fontSize: '64px', color: '#3f51b5' }} />
-                  <h3>{project.code}</h3>
+                  <h3>{project._code}</h3>
                   {/* go to details*/}
-                  <Link to={`/project/${project.code}`}>
+                  <Link to={`/project/${project._code}`}>
                     <Button variant="outlined" color="primary">
                       Afficher les Details
                     </Button>
