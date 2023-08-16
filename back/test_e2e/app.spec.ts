@@ -15,6 +15,7 @@ import { IRepoCra } from '../src/domain/IRepository/IRepoCra';
 import { CRA } from '@app/domain/model/CRA';
 import { TestModule } from '@app/test.module';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { Absence } from '@app/domain/model/Absence';
 
 describe('APP', () => {
   let app: INestApplication;
@@ -234,15 +235,22 @@ class MockRepoCra implements IRepoCra {
     throw new Error('Method not implemented.');
   }
   async findByMonthYear(month: number, year: number): Promise<any[]> {
+    const activityMap = new Map<string, number>();
+    activityMap.set('Project1', 10);
+    activityMap.set('Project2', 20);
+
+    const abs1 = new Absence(1, true, new Date(), Raison.Conges);
+    const abs2 = new Absence(1, true, new Date(), Raison.Conges);
     return [
       {
         collab: {
           name: 'amira',
           lastname: 'karchoud',
         },
-        absences: [{}, {}],
+        absences: [abs1, abs2],
         activities: [{}, {}, {}],
         calculateBusinessDays: jest.fn().mockReturnValue(20),
+        getActivityCountByProject: jest.fn().mockReturnValue(activityMap),
         holidays: [],
       },
     ];
@@ -278,5 +286,31 @@ describe('ExportService', () => {
     expect(dataRows[0].getCell(2).value).toBe('7/2023');
     expect(dataRows[0].getCell(8).value).toBe(1.5);
     expect(dataRows[0].getCell(9).value).toBe('2.5/20');
+  });
+  it('generates Excel file (format 2) with correct data', async () => {
+    const month = 7;
+    const year = 2023;
+    const excelBuffer = await exportService.generateExcel2(month, year);
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(excelBuffer);
+
+    const worksheet = workbook.getWorksheet('Recap du mois');
+
+    const headerRow = worksheet.getRow(1);
+    expect(headerRow.getCell(1).value).toBe('Collaborateur');
+    expect(headerRow.getCell(2).value).toBe('Imputation');
+    expect(headerRow.getCell(3).value).toBe('Nombre de jours');
+
+    const dataRows = worksheet.getRows(2, worksheet.rowCount);
+    expect(dataRows[0].getCell(1).value).toBe('amira karchoud');
+    expect(dataRows[0].getCell(2).value).toBe('Conges');
+    expect(dataRows[0].getCell(3).value).toBe(1);
+    expect(dataRows[1].getCell(1).value).toBe('amira karchoud');
+    expect(dataRows[1].getCell(2).value).toBe('Project1');
+    expect(dataRows[1].getCell(3).value).toBe(5);
+    expect(dataRows[2].getCell(1).value).toBe('amira karchoud');
+    expect(dataRows[2].getCell(2).value).toBe('Project2');
+    expect(dataRows[2].getCell(3).value).toBe(10);
   });
 });

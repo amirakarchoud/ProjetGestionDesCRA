@@ -104,4 +104,110 @@ export class ExportService {
     const buffer = await workbook.xlsx.writeBuffer();
     return buffer;
   }
+
+  async generateExcel2(month: number, year: number): Promise<ExcelJS.Buffer> {
+    //fetch data to fill
+    const craData = await this.repoCra.findByMonthYear(month, year);
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Recap du mois');
+
+    // headers
+    const headerRow = worksheet.addRow([
+      'Collaborateur',
+      'Imputation',
+      'Nombre de jours',
+    ]);
+    headerRow.height = 25;
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF8ac2d4' },
+      };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
+    });
+
+    //size
+    worksheet.getColumn('A').width = 30;
+    worksheet.getColumn('B').width = 20;
+    worksheet.getColumn('C').width = 15;
+
+    // data
+    craData.forEach((item) => {
+      const absenceCounts = {
+        Conges: 0,
+        RTT: 0,
+        Exceptionnelle: 0,
+        Formation: 0,
+        Maladie: 0,
+        SansSolde: 0,
+      };
+      item.absences.forEach((absence) => {
+        if (absence.raison === Raison.Conges) absenceCounts.Conges++;
+        else if (absence.raison === Raison.RTT) absenceCounts.RTT++;
+        else if (absence.raison === Raison.Exceptionnelle)
+          absenceCounts.Exceptionnelle++;
+        else if (absence.raison === Raison.Formation) absenceCounts.Formation++;
+        else if (absence.raison === Raison.Maladie) absenceCounts.Maladie++;
+        else if (absence.raison === Raison.Conges_sans_solde)
+          absenceCounts.SansSolde++;
+      });
+      if (absenceCounts.Conges > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'Conges',
+          absenceCounts.Conges / 2,
+        ]);
+      }
+      if (absenceCounts.RTT > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'RTT',
+          absenceCounts.RTT / 2,
+        ]);
+      }
+      if (absenceCounts.Exceptionnelle > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'Exceptionnelle',
+          absenceCounts.Exceptionnelle / 2,
+        ]);
+      }
+      if (absenceCounts.Formation > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'Formation',
+          absenceCounts.Formation / 2,
+        ]);
+      }
+      if (absenceCounts.Maladie > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'Maladie',
+          absenceCounts.Maladie / 2,
+        ]);
+      }
+      if (absenceCounts.SansSolde > 0) {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          'Conges sans solde',
+          absenceCounts.SansSolde / 2,
+        ]);
+      }
+      const activityMap = item.getActivityCountByProject();
+
+      activityMap.forEach((count, project) => {
+        worksheet.addRow([
+          `${item.collab.name} ${item.collab.lastname}`,
+          project,
+          count / 2,
+        ]);
+      });
+      worksheet.lastRow.height = 20;
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer;
+  }
 }

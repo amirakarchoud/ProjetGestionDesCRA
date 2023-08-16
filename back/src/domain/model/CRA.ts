@@ -379,4 +379,20 @@ export class CRA {
     this._etat = Etat.submitted;
     return true;
   }
+  public getActivityCountByProject(): Map<string, number> {
+    const projectActivityCountMap: Map<string, number> = new Map();
+    for (const activity of this._activites) {
+      const projectCode = activity.project.code;
+      if (projectActivityCountMap.has(projectCode)) {
+        projectActivityCountMap.set(
+          projectCode,
+          projectActivityCountMap.get(projectCode) + 1,
+        );
+      } else {
+        projectActivityCountMap.set(projectCode, 1);
+      }
+    }
+
+    return projectActivityCountMap;
+  }
 }
