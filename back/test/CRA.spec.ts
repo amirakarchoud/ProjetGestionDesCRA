@@ -13,6 +13,14 @@ import { Action } from '@app/domain/model/action.enum';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('Un CRA ', () => {
+  const projet = new Project(
+    '123',
+    [],
+    '',
+    '',
+    new Date(),
+    ProjetStatus.Active,
+  );
   it('peut supprimer des absences', () => {
     //given
     const today = new Date();
@@ -47,14 +55,6 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
     const absence = new Absence(cra.id, true, date, Raison.Maladie);
@@ -81,14 +81,6 @@ describe('Un CRA ', () => {
       new Date(),
       Etat.unsubmitted,
       Status.Open,
-    );
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
     );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
@@ -135,6 +127,54 @@ describe('Un CRA ', () => {
     }).toThrow(ForbiddenException);
   });
 
+  it(' peut ajouter une absence dans le futur', () => {
+    //Given
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      6,
+      2050,
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+
+    //When
+    const absence = new Absence(
+      cra.id,
+      true,
+      new Date('02-06-2050'),
+      Raison.Maladie,
+    );
+    cra.addAbsence(absence);
+
+    //Then
+    expect(cra.absences).toHaveLength(1);
+  });
+
+  it('ne peut pas ajouter une activité dans le futur', () => {
+    //Given
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      6,
+      2050,
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+
+    //When
+    const activity = new Activity(projet, true, new Date('02-06-2050'), cra.id);
+
+    //Then
+    expect(() => {
+      cra.addActivity(activity);
+    }).toThrow(ForbiddenException);
+  });
+
   it("ne peut pas supprimer une absence qui n'existe pas", () => {
     //given
     const today = new Date();
@@ -167,14 +207,6 @@ describe('Un CRA ', () => {
       new Date(),
       Etat.unsubmitted,
       Status.Open,
-    );
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
     );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
@@ -233,14 +265,6 @@ describe('Un CRA ', () => {
 
   it('peut être soumis si tous les jours sont remplis', () => {
     // Given
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
 
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
@@ -287,14 +311,6 @@ describe('Un CRA ', () => {
 
   it('peut retourner les dates vides', () => {
     // Given
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
@@ -438,14 +454,6 @@ describe('Un CRA ', () => {
     // Given
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const cra = new CRA(
       1,
@@ -468,14 +476,6 @@ describe('Un CRA ', () => {
     // Given
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const cra = new CRA(
       1,

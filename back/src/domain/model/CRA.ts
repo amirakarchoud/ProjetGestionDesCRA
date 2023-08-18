@@ -187,13 +187,12 @@ export class CRA {
     }
 
     const today = new Date();
-    const beforeFiveDays = new Date(); //fel CRA
-    beforeFiveDays.setDate(today.getDate() - 5);
     const absDate = new Date(absence.date);
 
     if (
-      absDate.getMonth() != today.getMonth() &&
-      beforeFiveDays.getMonth() != absDate.getMonth()
+      (absDate.getMonth() < today.getMonth() &&
+        absDate.getFullYear() == today.getFullYear()) ||
+      absDate.getFullYear() < today.getFullYear()
     ) {
       throw new ForbiddenException();
     }
