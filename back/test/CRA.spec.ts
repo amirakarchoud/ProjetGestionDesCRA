@@ -261,6 +261,7 @@ describe('Un CRA ', () => {
 
     //Then
     expect(cra.SubmitCra()).toBe(false);
+    expect(cra.etat).toBe(Etat.unsubmitted);
   });
 
   it('peut être soumis si tous les jours sont remplis', () => {
@@ -307,6 +308,7 @@ describe('Un CRA ', () => {
 
     // Then
     expect(result).toBe(true);
+    expect(cra.etat).toBe(Etat.submitted);
   });
 
   it('peut retourner les dates vides', () => {
@@ -495,5 +497,181 @@ describe('Un CRA ', () => {
     expect(cra.history).toHaveLength(1);
     expect(cra.history[0].target).toBe(activity);
     expect(cra.history[0].action).toBe(Action.Delete);
+  });
+  it("peut retourner le nombre d'activités par projet", () => {
+    // Given
+    const date = new Date();
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    projet.addCollab(collab.email);
+    const cra = new CRA(
+      1,
+      date.getMonth(),
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    const tomorrow = new Date(+1);
+
+    const activity1 = new Activity(projet, true, new Date(), cra.id);
+    const activity2 = new Activity(projet, false, new Date(), cra.id);
+    cra.addActivity(activity1);
+    cra.addActivity(activity2);
+
+    // When
+    const projectActivityCountMap = cra.getActivityCountByProject();
+
+    // Then
+    expect(projectActivityCountMap.size).toBe(1);
+    expect(projectActivityCountMap.get(projet.code)).toBe(2);
+  });
+
+  it("peut retourner le nombre d'activités pour plusieurs projets", () => {
+    // Given
+    const date = new Date();
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const projet1 = new Project(
+      'P001',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+    const projet2 = new Project(
+      'P002',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+    projet1.addCollab(collab.email);
+    projet2.addCollab(collab.email);
+
+    const cra = new CRA(
+      1,
+      date.getMonth(),
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+
+    const activity1 = new Activity(projet1, true, new Date(), cra.id);
+    const activity2 = new Activity(projet2, false, new Date(), cra.id);
+    cra.addActivity(activity1);
+    cra.addActivity(activity2);
+
+    // When
+    const projectActivityCountMap = cra.getActivityCountByProject();
+
+    // Then
+    expect(projectActivityCountMap.size).toBe(2);
+    expect(projectActivityCountMap.get(projet1.code)).toBe(1);
+    expect(projectActivityCountMap.get(projet2.code)).toBe(1);
+  });
+  it('calcul le nombre de jours ouvres du mois', () => {
+    // given
+    const year = 2023;
+    const month = 8;
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      month,
+      year,
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    const expectedBusinessDays = 23;
+    //when
+    const result = cra.calculateBusinessDays(year, month);
+    //then
+    expect(result).toBe(expectedBusinessDays);
+  });
+
+  it('retourne true si la date ou periode ne figure pas deja dans le cra', () => {
+    const periode = true;
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      8,
+      2023,
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    cra.activities = [];
+    cra.absences = [];
+
+    const result = cra.verifyDateNotInCRA(new Date(), periode);
+
+    expect(result).toBe(true);
+  });
+
+  it('retourne false si la date et la periode est deja remplie dans le cra', () => {
+    const periode = true;
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      8,
+      2023,
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    const projet = new Project(
+      'P001',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+    cra.activities = [new Activity(projet, periode, new Date(), cra.id)];
+    cra.absences = [];
+
+    const result = cra.verifyDateNotInCRA(new Date(), periode);
+
+    expect(result).toBe(false);
+  });
+
+  it('calcul le nombre de jours vides/non remplis du mois', () => {
+    // given
+    const date = new Date();
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const cra = new CRA(
+      1,
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    const projet = new Project(
+      'P001',
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+    const expectedEmptyDays = cra.calculateBusinessDays(cra.year, cra.month);
+    //then
+    expect(cra.calculateEmptyDays()).toBe(expectedEmptyDays);
+    //when
+    const activity1 = new Activity(projet, true, new Date(), cra.id);
+    const activity2 = new Activity(projet, false, new Date(), cra.id);
+    cra.addActivity(activity1);
+    cra.addActivity(activity2);
+    //then
+    expect(cra.calculateEmptyDays()).toBe(expectedEmptyDays - 1);
   });
 });

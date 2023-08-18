@@ -263,9 +263,9 @@ export class CRA {
       return false;
     } else {
       const existingItem = hasActivity[0] || hasAbsence[0];
-      const existingBoolean = existingItem.matin;
+      const existingMatin = existingItem.matin;
 
-      return existingBoolean !== periode;
+      return existingMatin !== periode;
     }
   }
 

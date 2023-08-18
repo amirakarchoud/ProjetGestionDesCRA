@@ -40,6 +40,10 @@ describe('Une activite ', () => {
     expect(() => new Activity(projet, null, new Date(), cra.id)).toThrowError(
       'cannot have a null attribut',
     );
+
+    expect(() => new Activity(projet, true, null, cra.id)).toThrowError(
+      'cannot have a null attribut',
+    );
   });
 
   it('peut etre cree par un collab', () => {

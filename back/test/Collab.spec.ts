@@ -1,28 +1,10 @@
-import { Absence } from '@app/domain/model/Absence';
-import { Activity } from '@app/domain/model/Activity';
-import { CRA } from '@app/domain/model/CRA';
 import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
-import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
-import { Etat } from '@app/domain/model/etat.enum';
-import { Status } from '@app/domain/model/Status';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 
 describe('Collaborateur ', () => {
   //Given
-  const date = new Date();
-  const collab = new Collab('user', 'test', 'last name', Role.admin);
-  const cra = new CRA(
-    1,
-    date.getMonth() + 1,
-    date.getFullYear(),
-    collab,
-    new Date(),
-    Etat.unsubmitted,
-    Status.Open,
-  );
-
   const projet = new Project(
     '123',
     [],
@@ -31,25 +13,38 @@ describe('Collaborateur ', () => {
     new Date(),
     ProjetStatus.Active,
   );
-  beforeAll(() => {
-    projet.addCollab(collab.email);
-  });
 
-  it('peut ajouter une activite pour le mois courant ', () => {
-    const activity = new Activity(projet, true, date, cra.id);
-
-    expect(activity.date).toBe(date);
+  it('est cree correctement ', () => {
+    //given
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    collab.password = 'pass';
+    //then
+    expect(collab.role).toBe(Role.admin);
+    expect(collab.email).toBe('user');
+    expect(collab.name).toBe('test');
+    expect(collab.password).toBe('pass');
+    expect(collab.lastname).toBe('last name');
   });
 
   it('peut avoir le role admin ', () => {
-    collab.role = Role.admin;
-
+    //given
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    //then
     expect(collab.role).toBe(Role.admin);
   });
 
   it('peut avoir le role user ', () => {
-    collab.role = Role.user;
-
+    //given
+    const collab = new Collab('user', 'test', 'last name', Role.user);
+    //then
     expect(collab.role).toBe(Role.user);
+  });
+  it('peut avoir des projets ', () => {
+    //given
+    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    //when
+    collab.addProject(projet);
+    //then
+    expect(collab.projects).toHaveLength(1);
   });
 });

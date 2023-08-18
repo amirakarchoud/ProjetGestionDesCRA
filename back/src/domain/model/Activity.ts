@@ -29,9 +29,6 @@ export class Activity {
     this._craId = cra;
   }
 
-  public set project(projet: Project) {
-    this._project = projet;
-  }
   public get project(): Project {
     return this._project;
   }
