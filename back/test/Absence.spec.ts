@@ -51,10 +51,12 @@ describe('Une absence ', () => {
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
+    const absence = new Absence(cra.id, true, date, Raison.Maladie);
 
     //Then
     expect(absence).toBeDefined();
+    expect(absence.cra).toBe(cra.id);
+    expect(absence.date).toBe(date);
   });
 
   it('peut avoir un raison', () => {
