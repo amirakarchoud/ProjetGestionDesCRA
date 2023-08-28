@@ -1,0 +1,3 @@
+---
+id: Stack technique
+---

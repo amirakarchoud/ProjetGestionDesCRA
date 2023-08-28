@@ -8,16 +8,76 @@
           "label": "Next",
           "isLast": true,
           "path": "/docs",
-          "mainDocId": "file2",
+          "mainDocId": "Contexte",
           "docs": [
             {
-              "id": "file2",
-              "path": "/docs/file2",
+              "id": "Architecture",
+              "path": "/docs/Architecture",
               "sidebar": "tutorialSidebar"
             },
             {
-              "id": "intro",
-              "path": "/docs/intro",
+              "id": "Base de données",
+              "path": "/docs/Base de données",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Contexte",
+              "path": "/docs/Contexte",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Documentation Swagger",
+              "path": "/docs/Documentation Swagger",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Features",
+              "path": "/docs/Features",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Manuel d'installation",
+              "path": "/docs/Manuel d'installation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Manuel d'utilisation",
+              "path": "/docs/Manuel d'utilisation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Méthodologie",
+              "path": "/docs/Méthodologie",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Pain points",
+              "path": "/docs/Pain points",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Persona",
+              "path": "/docs/Persona",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Stack technique",
+              "path": "/docs/Stack technique",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Structure du projet",
+              "path": "/docs/Structure du projet",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "Tests",
+              "path": "/docs/Tests",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "User Journey",
+              "path": "/docs/User Journey",
               "sidebar": "tutorialSidebar"
             }
           ],
@@ -25,8 +85,8 @@
           "sidebars": {
             "tutorialSidebar": {
               "link": {
-                "path": "/docs/file2",
-                "label": "file2"
+                "path": "/docs/Contexte",
+                "label": "Contexte"
               }
             }
           }

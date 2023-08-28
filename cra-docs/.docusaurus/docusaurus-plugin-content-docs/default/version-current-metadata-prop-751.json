@@ -11,29 +11,189 @@
     "tutorialSidebar": [
       {
         "type": "link",
-        "label": "file2",
-        "href": "/docs/file2",
-        "docId": "file2"
+        "label": "Contexte",
+        "href": "/docs/Contexte",
+        "docId": "Contexte"
       },
       {
         "type": "link",
-        "label": "intro",
-        "href": "/docs/intro",
-        "docId": "intro"
+        "label": "Architecture",
+        "href": "/docs/Architecture",
+        "docId": "Architecture"
+      },
+      {
+        "type": "category",
+        "label": "Analyse",
+        "items": [
+          {
+            "type": "link",
+            "label": "Persona",
+            "href": "/docs/Persona",
+            "docId": "Persona"
+          },
+          {
+            "type": "link",
+            "label": "User Journey",
+            "href": "/docs/User Journey",
+            "docId": "User Journey"
+          },
+          {
+            "type": "link",
+            "label": "Pain points",
+            "href": "/docs/Pain points",
+            "docId": "Pain points"
+          },
+          {
+            "type": "link",
+            "label": "Features",
+            "href": "/docs/Features",
+            "docId": "Features"
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "category",
+        "label": "Développement",
+        "items": [
+          {
+            "type": "link",
+            "label": "Méthodologie",
+            "href": "/docs/Méthodologie",
+            "docId": "Méthodologie"
+          },
+          {
+            "type": "link",
+            "label": "Structure du projet",
+            "href": "/docs/Structure du projet",
+            "docId": "Structure du projet"
+          },
+          {
+            "type": "link",
+            "label": "Stack technique",
+            "href": "/docs/Stack technique",
+            "docId": "Stack technique"
+          },
+          {
+            "type": "link",
+            "label": "Tests",
+            "href": "/docs/Tests",
+            "docId": "Tests"
+          },
+          {
+            "type": "link",
+            "label": "Base de données",
+            "href": "/docs/Base de données",
+            "docId": "Base de données"
+          },
+          {
+            "type": "link",
+            "label": "Documentation Swagger",
+            "href": "/docs/Documentation Swagger",
+            "docId": "Documentation Swagger"
+          }
+        ],
+        "collapsed": true,
+        "collapsible": true
+      },
+      {
+        "type": "link",
+        "label": "Manuel d'installation",
+        "href": "/docs/Manuel d'installation",
+        "docId": "Manuel d'installation"
+      },
+      {
+        "type": "link",
+        "label": "Manuel d'utilisation",
+        "href": "/docs/Manuel d'utilisation",
+        "docId": "Manuel d'utilisation"
       }
     ]
   },
   "docs": {
-    "file2": {
-      "id": "file2",
-      "title": "file2",
+    "Architecture": {
+      "id": "Architecture",
+      "title": "Architecture",
+      "description": "Cette section offre un aperçu détaillé de l'architecture globale du projet, ainsi que de la structure spécifique du backend. Cette section vise à explorer les choix effectués concernant l'architecture de l'application de gestion des comptes rendus d'activités (CRA). En examinant la disposition globale de l'architecture et en plongeant dans les composants clés du backend, nous obtiendrons une vision complète des mécanismes qui sous-tendent cette solution.",
+      "sidebar": "tutorialSidebar"
+    },
+    "Base de données": {
+      "id": "Base de données",
+      "title": "Base de données",
       "description": "",
       "sidebar": "tutorialSidebar"
     },
-    "intro": {
-      "id": "intro",
-      "title": "intro",
-      "description": "tttt",
+    "Contexte": {
+      "id": "Contexte",
+      "title": "Contexte",
+      "description": "Dans le cadre de l'évolution technologique et de l'ère digitale, l'adoption de solutions numériques, notamment pour les entreprises informatiques, devient une approche évidente. Dans un environnement professionnel où les informations et les interactions sont nombreuses, il peut devenir de plus en plus complexe de suivre le travail et les échanges. Cette problématique se révèle particulièrement fréquente pour les entreprises qui gèrent simultanément plusieurs projets et clients, où la gestion minutieuse des activités et du travail effectué est un facteur déterminant pour le succès de l’entreprise.",
+      "sidebar": "tutorialSidebar"
+    },
+    "Documentation Swagger": {
+      "id": "Documentation Swagger",
+      "title": "Documentation Swagger",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Features": {
+      "id": "Features",
+      "title": "Features",
+      "description": "Cette section répertorie les différentes fonctionnalités clés de l'application. Chaque fonctionnalité a été conçue pour répondre aux besoins spécifiques des utilisateurs et pour assurer le comportement attendu de l'application.",
+      "sidebar": "tutorialSidebar"
+    },
+    "Manuel d'installation": {
+      "id": "Manuel d'installation",
+      "title": "Manuel d'installation",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Manuel d'utilisation": {
+      "id": "Manuel d'utilisation",
+      "title": "Manuel d'utilisation",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Méthodologie": {
+      "id": "Méthodologie",
+      "title": "Méthodologie",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Pain points": {
+      "id": "Pain points",
+      "title": "Pain points",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Persona": {
+      "id": "Persona",
+      "title": "Persona",
+      "description": "Dans cette section, nous allons présenter des personas représentant les principaux utilisateurs de l'application. Ces personas nous aident à comprendre les besoins et motivations divers des personnes qui interagissent avec le système. En se concentrant sur ces profils d'utilisateurs, nous pouvons concevoir et développer des fonctionnalités adaptées à leurs besoins et améliorer leur expérience.",
+      "sidebar": "tutorialSidebar"
+    },
+    "Stack technique": {
+      "id": "Stack technique",
+      "title": "Stack technique",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Structure du projet": {
+      "id": "Structure du projet",
+      "title": "Structure du projet",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "Tests": {
+      "id": "Tests",
+      "title": "Tests",
+      "description": "",
+      "sidebar": "tutorialSidebar"
+    },
+    "User Journey": {
+      "id": "User Journey",
+      "title": "User Journey",
+      "description": "",
       "sidebar": "tutorialSidebar"
     }
   }

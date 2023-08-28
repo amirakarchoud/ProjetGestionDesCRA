@@ -1,0 +1,3 @@
+---
+id: Manuel d'utilisation
+---
