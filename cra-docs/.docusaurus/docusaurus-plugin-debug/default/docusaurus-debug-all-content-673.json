@@ -301,7 +301,7 @@
               "unversionedId": "Structure du projet",
               "id": "Structure du projet",
               "title": "Structure du projet",
-              "description": "",
+              "description": "Structure",
               "source": "@site/docs/Structure.md",
               "sourceDirName": ".",
               "slug": "/Structure du projet",
