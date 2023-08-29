@@ -163,7 +163,7 @@
     "Pain points": {
       "id": "Pain points",
       "title": "Pain points",
-      "description": "",
+      "description": "painPoints",
       "sidebar": "tutorialSidebar"
     },
     "Persona": {

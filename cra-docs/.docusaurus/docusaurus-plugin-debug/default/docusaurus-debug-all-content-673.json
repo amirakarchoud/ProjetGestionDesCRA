@@ -223,7 +223,7 @@
               "unversionedId": "Pain points",
               "id": "Pain points",
               "title": "Pain points",
-              "description": "",
+              "description": "painPoints",
               "source": "@site/docs/PainPoints.md",
               "sourceDirName": ".",
               "slug": "/Pain points",
