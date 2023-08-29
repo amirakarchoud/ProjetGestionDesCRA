@@ -35,7 +35,6 @@ const sidebars = {
       type: 'category',
       label: 'Développement',
       items: [
-        'Méthodologie',
         'Structure du projet',
         'Stack technique',
         'Tests',

@@ -141,8 +141,8 @@
                 "permalink": "/docs/Pain points"
               },
               "next": {
-                "title": "Méthodologie",
-                "permalink": "/docs/Méthodologie"
+                "title": "Structure du projet",
+                "permalink": "/docs/Structure du projet"
               }
             },
             {
@@ -191,32 +191,6 @@
               "previous": {
                 "title": "Guide d'Installation",
                 "permalink": "/docs/Manuel d'installation"
-              }
-            },
-            {
-              "unversionedId": "Méthodologie",
-              "id": "Méthodologie",
-              "title": "Méthodologie",
-              "description": "",
-              "source": "@site/docs/Methodologie.md",
-              "sourceDirName": ".",
-              "slug": "/Méthodologie",
-              "permalink": "/docs/Méthodologie",
-              "draft": false,
-              "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/Methodologie.md",
-              "tags": [],
-              "version": "current",
-              "frontMatter": {
-                "id": "Méthodologie"
-              },
-              "sidebar": "tutorialSidebar",
-              "previous": {
-                "title": "Features",
-                "permalink": "/docs/Features"
-              },
-              "next": {
-                "title": "Structure du projet",
-                "permalink": "/docs/Structure du projet"
               }
             },
             {
@@ -315,8 +289,8 @@
               },
               "sidebar": "tutorialSidebar",
               "previous": {
-                "title": "Méthodologie",
-                "permalink": "/docs/Méthodologie"
+                "title": "Features",
+                "permalink": "/docs/Features"
               },
               "next": {
                 "title": "Stack technique",
@@ -327,7 +301,7 @@
               "unversionedId": "Tests",
               "id": "Tests",
               "title": "Tests",
-              "description": "",
+              "description": "Pour garantir la qualité du code et la fonctionnalité , on a mis en place plusieurs tests",
               "source": "@site/docs/Tests.md",
               "sourceDirName": ".",
               "slug": "/Tests",
@@ -415,10 +389,6 @@
                 "type": "category",
                 "label": "Développement",
                 "items": [
-                  {
-                    "type": "doc",
-                    "id": "Méthodologie"
-                  },
                   {
                     "type": "doc",
                     "id": "Structure du projet"

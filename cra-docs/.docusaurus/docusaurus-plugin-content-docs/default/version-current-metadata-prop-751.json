@@ -59,12 +59,6 @@
         "items": [
           {
             "type": "link",
-            "label": "Méthodologie",
-            "href": "/docs/Méthodologie",
-            "docId": "Méthodologie"
-          },
-          {
-            "type": "link",
             "label": "Structure du projet",
             "href": "/docs/Structure du projet",
             "docId": "Structure du projet"
@@ -154,12 +148,6 @@
       "description": "",
       "sidebar": "tutorialSidebar"
     },
-    "Méthodologie": {
-      "id": "Méthodologie",
-      "title": "Méthodologie",
-      "description": "",
-      "sidebar": "tutorialSidebar"
-    },
     "Pain points": {
       "id": "Pain points",
       "title": "Pain points",
@@ -187,7 +175,7 @@
     "Tests": {
       "id": "Tests",
       "title": "Tests",
-      "description": "",
+      "description": "Pour garantir la qualité du code et la fonctionnalité , on a mis en place plusieurs tests",
       "sidebar": "tutorialSidebar"
     },
     "User Journey": {

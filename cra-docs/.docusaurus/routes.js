@@ -39,7 +39,7 @@ export default [
   },
   {
     path: '/docs',
-    component: ComponentCreator('/docs', '741'),
+    component: ComponentCreator('/docs', '6dc'),
     routes: [
       {
         path: '/docs/Architecture',
@@ -80,12 +80,6 @@ export default [
       {
         path: '/docs/Manuel d\'utilisation',
         component: ComponentCreator('/docs/Manuel d\'utilisation', '49b'),
-        exact: true,
-        sidebar: "tutorialSidebar"
-      },
-      {
-        path: '/docs/Méthodologie',
-        component: ComponentCreator('/docs/Méthodologie', '472'),
         exact: true,
         sidebar: "tutorialSidebar"
       },

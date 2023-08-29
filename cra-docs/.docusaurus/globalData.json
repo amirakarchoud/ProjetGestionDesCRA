@@ -46,11 +46,6 @@
               "sidebar": "tutorialSidebar"
             },
             {
-              "id": "Méthodologie",
-              "path": "/docs/Méthodologie",
-              "sidebar": "tutorialSidebar"
-            },
-            {
               "id": "Pain points",
               "path": "/docs/Pain points",
               "sidebar": "tutorialSidebar"
