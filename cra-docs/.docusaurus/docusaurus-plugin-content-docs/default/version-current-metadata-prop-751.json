@@ -99,7 +99,7 @@
       },
       {
         "type": "link",
-        "label": "Manuel d'installation",
+        "label": "Guide d'Installation",
         "href": "/docs/Manuel d'installation",
         "docId": "Manuel d'installation"
       },
@@ -144,8 +144,8 @@
     },
     "Manuel d'installation": {
       "id": "Manuel d'installation",
-      "title": "Manuel d'installation",
-      "description": "",
+      "title": "Guide d'Installation",
+      "description": "Ce guide d’installation aborde comment mettre en place et exécuter l'application \"Gestion des Comptes-Rendus d'Activités (CRA)\" localement .",
       "sidebar": "tutorialSidebar"
     },
     "Manuel d'utilisation": {

@@ -115,7 +115,7 @@
                 "permalink": "/docs/Base de données"
               },
               "next": {
-                "title": "Manuel d'installation",
+                "title": "Guide d'Installation",
                 "permalink": "/docs/Manuel d'installation"
               }
             },
@@ -148,8 +148,8 @@
             {
               "unversionedId": "Manuel d'installation",
               "id": "Manuel d'installation",
-              "title": "Manuel d'installation",
-              "description": "",
+              "title": "Guide d'Installation",
+              "description": "Ce guide d’installation aborde comment mettre en place et exécuter l'application \"Gestion des Comptes-Rendus d'Activités (CRA)\" localement .",
               "source": "@site/docs/installation.md",
               "sourceDirName": ".",
               "slug": "/Manuel d'installation",
@@ -189,7 +189,7 @@
               },
               "sidebar": "tutorialSidebar",
               "previous": {
-                "title": "Manuel d'installation",
+                "title": "Guide d'Installation",
                 "permalink": "/docs/Manuel d'installation"
               }
             },
