@@ -353,7 +353,7 @@
               "unversionedId": "User Journey",
               "id": "User Journey",
               "title": "User Journey",
-              "description": "",
+              "description": "User journeys",
               "source": "@site/docs/UserJourney.md",
               "sourceDirName": ".",
               "slug": "/User Journey",

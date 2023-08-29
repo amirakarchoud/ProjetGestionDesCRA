@@ -193,7 +193,7 @@
     "User Journey": {
       "id": "User Journey",
       "title": "User Journey",
-      "description": "",
+      "description": "User journeys",
       "sidebar": "tutorialSidebar"
     }
   }
