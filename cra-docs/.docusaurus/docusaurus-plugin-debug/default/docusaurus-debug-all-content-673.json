@@ -49,7 +49,7 @@
               "unversionedId": "Base de données",
               "id": "Base de données",
               "title": "Base de données",
-              "description": "",
+              "description": "Séparation en Couches",
               "source": "@site/docs/BaseDonnees.md",
               "sourceDirName": ".",
               "slug": "/Base de données",

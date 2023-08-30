@@ -115,7 +115,7 @@
     "Base de données": {
       "id": "Base de données",
       "title": "Base de données",
-      "description": "",
+      "description": "Séparation en Couches",
       "sidebar": "tutorialSidebar"
     },
     "Contexte": {
