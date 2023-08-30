@@ -97,7 +97,7 @@
               "unversionedId": "Documentation Swagger",
               "id": "Documentation Swagger",
               "title": "Documentation Swagger",
-              "description": "",
+              "description": "La documentation Swagger a été incorporée dans le projet pour fournir une vue détaillée et conviviale de l'API développée. Elle sert de référence centrale pour comprendre les endpoints, les requêtes acceptées et les réponses renvoyées par l'API.",
               "source": "@site/docs/Swagger.md",
               "sourceDirName": ".",
               "slug": "/Documentation Swagger",
