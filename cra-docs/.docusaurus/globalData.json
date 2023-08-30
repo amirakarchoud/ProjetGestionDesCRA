@@ -31,6 +31,11 @@
               "sidebar": "tutorialSidebar"
             },
             {
+              "id": "Domaine",
+              "path": "/docs/Domaine",
+              "sidebar": "tutorialSidebar"
+            },
+            {
               "id": "Features",
               "path": "/docs/Features",
               "sidebar": "tutorialSidebar"

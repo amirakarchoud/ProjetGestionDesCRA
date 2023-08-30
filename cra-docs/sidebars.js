@@ -28,7 +28,8 @@ const sidebars = {
         'Persona',
         'User Journey',
         'Pain points',
-        'Features'
+        'Features',
+        'Domaine'
       ],
     },
     {

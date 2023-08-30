@@ -120,6 +120,32 @@
               }
             },
             {
+              "unversionedId": "Domaine",
+              "id": "Domaine",
+              "title": "Domaine de l'Application",
+              "description": "Le cœur de l'application et l'architecture hexagonale réside dans le domaine. Comprendre les concepts et les relations entre ces entités est essentiel pour avoir une vue complète du fonctionnement de l'application.",
+              "source": "@site/docs/Domaine.md",
+              "sourceDirName": ".",
+              "slug": "/Domaine",
+              "permalink": "/docs/Domaine",
+              "draft": false,
+              "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/Domaine.md",
+              "tags": [],
+              "version": "current",
+              "frontMatter": {
+                "id": "Domaine"
+              },
+              "sidebar": "tutorialSidebar",
+              "previous": {
+                "title": "Features",
+                "permalink": "/docs/Features"
+              },
+              "next": {
+                "title": "Structure du projet",
+                "permalink": "/docs/Structure du projet"
+              }
+            },
+            {
               "unversionedId": "Features",
               "id": "Features",
               "title": "Features",
@@ -141,8 +167,8 @@
                 "permalink": "/docs/Pain points"
               },
               "next": {
-                "title": "Structure du projet",
-                "permalink": "/docs/Structure du projet"
+                "title": "Domaine de l'Application",
+                "permalink": "/docs/Domaine"
               }
             },
             {
@@ -289,8 +315,8 @@
               },
               "sidebar": "tutorialSidebar",
               "previous": {
-                "title": "Features",
-                "permalink": "/docs/Features"
+                "title": "Domaine de l'Application",
+                "permalink": "/docs/Domaine"
               },
               "next": {
                 "title": "Stack technique",
@@ -380,6 +406,10 @@
                   {
                     "type": "doc",
                     "id": "Features"
+                  },
+                  {
+                    "type": "doc",
+                    "id": "Domaine"
                   }
                 ],
                 "collapsed": true,

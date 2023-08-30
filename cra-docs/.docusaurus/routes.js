@@ -39,7 +39,7 @@ export default [
   },
   {
     path: '/docs',
-    component: ComponentCreator('/docs', '6dc'),
+    component: ComponentCreator('/docs', '37d'),
     routes: [
       {
         path: '/docs/Architecture',
@@ -62,6 +62,12 @@ export default [
       {
         path: '/docs/Documentation Swagger',
         component: ComponentCreator('/docs/Documentation Swagger', '24e'),
+        exact: true,
+        sidebar: "tutorialSidebar"
+      },
+      {
+        path: '/docs/Domaine',
+        component: ComponentCreator('/docs/Domaine', 'f27'),
         exact: true,
         sidebar: "tutorialSidebar"
       },
