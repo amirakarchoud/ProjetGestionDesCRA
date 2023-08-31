@@ -42,157 +42,68 @@
       "plugin": "plugin---docusaurus-debugd-38-002"
     }
   },
-  "/blog-8d8": {
-    "__comp": "__comp---theme-blog-list-pagea-6-a-7ba",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "items": [
-      {
-        "content": "content---blog-766-e3c"
-      },
-      {
-        "content": "content---blogf-4-f-cd7"
-      },
-      {
-        "content": "content---blog-871-381"
-      },
-      {
-        "content": "content---blog-925-e00"
-      }
-    ],
-    "metadata": "metadata---blogb-2-b-df1"
-  },
-  "/blog/archive-848": {
-    "__comp": "__comp---theme-blog-archive-page-9-e-4-1d8",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "archive": "archive---blog-archiveb-2-f-393"
-  },
-  "/blog/first-blog-post-739": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "content": "content---blog-first-blog-poste-27-4a1"
-  },
-  "/blog/long-blog-post-6ce": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "content": "content---blog-long-blog-post-736-bc7"
-  },
-  "/blog/mdx-blog-post-4ed": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "content": "content---blog-mdx-blog-post-593-37b"
-  },
-  "/blog/tags-464": {
-    "__comp": "__comp---theme-blog-tags-list-page-01-a-d0b",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "tags": "tags---blog-tagsa-70-da2"
-  },
-  "/blog/tags/docusaurus-7e6": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "items": [
-      {
-        "content": "content---blog-766-e3c"
-      },
-      {
-        "content": "content---blogf-4-f-cd7"
-      },
-      {
-        "content": "content---blog-871-381"
-      },
-      {
-        "content": "content---blog-925-e00"
-      }
-    ],
-    "tag": "tag---blog-tags-docusaurusa-80-728",
-    "listMetadata": "listMetadata---blog-tags-docusaurus-608-c09"
-  },
-  "/blog/tags/facebook-9cd": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "items": [
-      {
-        "content": "content---blog-766-e3c"
-      }
-    ],
-    "tag": "tag---blog-tags-facebook-031-c52",
-    "listMetadata": "listMetadata---blog-tags-facebook-096-d31"
-  },
-  "/blog/tags/hello-003": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "items": [
-      {
-        "content": "content---blog-766-e3c"
-      },
-      {
-        "content": "content---blog-871-381"
-      }
-    ],
-    "tag": "tag---blog-tags-hello-30-a-bed",
-    "listMetadata": "listMetadata---blog-tags-hello-664-70a"
-  },
-  "/blog/tags/hola-3ca": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "items": [
-      {
-        "content": "content---blog-925-e00"
-      }
-    ],
-    "tag": "tag---blog-tags-holae-16-18a",
-    "listMetadata": "listMetadata---blog-tags-hola-4-c-9-a24"
-  },
-  "/blog/welcome-35a": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
-    "__context": {
-      "plugin": "plugin---blog-943-427"
-    },
-    "sidebar": "sidebar---blog-814-8ac",
-    "content": "content---blog-welcomed-9-f-ffb"
-  },
-  "/docs-b5c": {
+  "/docs-37d": {
     "__comp": "__comp---theme-doc-page-1-be-9be",
     "__context": {
       "plugin": "plugin---docs-6-fc-7e5"
     },
     "versionMetadata": "versionMetadata---docs-935-398"
   },
-  "/docs/file2-589": {
+  "/docs/Architecture-105": {
     "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---docs-file-2604-d73"
+    "content": "content---docs-architecture-495-278"
   },
-  "/docs/intro-aed": {
+  "/docs/Base de données-30c": {
     "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---docs-intro-0-e-3-be1"
+    "content": "content---docs-base-de-donneesf-82-bdf"
+  },
+  "/docs/Contexte-764": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-contexte-776-a72"
+  },
+  "/docs/Documentation Swagger-24e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-documentation-swagger-87-e-34d"
+  },
+  "/docs/Domaine-f27": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-domaine-803-008"
+  },
+  "/docs/Features-f16": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-featuresbf-7-37f"
+  },
+  "/docs/Manuel d'installation-be7": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-manuel-dinstallation-3-b-8-45b"
+  },
+  "/docs/Manuel d'utilisation-49b": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-manuel-dutilisation-76-f-cf1"
+  },
+  "/docs/Pain points-a4f": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-pain-points-2-c-0-bd1"
+  },
+  "/docs/Persona-eda": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-persona-0-f-4-84e"
+  },
+  "/docs/Stack technique-f97": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-stack-technique-767-d92"
+  },
+  "/docs/Structure du projet-881": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-structure-du-projet-05-d-277"
+  },
+  "/docs/Tests-6e6": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-tests-400-449"
+  },
+  "/docs/User Journey-ade": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---docs-user-journey-176-d50"
   },
   "/-35c": {
     "__comp": "__comp---theme-mdx-page-1-f-3-b90",

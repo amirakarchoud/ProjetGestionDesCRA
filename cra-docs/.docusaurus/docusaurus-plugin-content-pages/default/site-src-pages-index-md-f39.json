@@ -2,6 +2,11 @@
   "type": "mdx",
   "permalink": "/",
   "source": "@site/src/pages/index.md",
-  "description": "cc",
-  "frontMatter": {}
+  "title": "Index page",
+  "description": "Main index page",
+  "frontMatter": {
+    "title": "Index page",
+    "description": "Main index page",
+    "hide_table_of_contents": true
+  }
 }
