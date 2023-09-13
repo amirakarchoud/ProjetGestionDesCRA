@@ -7,19 +7,12 @@ import { Status } from './Status';
 import { Holiday } from './Holiday';
 import { Regul } from './Regul';
 import { Action } from './action.enum';
+import { AvailableEntity } from '@app/data/dataModel/available.entity';
 
 export class CRA {
-  private _id: number;
-  private _holidays: Holiday[] = [];
-  private _absences: Absence[] = [];
   private _activites: Activity[] = [];
-  private _month: number;
-  private _year: number;
-  private _collab: Collab;
-  private _date: Date;
-  private _etat: Etat = Etat.unsubmitted;
-  private _status: Status = Status.Open;
-  private _history: Regul[] = [];
+  private availableDates: AvailableEntity[] = [];
+
   constructor(
     id: number,
     month: number,
@@ -39,45 +32,108 @@ export class CRA {
     this._status = status;
   }
 
-  public closeCra() {
-    this._status = Status.Closed;
+  private _id: number;
+
+  public get id(): number {
+    return this._id;
   }
 
-  public get history(): Regul[] {
-    return this._history;
-  }
-  public set history(reguls: Regul[]) {
-    this._history = reguls;
+  private _holidays: Holiday[] = [];
+
+  public get holidays(): Holiday[] {
+    return this._holidays;
   }
 
-  public get status(): Status {
-    return this._status;
+  public set holidays(holidays: Holiday[]) {
+    this._holidays = holidays;
   }
-  public set status(stat: Status) {
-    this._status = stat;
+
+  private _absences: Absence[] = [];
+
+  public get absences(): Absence[] {
+    return this._absences;
   }
+
+  public set absences(abs: Absence[]) {
+    this._absences = abs;
+  }
+
+  private _month: number;
+
+  public get month(): number {
+    return this._month;
+  }
+
+  private _year: number;
+
+  public get year(): number {
+    return this._year;
+  }
+
+  private _collab: Collab;
+
+  public get collab(): Collab {
+    return this._collab;
+  }
+
+  private _date: Date;
+
+  public get date(): Date {
+    return this._date;
+  }
+
+  private _etat: Etat = Etat.unsubmitted;
 
   public get etat(): Etat {
     return this._etat;
   }
+
   public set etat(etat: Etat) {
     this._etat = etat;
   }
 
-  checkActivityOrAbsenceExists(date: Date, matin: boolean): boolean {
+  private _status: Status = Status.Open;
+
+  public get status(): Status {
+    return this._status;
+  }
+
+  public set status(stat: Status) {
+    this._status = stat;
+  }
+
+  private _history: Regul[] = [];
+
+  public get history(): Regul[] {
+    return this._history;
+  }
+
+  public set history(reguls: Regul[]) {
+    this._history = reguls;
+  }
+
+  public get activities(): Activity[] {
+    return this._activites;
+  }
+
+  public set activities(act: Activity[]) {
+    this._activites = act;
+  }
+
+  public closeCra() {
+    this._status = Status.Closed;
+  }
+
+  checkActivityOrAbsenceExists(date: Date): boolean {
     const existingActivity = this._activites.find(
-      (activity) =>
-        this.formatDate(activity.date) === this.formatDate(date) &&
-        activity.matin === matin,
+      (activity) => this.formatDate(activity.date) === this.formatDate(date),
     );
     if (existingActivity) {
       return true;
     }
 
     const existingAbsence = this._absences.find(
-      (absence) =>
-        this.formatDate(absence.date) === this.formatDate(date) &&
-        absence.matin === matin,
+      (absence) => this.formatDate(absence.date) === this.formatDate(date),
     );
     if (existingAbsence) {
       return true;
@@ -89,10 +145,7 @@ export class CRA {
     const absences = this._absences.filter(
       (absence) => this.formatDate(absence.date) === this.formatDate(date),
     );
-    if (activities.length + absences.length > 1) {
-      return true;
-    }
-    return false;
+    return activities.length + absences.length > 1;
   }
 
   calculateBusinessDays(year: number, month: number): number {
@@ -113,56 +166,16 @@ export class CRA {
     return businessDays;
   }
 
-  public get activities(): Activity[] {
-    return this._activites;
-  }
-
-  public set activities(act: Activity[]) {
-    this._activites = act;
-  }
-
-  public get absences(): Absence[] {
-    return this._absences;
-  }
-  public set absences(abs: Absence[]) {
-    this._absences = abs;
-  }
-  public set holidays(holidays: Holiday[]) {
-    this._holidays = holidays;
-  }
-
-  public get holidays(): Holiday[] {
-    return this._holidays;
-  }
-
   addActivity(activity: Activity) {
     const dateAct = new Date(activity.date);
-    //check if holiday
-    this.holidays.forEach((element) => {
-      if (this.formatDate(element.date) == this.formatDate(activity.date)) {
-        throw Error('it is a holiday :' + element.name);
-      }
-    });
 
-    // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.checkActivityOrAbsenceExists(dateAct, activity.matin)) {
-      //cra
+    if (this.getAvailablePercentageOfDay(dateAct) == 0) {
       throw new Error('FULL day or period');
     }
-
     //test if you have the right to add according to the date constraint
-
     const today = new Date();
     const beforeFiveDays = new Date(); //fel CRA
     beforeFiveDays.setDate(today.getDate() - 5);
-
-    if (
-      dateAct.getMonth() != today.getMonth() &&
-      beforeFiveDays.getMonth() != dateAct.getMonth()
-    ) {
-      throw new ForbiddenException();
-    }
-
     //check if regul
     if (this._status == Status.Closed) {
       this._history.push(new Regul(0, new Date(), Action.Add, activity));
@@ -174,6 +187,10 @@ export class CRA {
   addAbsence(absence: Absence) {
     const dateAbs = new Date(absence.date);
     //check if holiday
+
+    if ([0, 6].includes(dateAbs.getDay())) {
+      throw new Error('is Weekend');
+    }
     this.holidays.forEach((element) => {
       if (this.formatDate(element.date) == this.formatDate(dateAbs)) {
         throw Error('it is a holiday :' + element.name);
@@ -181,7 +198,7 @@ export class CRA {
     });
 
     // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.checkActivityOrAbsenceExists(dateAbs, absence.matin)) {
+    if (this.checkActivityOrAbsenceExists(dateAbs)) {
       //cra
       throw new Error('FULL day or period');
     }
@@ -220,26 +237,7 @@ export class CRA {
   }
 
   verifyTotalDays(): boolean {
-    if (this.calculateEmptyDays() == 0) return true;
-    return false;
-  }
-
-  public get id(): number {
-    return this._id;
-  }
-
-  public get month(): number {
-    return this._month;
-  }
-  public get year(): number {
-    return this._year;
-  }
-
-  public get date(): Date {
-    return this._date;
-  }
-  public get collab(): Collab {
-    return this._collab;
+    return this.calculateEmptyDays() == 0;
   }
 
   verifyDateNotInCRA(date: Date, periode: boolean): boolean {
@@ -263,9 +261,8 @@ export class CRA {
       return false;
     } else {
       const existingItem = hasActivity[0] || hasAbsence[0];
-      const existingMatin = existingItem.matin;
 
-      return existingMatin !== periode;
+      return existingItem.percentage != 100;
     }
   }
 
@@ -276,12 +273,9 @@ export class CRA {
     return `${year}-${month}-${day}`;
   }
 
-  deleteAbsence(date: Date, matin: boolean) {
+  deleteAbsence(date: Date) {
     this.absences.forEach((abs, index) => {
-      if (
-        this.formatDate(abs.date) === this.formatDate(date) &&
-        abs.matin === matin
-      ) {
+      if (this.formatDate(abs.date) === this.formatDate(date)) {
         //check if regul
         if (this._status == Status.Closed) {
           this._history.push(new Regul(0, new Date(), Action.Delete, abs));
@@ -291,12 +285,10 @@ export class CRA {
     });
   }
 
-  deleteActivity(date: Date, matin: boolean) {
+  deleteActivity(date: Date) {
     this.activities.forEach((act, index) => {
       if (
-        this.formatDate(new Date(act.date)) ===
-          this.formatDate(new Date(date)) &&
-        act.matin === matin
+        this.formatDate(new Date(act.date)) === this.formatDate(new Date(date))
       ) {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(0, new Date(), Action.Delete, act));
@@ -306,24 +298,27 @@ export class CRA {
     });
   }
 
-  getAvailableDatesOfCra(): Date[] {
+  getAvailableDatesOfCra(): AvailableEntity[] {
     const startDate = new Date(this.year, this.month - 1, 1);
     const endDate = new Date(this.year, this.month, 0);
-    const availableDates: Date[] = [];
+    const availableDates: AvailableEntity[] = [];
 
     const currentDate = new Date(startDate);
     while (currentDate <= endDate) {
       const isWeekend = this.isWeekend(currentDate);
       const isHoliday = this.checkDateIsHoliday(currentDate);
-      const isActivityOrAbsenceExists = this.checkDayIsFull(currentDate);
+      const percentage = this.getPercentagePerDay(currentDate);
+      const isActivityOrAbsenceExists = percentage >= 100;
 
       if (!isWeekend && !isHoliday && !isActivityOrAbsenceExists) {
-        availableDates.push(new Date(currentDate));
+        availableDates.push(
+          new AvailableEntity(new Date(currentDate), 100 - percentage),
+        );
       }
 
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
+    this.availableDates = availableDates;
     return availableDates;
   }
 
@@ -338,25 +333,19 @@ export class CRA {
     );
   }
 
-  checkDayIsFull(date: Date): boolean {
-    const existingActivity = this.activities.filter((activity) =>
-      this.isSameDate(activity.date, date),
-    );
-    if (existingActivity.length > 1) {
-      return true;
+  getPercentagePerDay(date: Date): number {
+    const existingActivity = this.activities
+      .filter((activity) => this.isSameDate(activity.date, date))
+      .map((value) => value.percentage)
+      .reduce((sum, current) => sum + current, 0);
+    if (existingActivity >= 100) {
+      return 100;
     }
-
-    const existingAbsence = this.absences.filter((absence) =>
-      this.isSameDate(absence.date, date),
-    );
-    if (existingAbsence.length > 1) {
-      return true;
-    }
-
-    if (existingAbsence.length + existingActivity.length > 1) {
-      return true;
-    }
-    return false;
+    const existingAbsence = this.absences
+      .filter((absence) => this.isSameDate(absence.date, date))
+      .map((value) => value.percentage)
+      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    return existingAbsence + existingActivity;
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
@@ -378,6 +367,7 @@ export class CRA {
     this._etat = Etat.submitted;
     return true;
   }
+
   public getActivityCountByProject(): Map<string, number> {
     const projectActivityCountMap: Map<string, number> = new Map();
     for (const activity of this._activites) {
@@ -393,5 +383,32 @@ export class CRA {
     }
 
     return projectActivityCountMap;
+  }
+
+  private getAvailablePercentageOfDay(date: Date) {
+    ///calculating filled data
+    //fetch holiday
+    let availablePercentage = 0;
+    this.holidays.forEach((element) => {
+      if (this.formatDate(element.date) == this.formatDate(date)) {
+        throw Error('it is a holiday :' + element.name);
+      }
+    });
+    //check percentage in activities
+    this.activities
+      .map((value) => value.percentage)
+      .reduce(
+        (previousValue, currentValue) => (availablePercentage += currentValue), 0,
+      );
+
+    //check percentage in leaves
+    this.absences
+      .filter((value) => this.formatDate(value.date) == this.formatDate(date))
+      .map((value) => value.percentage)
+      .reduce(
+        (previousValue, currentValue) => (availablePercentage += currentValue),0
+      );
+
+    return 100 - availablePercentage;
   }
 }

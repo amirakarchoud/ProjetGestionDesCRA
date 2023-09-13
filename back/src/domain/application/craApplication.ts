@@ -60,16 +60,16 @@ export class CraApplication {
     return await this.craService.addAbsence(absence);
   }
 
-  async deleteAbsence(idCra: number, date: Date, matin: boolean) {
-    return await this.craService.deleteAbsence(idCra, date, matin);
+  async deleteAbsence(idCra: number, date: Date) {
+    return await this.craService.deleteAbsence(idCra, date);
   }
 
   async addActivity(activity: CreateActivityDto) {
     return await this.craService.addActivity(activity);
   }
 
-  async deleteActivity(idCra: number, date: Date, matin: boolean) {
-    return await this.craService.deleteActivity(idCra, date, matin);
+  async deleteActivity(idCra: number, date: Date) {
+    return await this.craService.deleteActivity(idCra, date);
   }
 
   async getCraByCollabMonthYear(idUser: string, month: number, year: number) {

@@ -1,12 +1,5 @@
-import { Role } from '../../domain/model/Role';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryColumn,
-} from 'typeorm';
+import { Role } from '@app/domain/model/Role';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
 import { CRADB } from './cra.entity';
 import { ProjectDB } from './project.entity';
 

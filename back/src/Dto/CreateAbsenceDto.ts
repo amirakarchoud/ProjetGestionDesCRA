@@ -5,7 +5,7 @@ export class CreateAbsenceDto {
   @ApiProperty()
   date: Date;
   @ApiProperty()
-  matin: boolean;
+  percentage: number;
   @ApiProperty()
   collabId: string;
   @ApiProperty()

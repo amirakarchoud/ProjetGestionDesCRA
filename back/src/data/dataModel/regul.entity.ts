@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CRADB } from './cra.entity';
 import { AbsenceInfo } from './absenceInfo';
-import { Action } from '../../domain/model/action.enum';
+import { Action } from '@app/domain/model/action.enum';
 
 @Entity('regul')
 export class RegulDB {

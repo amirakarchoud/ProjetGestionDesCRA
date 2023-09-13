@@ -1,11 +1,15 @@
 import { Column } from 'typeorm';
 import { Raison } from '@app/domain/model/Raison';
+import { IsIn, IsInt } from 'class-validator';
+
 export class AbsenceInfo {
   @Column()
   date: Date;
 
   @Column()
-  matin: boolean;
+  @IsIn([50, 100])
+  @IsInt()
+  percentage: number;
 
   @Column('enum', {
     enum: [

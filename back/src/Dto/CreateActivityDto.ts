@@ -4,7 +4,7 @@ export class CreateActivityDto {
   @ApiProperty()
   date: Date;
   @ApiProperty()
-  matin: boolean;
+  percentage: number;
   @ApiProperty()
   collabId: string;
   @ApiProperty()

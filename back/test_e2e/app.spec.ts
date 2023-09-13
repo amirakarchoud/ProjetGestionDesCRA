@@ -83,7 +83,7 @@ describe('APP', () => {
       date.getFullYear(),
       'test1',
     );
-    await application.deleteAbsence(cra.id, date, absence.matin);
+    await application.deleteAbsence(cra.id, date);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -118,7 +118,7 @@ describe('APP', () => {
       date.getFullYear(),
       'test1',
     );
-    await application.deleteActivity(cra.id, date, activity.matin);
+    await application.deleteActivity(cra.id, date);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -177,7 +177,7 @@ async function prepareActivity(app: INestApplication, date: Date) {
   const activity = new CreateActivityDto();
   const project = await createProject(app);
   activity.date = date;
-  activity.matin = true;
+  activity.percentage = 100;
   activity.projectId = project.code;
   activity.collabId = 'test1';
   await application.addActivity(activity);
@@ -213,7 +213,7 @@ async function prepareAbsence(app: INestApplication) {
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
   absence.date = date;
-  absence.matin = false;
+  absence.percentage = 50;
   absence.raison = Raison.Maladie;
 
   absence.collabId = 'test1';

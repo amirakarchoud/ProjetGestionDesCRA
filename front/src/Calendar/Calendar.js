@@ -13,8 +13,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import DetailsCard from './Details'
-import ConfirmationModal from './ConfirmationDelete'
+import DetailsCard from './Details';
+import ConfirmationModal from './ConfirmationDelete';
 import { toast } from 'react-toastify';
 import './custom-calendar.css';
 import RecapCraCollab from './RecapCraCollab';
@@ -34,8 +34,7 @@ const style = {
 };
 
 
-
-const localizer = momentLocalizer(moment);
+const localizer = momentLocalizer(moment.utc);
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const CalendarComponent = () => {
@@ -55,7 +54,7 @@ const CalendarComponent = () => {
 
   const formattedStartDate = selectedRange && selectedRange.start ? selectedRange.start.toDateString() : '';
   const formattedEndDate = selectedRange && selectedRange.end ? selectedRange.end.toDateString() : '';
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
 
   const { user } = useParams();
@@ -77,14 +76,14 @@ const CalendarComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' ,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      }, );
+        const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, {
+          mode: 'cors',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
-        if(response.status === 401)
-        {
+        if (response.status === 401) {
           logout();
           navigate('/login');
 
@@ -94,7 +93,7 @@ const CalendarComponent = () => {
         setEvents(processedEvents);
       } catch (error) {
         console.log(error);
-       
+
         console.error('Error fetching data:', error);
       }
     };
@@ -104,10 +103,11 @@ const CalendarComponent = () => {
     const fetchUserProjects = async () => {
       try {
         const response = await fetch(`${apiUrl}/project/user/${user}`,
-       { headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
         const data = await response.json();
         setUserProjects(data);
       } catch (error) {
@@ -120,9 +120,11 @@ const CalendarComponent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, { mode: 'cors' ,headers: {
-        'Authorization': `Bearer ${token}`,
-      },});
+      const response = await fetch(`${apiUrl}/cra/userYear/${user}/2023`, {
+        mode: 'cors', headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       setUserCras(data);
       const processedEvents = processData(data);
@@ -138,12 +140,12 @@ const CalendarComponent = () => {
     data.forEach((entry) => {
       // Process activities
       entry._activites.forEach((activity) => {
-        const formattedDate = moment(activity.date).format('YYYY-MM-DD');
+        const formattedDate = moment.utc(activity.date).format('YYYY-MM-DD');
         const event = {
           id: activity.id,
           type: 'Activity',
           cra: entry._id,
-          matin: activity.matin,
+          percentage: activity.percentage,
           title: activity.project._code,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
@@ -160,7 +162,7 @@ const CalendarComponent = () => {
           type: 'Absence',
           title: absence.raison,
           cra: entry._id,
-          matin: absence.matin,
+          percentage: absence.percentage,
           start: new Date(formattedDate),
           end: new Date(formattedDate),
         };
@@ -215,11 +217,11 @@ const CalendarComponent = () => {
     let end = null;
 
     if (slots.length > 1) {
-      start = moment(slots[0]).toDate();
-      end = moment(slots[slots.length - 1]).toDate();
+      start = moment.utc(slots[0]).toDate();
+      end = moment.utc(slots[slots.length - 1]).toDate();
     } else if (slots.length === 1) {
-      start = moment(slots[0]).toDate();
-      end = moment(slots[0]).toDate();
+      start = moment.utc(slots[0]).toDate();
+      end = moment.utc(slots[0]).toDate();
     }
 
     setSelectedRange({ start, end });
@@ -251,27 +253,27 @@ const CalendarComponent = () => {
   };
 
   const handleConfirm = async () => {
-    const matin = selectedAbsenceOption === 'half-day' ? (selectedAmPm === 'am' ? true : false) : true;
-  
+    const percentage = selectedAbsenceOption === 'half-day' ? (50) : 100;
+
     const dateRange = [];
-    let currentDate = moment(selectedRange.start);
-    const endDate = moment(selectedRange.end);
-  
+    let currentDate = moment.utc(selectedRange.start);
+    const endDate = moment.utc(selectedRange.end);
+
     while (currentDate <= endDate) {
       if (currentDate.day() !== 0 && currentDate.day() !== 6) {
         dateRange.push(currentDate.toDate());
       }
       currentDate = currentDate.clone().add(1, 'day');
     }
-  
+
     const absenceDtos = [];
     const activityDtos = [];
-  
+
     for (const date of dateRange) {
       if (selectedOption === 'activity') {
         const createActivityDto = {
           date,
-          matin,
+          percentage,
           collabId: user,
           projectId: selectedReason,
           craId: 0,
@@ -280,39 +282,39 @@ const CalendarComponent = () => {
       } else if (selectedOption === 'absence') {
         const createAbsenceDto = {
           date,
-          matin,
+          percentage,
           collabId: user,
           raison: selectedReason,
           craId: 0,
         };
         absenceDtos.push(createAbsenceDto);
       }
-  
-      if (selectedAbsenceOption === 'full-day') {
-        const secondMatinValue = !matin;
-  
-        if (selectedOption === 'activity') {
-          const createActivityDto = {
-            date,
-            matin: secondMatinValue,
-            collabId: user,
-            projectId: selectedReason,
-            craId: 0,
-          };
-          activityDtos.push(createActivityDto);
-        } else if (selectedOption === 'absence') {
-          const createAbsenceDto = {
-            date,
-            matin: secondMatinValue,
-            collabId: user,
-            raison: selectedReason,
-            craId: 0,
-          };
-          absenceDtos.push(createAbsenceDto);
-        }
-      }
+
+      /*      if (selectedAbsenceOption === 'full-day') {
+              const secondMatinValue = !matin;
+
+              if (selectedOption === 'activity') {
+                const createActivityDto = {
+                  date,
+                  matin: secondMatinValue,
+                  collabId: user,
+                  projectId: selectedReason,
+                  craId: 0,
+                };
+                activityDtos.push(createActivityDto);
+              } else if (selectedOption === 'absence') {
+                const createAbsenceDto = {
+                  date,
+                  matin: secondMatinValue,
+                  collabId: user,
+                  raison: selectedReason,
+                  craId: 0,
+                };
+                absenceDtos.push(createAbsenceDto);
+              }
+            }*/
     }
-  
+
     try {
       if (absenceDtos.length > 0) {
         const response = await fetch(`${apiUrl}/cra/absences`, {
@@ -336,7 +338,7 @@ const CalendarComponent = () => {
           }
         }
       }
-  
+
       if (activityDtos.length > 0) {
         const response = await fetch(`${apiUrl}/cra/activities`, {
           method: 'POST',
@@ -362,13 +364,13 @@ const CalendarComponent = () => {
     } catch (error) {
       console.error('Error adding absences and activities:', error);
     }
-  
+
     fetchData();
     setSelectedRange(null);
     setShowConfirmation(false);
     setRecapCraKey(prevKey => prevKey + 1);
   };
-  
+
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
@@ -460,8 +462,8 @@ const CalendarComponent = () => {
           <Calendar
             localizer={localizer}
             events={events}
-            startAccessor="start"
-            endAccessor="end"
+            startAccessor='start'
+            endAccessor='end'
             selectable={true}
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
@@ -472,38 +474,40 @@ const CalendarComponent = () => {
         <Modal
           open={showConfirmation}
           onClose={handleCancel}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
+          aria-labelledby='modal-modal-title'
+          aria-describedby='modal-modal-description'
         >
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography id='modal-modal-title' variant='h6' component='h2'>
               Selection des dates
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            <Typography id='modal-modal-description' sx={{ mt: 2 }}>
               Etes-vous sûr des dates sélectionnées?<br />
 
               <strong> Les dates: </strong>{selectedRange && selectedRange.start && (
-                <>
-                  {formattedStartDate}
-                  {selectedRange.end && formattedStartDate !== formattedEndDate && ` au ${formattedEndDate}`}
-                </>
-              )}
+              <>
+                {formattedStartDate}
+                {selectedRange.end && formattedStartDate !== formattedEndDate && ` au ${formattedEndDate}`}
+              </>
+            )}
               <br />
-              <RadioGroup aria-label="activity-absence" name="activity-absence" value={selectedOption} onChange={handleOptionChange}>
-                <FormControlLabel value="activity" control={<Radio />} label="Activité" />
-                <FormControlLabel value="absence" control={<Radio />} label="Absence" />
+              <RadioGroup aria-label='activity-absence' name='activity-absence' value={selectedOption}
+                          onChange={handleOptionChange}>
+                <FormControlLabel value='activity' control={<Radio />} label='Activité' />
+                <FormControlLabel value='absence' control={<Radio />} label='Absence' />
               </RadioGroup>
 
               <div>
                 <strong>Journée ou demie journee:</strong>
-                <RadioGroup aria-label="half-full-day" name="half-full-day" value={selectedAbsenceOption} onChange={handleAbsenceOptionChange}>
-                  <FormControlLabel value="half-day" control={<Radio />} label="Demi Journée" />
-                  <FormControlLabel value="full-day" control={<Radio />} label="Journée" />
+                <RadioGroup aria-label='half-full-day' name='half-full-day' value={selectedAbsenceOption}
+                            onChange={handleAbsenceOptionChange}>
+                  <FormControlLabel value='half-day' control={<Radio />} label='Demi Journée' />
+                  <FormControlLabel value='full-day' control={<Radio />} label='Journée' />
                 </RadioGroup>
                 {selectedAbsenceOption === 'half-day' && (
-                  <RadioGroup aria-label="am-pm" name="am-pm" value={selectedAmPm} onChange={handleAmPmChange}>
-                    <FormControlLabel value="am" control={<Radio />} label="Matin" />
-                    <FormControlLabel value="pm" control={<Radio />} label="Après-midi" />
+                  <RadioGroup aria-label='am-pm' name='am-pm' value={selectedAmPm} onChange={handleAmPmChange}>
+                    <FormControlLabel value='am' control={<Radio />} label='Matin' />
+                    <FormControlLabel value='pm' control={<Radio />} label='Après-midi' />
                   </RadioGroup>
                 )}
               </div>
@@ -514,7 +518,7 @@ const CalendarComponent = () => {
                 displayEmpty
                 sx={{ mt: 2 }}
               >
-                <MenuItem value="" disabled>
+                <MenuItem value='' disabled>
                   {selectedOption === 'activity' ? 'Projet' : 'Raison'}
                 </MenuItem>
                 {selectedOption === 'activity'
@@ -544,7 +548,7 @@ const CalendarComponent = () => {
         )}
         <div style={{ position: 'absolute', top: '40%', right: '10%', width: '30%' }}>
           <RecapCraCollab key={recapCraKey} collabId={user} cras={userCras} />
-        </div >
+        </div>
         <ConfirmationModal
           open={showConfirmationDelete}
           onClose={handleCloseConfirmationModal}

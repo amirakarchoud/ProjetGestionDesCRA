@@ -10,6 +10,7 @@ import { CreateActivityDto } from '../../Dto/CreateActivityDto';
 import { Activity } from '../model/Activity';
 import { IRepoProject } from '../IRepository/IRepoProject';
 import { Status } from '@app/domain/model/Status';
+import { Collab } from '@app/domain/model/Collab';
 
 @Injectable()
 export class CraService {
@@ -18,18 +19,20 @@ export class CraService {
     @Inject('IRepoCra') private readonly repoCra: IRepoCra,
     @Inject('IRepoProject') private readonly repoProject: IRepoProject,
     @Inject('IRepoHoliday') private readonly repoHoliday: IRepoHoliday,
-  ) {}
+  ) {
+  }
 
-  async deleteAbsence(id: number, date: Date, matin: boolean) {
+  async deleteAbsence(id: number, date: Date) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
-    cra.deleteAbsence(date, matin);
+    cra.deleteAbsence(date);
     return await this.repoCra.save(cra);
   }
 
   async addAbsence(createAbsenceDto: CreateAbsenceDto) {
     const dateAbs = new Date(createAbsenceDto.date);
     const user = await this.repoCollab.findById(createAbsenceDto.collabId);
+
     // Check if the specified CRA exists
     let cra = await this.repoCra.findByMonthYearCollab(
       dateAbs.getMonth() + 1,
@@ -37,31 +40,13 @@ export class CraService {
       createAbsenceDto.collabId,
     );
     if (!cra) {
-      cra = new CRA(
-        0,
-        dateAbs.getMonth() + 1,
-        dateAbs.getFullYear(),
-        user,
-        new Date(),
-        Etat.unsubmitted,
-        Status.Open,
-      );
-      cra.holidays = await this.repoHoliday.findForCra(
-        dateAbs.getMonth() + 1,
-        dateAbs.getFullYear(),
-      );
-      await this.repoCra.save(cra);
+      cra = await this.createCra(cra, dateAbs, user);
     }
-    cra = (await this.repoCra.findByMonthYearCollab(
-      dateAbs.getMonth() + 1,
-      dateAbs.getFullYear(),
-      createAbsenceDto.collabId,
-    )) as CRA;
     console.log('cra etat here = ' + cra.etat);
     //create absence
     const absence = new Absence(
       cra.id,
-      createAbsenceDto.matin,
+      createAbsenceDto.percentage,
       createAbsenceDto.date,
       createAbsenceDto.raison,
     );
@@ -73,10 +58,10 @@ export class CraService {
     return absence;
   }
 
-  async deleteActivity(id: number, date: Date, matin: boolean) {
+  async deleteActivity(id: number, date: Date) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
-    cra.deleteActivity(date, matin);
+    cra.deleteActivity(date);
     return await this.repoCra.save(cra);
   }
 
@@ -116,7 +101,7 @@ export class CraService {
     //create absence
     const activity = new Activity(
       project,
-      createActivityDto.matin,
+      createActivityDto.percentage,
       dateAct,
       cra.id,
     );
@@ -138,5 +123,23 @@ export class CraService {
       cra.closeCra();
       this.repoCra.save(cra);
     });
+  }
+
+  private async createCra(cra, dateAbs: Date, user: Collab) {
+    cra = new CRA(
+      0,
+      dateAbs.getMonth() + 1,
+      dateAbs.getFullYear(),
+      user,
+      new Date(),
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    cra.holidays = await this.repoHoliday.findForCra(
+      dateAbs.getMonth() + 1,
+      dateAbs.getFullYear(),
+    );
+    await this.repoCra.save(cra);
+    return cra;
   }
 }

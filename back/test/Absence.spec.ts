@@ -22,14 +22,14 @@ describe('Une absence ', () => {
     );
     //When
     expect(
-      () => new Absence(null, true, new Date(), Raison.Maladie),
+      () => new Absence(null, 100, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
     expect(
       () => new Absence(cra.id, null, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
-    expect(() => new Absence(cra.id, true, null, Raison.Maladie)).toThrowError(
+    expect(() => new Absence(cra.id, 100, null, Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
     );
 

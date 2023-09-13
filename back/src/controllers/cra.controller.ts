@@ -1,24 +1,12 @@
 import { CraApplication } from '../domain/application/craApplication';
 import { CreateAbsenceDto } from '../Dto/CreateAbsenceDto';
 import { Absence } from '../domain/model/Absence';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  HttpStatus,
-  Param,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Res } from '@nestjs/common';
 import { CreateActivityDto } from '../Dto/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
 import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
 import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
-import { AuthGuard } from '@app/guards/auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 //@UseGuards(AuthGuard)
@@ -29,6 +17,7 @@ export class CraController {
     private readonly craApp: CraApplication,
     private readonly exportService: ExportService,
   ) {}
+
   @Post('absence')
   @ApiOperation({
     summary: 'Ajouter une seule absence',
@@ -41,9 +30,10 @@ export class CraController {
       const result = await this.craApp.addAbsence(createAbsenceDto);
       return result;
     } catch (error) {
+      console.error(error);
       if (error.message.includes('it is a holiday')) {
         throw new HttpException(
-          { message: "C'est un jour ferie!" },
+          { message: 'C\'est un jour ferie!' },
           HttpStatus.BAD_REQUEST,
         );
       } else if (error.message === 'FULL day or period') {
@@ -53,7 +43,7 @@ export class CraController {
         );
       } else if (error.message === 'Forbidden') {
         throw new HttpException(
-          { message: "ce n'est pas le moment de dresser ce compte rendu" },
+          { message: 'ce n\'est pas le moment de dresser ce compte rendu' },
           HttpStatus.FORBIDDEN,
         );
       } else {
@@ -97,7 +87,6 @@ export class CraController {
     return await this.craApp.deleteAbsence(
       delAbsenceDto.id,
       new Date(delAbsenceDto.date),
-      delAbsenceDto.matin,
     );
   }
 
@@ -111,7 +100,6 @@ export class CraController {
       await this.craApp.deleteAbsence(
         delAbsenceDto.id,
         new Date(delAbsenceDto.date),
-        delAbsenceDto.matin,
       );
     }
   }
@@ -130,7 +118,7 @@ export class CraController {
     } catch (error) {
       if (error.message.includes('it is a holiday')) {
         throw new HttpException(
-          { message: "C'est un jour ferie!" },
+          { message: 'C\'est un jour ferie!' },
           HttpStatus.BAD_REQUEST,
         );
       } else if (error.message === 'FULL day or period') {
@@ -140,7 +128,7 @@ export class CraController {
         );
       } else if (error.message === 'Forbidden') {
         throw new HttpException(
-          { message: "ce n'est pas le moment de dresser ce compte rendu" },
+          { message: 'ce n\'est pas le moment de dresser ce compte rendu' },
           HttpStatus.FORBIDDEN,
         );
       } else {
@@ -184,7 +172,6 @@ export class CraController {
     return await this.craApp.deleteActivity(
       delActivityDto.id,
       delActivityDto.date,
-      delActivityDto.matin,
     );
   }
 
@@ -197,19 +184,15 @@ export class CraController {
     @Body() delActivitiesDtos: deleteActivityAbsenceDto[],
   ) {
     for (const delActivityDto of delActivitiesDtos) {
-      await this.craApp.deleteActivity(
-        delActivityDto.id,
-        delActivityDto.date,
-        delActivityDto.matin,
-      );
+      await this.craApp.deleteActivity(delActivityDto.id, delActivityDto.date);
     }
   }
 
   @Get('get/:user/:month/:year')
   @ApiOperation({
-    summary: "CRA du mois d'un utilisateur",
+    summary: 'CRA du mois d\'un utilisateur',
     description:
-      "Récupère les comptes rendus d'activité (CRA) d'un utilisateur pour un mois donné (et année).",
+      'Récupère les comptes rendus d\'activité (CRA) d\'un utilisateur pour un mois donné (et année).',
   })
   async getUserCra(
     @Param('user') idUser: string,
@@ -223,7 +206,7 @@ export class CraController {
   @ApiOperation({
     summary: 'Soumettre un CRA',
     description:
-      "Soumet le compte rendu d'activité avec l'ID spécifié. La soumission n'est possible que si le compte rendu est entièrement rempli, c'est-à-dire s'il n'y a pas de jours vides ",
+      'Soumet le compte rendu d\'activité avec l\'ID spécifié. La soumission n\'est possible que si le compte rendu est entièrement rempli, c\'est-à-dire s\'il n\'y a pas de jours vides ',
   })
   async submitCra(@Param('id') idCra: number) {
     return await this.craApp.submitCra(idCra);
@@ -233,7 +216,7 @@ export class CraController {
   @ApiOperation({
     summary: 'Récupère les dates disponibles',
     description:
-      "Récupère les dates disponibles pour un compte rendu d'activité (CRA) avec l'ID spécifié. Donc les jours encore vides. Les jours feries non comptés",
+      'Récupère les dates disponibles pour un compte rendu d\'activité (CRA) avec l\'ID spécifié. Donc les jours encore vides. Les jours feries non comptés',
   })
   async availableDates(@Param('id') idCra: number) {
     return await this.craApp.getEmptyDates(idCra);
@@ -241,9 +224,9 @@ export class CraController {
 
   @Get('userYear/:id/:year')
   @ApiOperation({
-    summary: "CRA d'un utilisateur par année",
+    summary: 'CRA d\'un utilisateur par année',
     description:
-      "Récupère tous les comptes rendus d'activité (CRA) d'un utilisateur pour une année donnée.",
+      'Récupère tous les comptes rendus d\'activité (CRA) d\'un utilisateur pour une année donnée.',
   })
   async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
     console.log('user cra by year');
@@ -254,7 +237,7 @@ export class CraController {
   @ApiOperation({
     summary: 'CRA du mois',
     description:
-      "Récupère tous les comptes rendus d'activité de tous les collaborateurs pour un mois donnée.",
+      'Récupère tous les comptes rendus d\'activité de tous les collaborateurs pour un mois donnée.',
   })
   async getMonthCra(
     @Param('month') month: number,
@@ -267,7 +250,7 @@ export class CraController {
   @ApiOperation({
     summary: 'Clôturer les CRA du mois',
     description:
-      "Clôture tous les comptes rendus d'activité (CRA) pour un mois et une année donnés. permet de créer une regularisation apres chaque future modification du CRA",
+      'Clôture tous les comptes rendus d\'activité (CRA) pour un mois et une année donnés. permet de créer une regularisation apres chaque future modification du CRA',
   })
   async closeAllMonthCra(
     @Param('month') month: number,
@@ -280,7 +263,7 @@ export class CraController {
   @ApiOperation({
     summary: 'Exporter en Excel',
     description:
-      "Exporte les données des comptes rendus d'activité (CRA) au format Excel pour un mois et une année donnés.",
+      'Exporte les données des comptes rendus d\'activité (CRA) au format Excel pour un mois et une année donnés.',
   })
   async exportToExcel(
     @Res() res: Response,
@@ -309,7 +292,7 @@ export class CraController {
   @ApiOperation({
     summary: 'Exporter en Excel',
     description:
-      "Exporte les données des comptes rendus d'activité (CRA) au format Excel pour un mois et une année donnés.",
+      'Exporte les données des comptes rendus d\'activité (CRA) au format Excel pour un mois et une année donnés.',
   })
   async exportToExcel2(
     @Res() res: Response,

@@ -30,7 +30,8 @@ export class CraRepository implements IRepoCra {
     @InjectRepository(AbsenceDB)
     private absenceRepository: Repository<AbsenceDB>,
     @Inject('IRepoCollab') private readonly collabRepository: IRepoCollab,
-  ) {}
+  ) {
+  }
 
   async findByMonthYear(month: number, year: number): Promise<CRA[]> {
     const foundcras: CRA[] = [];
@@ -67,95 +68,20 @@ export class CraRepository implements IRepoCra {
       where: { month, year, collab: { email: collabid } },
       relations: ['collab', 'holidays', 'history'],
     });
+
     if (cra) {
       const foundcra = await this.CraDBToCra(cra);
+      foundcra.getAvailableDatesOfCra();
 
       return foundcra;
     }
+    const now = new Date();
+    if (now.getMonth() == month && now.getFullYear() == year){
+      CRA
+    }
+
     console.log('returning null');
     return null;
-  }
-
-  private async CraDBToCra(cra: CRADB) {
-    const user = await this.collabRepository.findById(cra.collab.email);
-
-    const foundcra = new CRA(
-      cra.id,
-      cra.month,
-      cra.year,
-      user,
-      cra.date,
-      cra.etat,
-      cra.status,
-    );
-    foundcra.collab.email = user.email;
-    //fill absences
-    const absences = await this.absenceRepository.findBy({
-      craId: foundcra.id,
-    });
-    const craAbsences: Absence[] = absences.map((abs) => {
-      const absf = new Absence(foundcra.id, abs.matin, abs.date, abs.raison);
-      return absf;
-    });
-    foundcra.absences = craAbsences;
-    //fill activities
-    const activities = await this.activityRepository.find({
-      where: { craId: foundcra.id },
-      relations: ['project'],
-    });
-    const craActivities: Activity[] = activities.map((abs) => {
-      const absf = new Activity(
-        new Project(
-          abs.project.code,
-          [],
-          abs.project.name,
-          abs.project.client,
-          new Date(abs.project.date),
-          abs.project.status,
-        ),
-        abs.matin,
-        abs.date,
-        foundcra.id,
-      );
-      return absf;
-    });
-    foundcra.activities = craActivities;
-
-    const craholiday: Holiday[] = cra.holidays.map((abs) => {
-      const absf = new Holiday(abs.id, abs.date, abs.name);
-      return absf;
-    });
-    foundcra.holidays = craholiday;
-
-    const craRegul: Regul[] = cra.history.map((abs) => {
-      let target = null;
-      if (abs.target.code != null) {
-        target = new Activity(
-          new Project(
-            abs.target.code,
-            [],
-            '',
-            '',
-            new Date(),
-            ProjetStatus.Active,
-          ),
-          abs.target.matin,
-          abs.target.date,
-          foundcra.id,
-        );
-      } else if (abs.target.raison != null) {
-        target = new Absence(
-          foundcra.id,
-          abs.target.matin,
-          abs.target.date,
-          abs.target.raison,
-        );
-      }
-      const absf = new Regul(abs.id, abs.date, abs.action, target);
-      return absf;
-    });
-    foundcra.history = craRegul;
-    return foundcra;
   }
 
   async findById(id: number): Promise<CRA> {
@@ -187,6 +113,109 @@ export class CraRepository implements IRepoCra {
     return cra;
   }
 
+  async findByCollab(collabid: string) {
+    const foundcras: CRA[] = [];
+
+    const cras = await this.craRepository.find({
+      where: { collab: { email: collabid } },
+      relations: ['collab', 'holidays', 'history'],
+    });
+    if (cras) {
+      for (const cra of cras) {
+        const foundcra = await this.CraDBToCra(cra);
+        foundcras.push(foundcra);
+      }
+    }
+    return foundcras;
+  }
+
+  private async CraDBToCra(cra: CRADB) {
+    const user = await this.collabRepository.findById(cra.collab.email);
+
+    const foundcra = new CRA(
+      cra.id,
+      cra.month,
+      cra.year,
+      user,
+      cra.date,
+      cra.etat,
+      cra.status,
+    );
+    foundcra.collab.email = user.email;
+    //fill absences
+    const absences = await this.absenceRepository.findBy({
+      craId: foundcra.id,
+    });
+    const craAbsences: Absence[] = absences.map((abs) => {
+      const absf = new Absence(
+        foundcra.id,
+        abs.percentage,
+        abs.date,
+        abs.raison,
+      );
+      return absf;
+    });
+    foundcra.absences = craAbsences;
+    //fill activities
+    const activities = await this.activityRepository.find({
+      where: { craId: foundcra.id },
+      relations: ['project'],
+    });
+    const craActivities: Activity[] = activities.map((abs) => {
+      const absf = new Activity(
+        new Project(
+          abs.project.code,
+          [],
+          abs.project.name,
+          abs.project.client,
+          new Date(abs.project.date),
+          abs.project.status,
+        ),
+        abs.percentage,
+        abs.date,
+        foundcra.id,
+      );
+      return absf;
+    });
+    foundcra.activities = craActivities;
+
+    const craholiday: Holiday[] = cra.holidays.map((abs) => {
+      const absf = new Holiday(abs.id, abs.date, abs.name);
+      return absf;
+    });
+    foundcra.holidays = craholiday;
+
+    const craRegul: Regul[] = cra.history.map((abs) => {
+      let target = null;
+      if (abs.target.code != null) {
+        target = new Activity(
+          new Project(
+            abs.target.code,
+            [],
+            '',
+            '',
+            new Date(),
+            ProjetStatus.Active,
+          ),
+          abs.target.percentage,
+          abs.target.date,
+          foundcra.id,
+        );
+      } else if (abs.target.raison != null) {
+        target = new Absence(
+          foundcra.id,
+          abs.target.percentage,
+          abs.target.date,
+          abs.target.raison,
+        );
+      }
+      const absf = new Regul(abs.id, abs.date, abs.action, target);
+      return absf;
+    });
+    foundcra.history = craRegul;
+    return foundcra;
+  }
+
   private async CraToCraDB(cra: CRA) {
     const cradb = new CRADB();
     cradb.id = cra.id;
@@ -202,7 +231,7 @@ export class CraRepository implements IRepoCra {
       const activityDB = new ActivityDB();
       activityDB.craId = cra.id;
       activityDB.date = activity.date;
-      activityDB.matin = activity.matin;
+      activityDB.percentage = activity.percentage;
       activityDB.project = new ProjectDB();
       activityDB.project.code = activity.project.code;
       activityDB.project.status = activity.project.status;
@@ -216,7 +245,7 @@ export class CraRepository implements IRepoCra {
       const absdb = new AbsenceDB();
       absdb.craId = cra.id;
       absdb.date = abs.date;
-      absdb.matin = abs.matin;
+      absdb.percentage = abs.percentage;
       absdb.raison = abs.raison;
       return absdb;
     });
@@ -238,7 +267,7 @@ export class CraRepository implements IRepoCra {
       regdb.action = reg.action;
       regdb.target = new AbsenceInfo();
       regdb.target.date = reg.target.date;
-      regdb.target.matin = reg.target.matin;
+      regdb.target.percentage = reg.target.percentage;
       if (reg.target instanceof Activity) {
         regdb.target.code = reg.target.project.code;
       } else if (reg.target instanceof Absence) {
@@ -248,21 +277,5 @@ export class CraRepository implements IRepoCra {
     });
     cradb.history = regulDB;
     return cradb;
-  }
-
-  async findByCollab(collabid: string) {
-    const foundcras: CRA[] = [];
-
-    const cras = await this.craRepository.find({
-      where: { collab: { email: collabid } },
-      relations: ['collab', 'holidays', 'history'],
-    });
-    if (cras) {
-      for (const cra of cras) {
-        const foundcra = await this.CraDBToCra(cra);
-        foundcras.push(foundcra);
-      }
-    }
-    return foundcras;
   }
 }

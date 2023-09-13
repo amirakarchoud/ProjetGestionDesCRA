@@ -5,6 +5,4 @@ export class deleteActivityAbsenceDto {
   id: number;
   @ApiProperty()
   date: Date;
-  @ApiProperty()
-  matin: boolean;
 }
