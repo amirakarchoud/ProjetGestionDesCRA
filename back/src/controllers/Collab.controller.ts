@@ -1,12 +1,13 @@
 import { CraApplication } from '@app/domain/application/craApplication';
 import { Collab } from '@app/domain/model/Collab';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Collaborateur')
 @Controller('collab')
 export class CollabController {
-  constructor(private readonly craApplication: CraApplication) {}
+  constructor(private readonly craApplication: CraApplication) {
+  }
 
   @Get('all')
   @ApiOperation({
@@ -17,14 +18,16 @@ export class CollabController {
     return await this.craApplication.getAllCollabs();
   }
 
-  @Post('ids')
+  @Get('ids')
   @ApiOperation({
     summary: 'Liste de collaborateurs par emails',
     description:
       'Récupère la liste des collaborateurs correspondant aux identifiants(email) fournis.',
   })
-  async getCollabsByIds(@Body() ids: string[]): Promise<Collab[]> {
-    return await this.craApplication.getAllCollabsByIds(ids);
+  async getCollabsByIds(@Query() params: string): Promise<Collab[]> {
+    return await this.craApplication.getAllCollabsByIds(
+      params['ids'].split(','),
+    );
   }
 
   @Post('')

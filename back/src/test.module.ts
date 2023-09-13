@@ -46,6 +46,7 @@ console.log('env is ', dotEnvPath);
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       dropSchema: true,
+      timezone: 'utc',
     }),
     TypeOrmModule.forFeature([
       UserDB,
