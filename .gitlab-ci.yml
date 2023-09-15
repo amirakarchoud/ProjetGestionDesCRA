@@ -1,4 +1,4 @@
-image: gitlab-registry.proxym-group.net/docker/node:12.16
+image: gitlab-registry.proxym-group.net/docker/node:18
 
 variables:
   NODE_VERSION: "12.18"
