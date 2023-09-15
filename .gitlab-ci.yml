@@ -1,0 +1,138 @@
+image: gitlab-registry.proxym-group.net/docker/node:12.16
+
+variables:
+  NODE_VERSION: "12.18"
+  CHART_VERSION: "0.3.2"
+  RELEASE_NAME: CRA-APP
+
+stages:
+  - build
+  - sonarqube
+  - docker_build
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
+  #image: node:alpine
+  stage: build
+  tags:
+    - docker
+  before_script:
+    - cd back
+    - npm cache clear --force
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 day
+
+sonarqube:
+  stage: sonarqube
+  image: gitlab-registry.proxym-group.net/docker/node:12.16
+  tags:
+    - docker
+  before_script:
+    - cd back
+    - npm install
+    - npm install -g sonarqube-scanner
+  script:
+    - echo "sonar running..."
+    - npm test -- --coverage
+    - sonar-scanner -Dsonar.host.url="${SONAR_URL}" -Dsonar.login="${SONAR_TOKEN}" -Dsonar.sources="api" -Dsonar.projectVersion="${CI_COMMIT_REF_NAME}" -Dsonar.analysis.projectId="${CI_PROJECT_ID}" -Dsonar.projectKey="${SONAR_PROJECT_KEY}" -Dsonar.projectName="${SONAR_PROJECT_NAME}" -Dsonar.qualitygate.wait=true -Dsonar.branch.name="$CI_COMMIT_BRANCH"
+    #allow_failure: true
+  variables:
+    SONAR_PROJECT_BASE_DIR: "${CI_PROJECT_DIR}"
+    GIT_DEPTH: 0
+  only:
+    - develop
+    - /^feature\/.+$/
+    - /^bugfix\/.+$/
+    - /^release\/.+$/
+
+
+docker_build_dev:
+  stage: docker_build
+  tags:
+    - docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    IMAGE_TAG: dev
+    #GIT_STRATEGY: none
+  before_script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor --context $CI_PROJECT_DIR --single-snapshot --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$IMAGE_TAG
+  dependencies:
+    - sonarqube
+  only:
+    - develop
+
+docker_build_qa:
+  stage: docker_build
+  tags:
+    - docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    IMAGE_TAG: qa
+    #GIT_STRATEGY: none
+  before_script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - mv .env_dev.qa .env_dev
+    - /kaniko/executor --context $CI_PROJECT_DIR --single-snapshot --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$IMAGE_TAG
+  dependencies:
+    - sonarqube
+  only:
+    - /^release\/.+$/
+
+deploy_dev:
+  stage: deploy
+  tags:
+    - docker
+  image: ${CI_REGISTRY}/docker/helm:3
+  variables:
+    IMAGE_TAG: dev
+    #GIT_STRATEGY: none
+  before_script:
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${K8S_CA_DATA}
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab --namespace=${K8S_NAMESPACE}
+    - kubectl config use-context default
+  script:
+    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
+    - helm upgrade senior-tt-bo-${IMAGE_TAG} proxym/node --install --version ${CHART_VERSION} -f values-dev.yaml --set image.repository=${CI_REGISTRY_IMAGE},image.tag=${IMAGE_TAG}
+  dependencies:
+    - docker_build_dev
+  only:
+    - develop
+
+deploy_qa:
+  stage: deploy
+  tags:
+    - docker
+  image: ${CI_REGISTRY}/docker/helm:3
+  variables:
+    IMAGE_TAG: qa
+    #GIT_STRATEGY: none
+  before_script:
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${K8S_CA_DATA}
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab --namespace=${K8S_NAMESPACE}
+    - kubectl config use-context default
+  script:
+    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
+    - helm upgrade senior-tt-bo-${IMAGE_TAG} proxym/node --install --version ${CHART_VERSION} -f values-qa.yaml --set image.repository=${CI_REGISTRY_IMAGE},image.tag=${IMAGE_TAG}
+  dependencies:
+    - docker_build_qa
+  only:
+    - /^release\/.+$/
