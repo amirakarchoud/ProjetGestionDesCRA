@@ -3,6 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 
+const HOLIDAYS_COLLECTION = 'holidays';
+
 @Injectable()
 export class HolidayRepository implements IRepoHoliday {
   constructor(
@@ -18,8 +20,18 @@ export class HolidayRepository implements IRepoHoliday {
     console.log('R');
   }
 
-  findAll(): Promise<Holiday[]> {
-    return Promise.resolve([]);
+  async findAll(): Promise<Holiday[]> {
+    const collection = this.client.getCollection(HOLIDAYS_COLLECTION);
+
+    const cursor = collection.find({});
+
+    const holidays = [];
+
+    for await (const doc of cursor) {
+      holidays.push(Holiday.fromJson(doc));
+    }
+
+    return holidays;
   }
 
   findByDate(date: Date): Promise<Holiday[]> {
@@ -30,6 +42,21 @@ export class HolidayRepository implements IRepoHoliday {
     return Promise.resolve([]);
   }
 
+  async deleteAll(): Promise<void> {
+    const collection = this.client.getCollection(HOLIDAYS_COLLECTION);
+
+    await collection.deleteMany({});
+  }
+
+  async save(holiday: Holiday): Promise<void> {
+    const collection = this.client.getCollection(HOLIDAYS_COLLECTION);
+
+    await collection.insertOne({
+      _id: holiday.id,
+      ...holiday,
+    });
+  }
+
   // async findAll(): Promise<Holiday[]> {
   //   const holidaysDB = await this.holidayRepository.find();
   //
@@ -38,56 +65,6 @@ export class HolidayRepository implements IRepoHoliday {
   //   });
   // }
   //
-  // @Cron('0 0 1 1 *')
-  // async fetchAndStoreHolidays(): Promise<HolidayDB[]> {
-  //   console.log('fetching holidays');
-  //   await this.holidayRepository.delete({});
-  //   const year = new Date().getFullYear();
-  //   const url = `${environment.apiUrl}${year}.json`;
-  //   console.log(url);
-  //
-  //   try {
-  //     const data = await new Promise<string>((resolve, reject) => {
-  //       https
-  //         .get(url, (res) => {
-  //           let data = '';
-  //
-  //           res.on('data', (chunk) => {
-  //             data += chunk;
-  //           });
-  //
-  //           res.on('end', () => {
-  //             resolve(data);
-  //           });
-  //         })
-  //         .on('error', (error) => {
-  //           reject(error);
-  //         });
-  //     });
-  //
-  //     const holidaysData = JSON.parse(data);
-  //     const holidays: HolidayDB[] = [];
-  //     for (const [dateStr, name] of Object.entries(holidaysData)) {
-  //       const date = new Date(dateStr);
-  //
-  //       const existingHoliday = await this.holidayRepository.findOne({
-  //         where: { date },
-  //       });
-  //       if (!existingHoliday) {
-  //         const holiday = new HolidayDB();
-  //         holiday.date = date;
-  //         holiday.name = name as string;
-  //         holidays.push(holiday);
-  //       }
-  //     }
-  //     const savedHolidays = await this.holidayRepository.save(holidays);
-  //     console.log('done fetching holidays');
-  //     return savedHolidays;
-  //   } catch (error) {
-  //     console.error('Error fetching holidays:', error);
-  //     throw error;
-  //   }
-  // }
   //
   // async checkTableEmpty(): Promise<boolean> {
   //   const count = await this.holidayRepository.count();

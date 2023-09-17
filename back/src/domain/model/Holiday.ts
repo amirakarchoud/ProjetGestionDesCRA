@@ -1,15 +1,17 @@
 export class Holiday {
-  private _id: number;
-  private _date: Date;
-  private _name: string;
+  private readonly _date: Date;
+  private readonly _name: string;
 
-  constructor(id: number, date: Date, name: string) {
-    if (!(id && date && name)) {
-      throw new Error('cannot have a null attribut');
+  constructor(date: Date, name: string) {
+    if (!(date && name)) {
+      throw new Error('cannot have a null attribute');
     }
-    this._id = id;
     this._date = date;
     this._name = name;
+  }
+
+  public get id() {
+    return this._date.toISOString();
   }
 
   public get date(): Date {
@@ -20,7 +22,7 @@ export class Holiday {
     return this._name;
   }
 
-  public get id(): number {
-    return this._id;
+  static fromJson(json: any): Holiday {
+    return new Holiday(json._date, json._name);
   }
 }

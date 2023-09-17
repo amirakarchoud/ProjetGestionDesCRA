@@ -18,6 +18,8 @@ import { CraRepository } from '@app/repositories/cra.repository';
 import { HolidayRepository } from '@app/repositories/holiday.repository';
 import { ProjectRepository } from '@app/repositories/project.repository';
 import { CollabController } from '@app/controllers/collab.controller';
+import { HolidaysSyncService } from '@app/services/holidays-sync.service';
+import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
 
 let dotEnvPath = '.env';
 
@@ -50,6 +52,8 @@ console.log('env is ', dotEnvPath);
     CraService,
     AuthService,
     ExportService,
+    HolidaysSyncService,
+    HttpHolidayFetchService,
     { provide: 'IRepoCollab', useClass: CollabRepository },
     { provide: 'IRepoCra', useClass: CraRepository },
     { provide: 'IRepoHoliday', useClass: HolidayRepository },
