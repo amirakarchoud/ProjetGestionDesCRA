@@ -54,4 +54,8 @@ export class Collab {
   public get projects(): Project[] {
     return this._projects;
   }
+
+  static fromJson(json: any): Collab {
+    return new Collab(json._email, json._name, json._lastname, json._role);
+  }
 }

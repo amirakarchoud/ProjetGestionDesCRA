@@ -12,7 +12,6 @@ describe('Une absence ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -42,7 +41,6 @@ describe('Une absence ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -64,7 +62,6 @@ describe('Une absence ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -84,7 +81,6 @@ describe('Une absence ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,

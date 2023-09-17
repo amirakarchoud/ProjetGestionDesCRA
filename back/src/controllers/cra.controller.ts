@@ -1,5 +1,5 @@
 import { CraApplication } from '../domain/application/craApplication';
-import { CreateAbsenceDto } from '../Dto/CreateAbsenceDto';
+import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { Absence } from '../domain/model/Absence';
 import {
   Body,
@@ -11,14 +11,12 @@ import {
   Param,
   Post,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import { CreateActivityDto } from '../Dto/CreateActivityDto';
+import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
-import { deleteActivityAbsenceDto } from '../Dto/deleteActivityAbsenceDto';
+import { DeleteActivityAbsenceDto } from '@app/dtos/deleteActivityAbsenceDto';
 import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
-import { AuthGuard } from '@app/guards/auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 //@UseGuards(AuthGuard)
@@ -92,7 +90,7 @@ export class CraController {
     summary: 'Supprimer une seule absence',
     description: 'Supprimer une seule absence de la base de données.',
   })
-  async deleteAbsence(@Body() delAbsenceDto: deleteActivityAbsenceDto) {
+  async deleteAbsence(@Body() delAbsenceDto: DeleteActivityAbsenceDto) {
     console.log('deleting absence');
     return await this.craApp.deleteAbsence(
       delAbsenceDto.id,
@@ -106,7 +104,7 @@ export class CraController {
     summary: 'Supprimer des absences en lot',
     description: 'Supprimer plusieurs absences de la base de données en lot.',
   })
-  async deleteAbsences(@Body() delAbsencesDtos: deleteActivityAbsenceDto[]) {
+  async deleteAbsences(@Body() delAbsencesDtos: DeleteActivityAbsenceDto[]) {
     for (const delAbsenceDto of delAbsencesDtos) {
       await this.craApp.deleteAbsence(
         delAbsenceDto.id,
@@ -179,7 +177,7 @@ export class CraController {
     summary: 'Supprimer une seule activite',
     description: 'Supprimer une seule activite de la base de données.',
   })
-  async deleteActivity(@Body() delActivityDto: deleteActivityAbsenceDto) {
+  async deleteActivity(@Body() delActivityDto: DeleteActivityAbsenceDto) {
     console.log('deleting activity');
     return await this.craApp.deleteActivity(
       delActivityDto.id,
@@ -194,7 +192,7 @@ export class CraController {
     description: 'Supprimer plusieurs activites de la base de données en lot.',
   })
   async deleteActivities(
-    @Body() delActivitiesDtos: deleteActivityAbsenceDto[],
+    @Body() delActivitiesDtos: DeleteActivityAbsenceDto[],
   ) {
     for (const delActivityDto of delActivitiesDtos) {
       await this.craApp.deleteActivity(
@@ -225,7 +223,7 @@ export class CraController {
     description:
       "Soumet le compte rendu d'activité avec l'ID spécifié. La soumission n'est possible que si le compte rendu est entièrement rempli, c'est-à-dire s'il n'y a pas de jours vides ",
   })
-  async submitCra(@Param('id') idCra: number) {
+  async submitCra(@Param('id') idCra: string) {
     return await this.craApp.submitCra(idCra);
   }
 
@@ -235,7 +233,7 @@ export class CraController {
     description:
       "Récupère les dates disponibles pour un compte rendu d'activité (CRA) avec l'ID spécifié. Donc les jours encore vides. Les jours feries non comptés",
   })
-  async availableDates(@Param('id') idCra: number) {
+  async availableDates(@Param('id') idCra: string) {
     return await this.craApp.getEmptyDates(idCra);
   }
 

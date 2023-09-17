@@ -1,33 +1,25 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CraApplication } from './domain/application/craApplication';
-import { CollabRepository } from './data/Repository/CollabRepository';
-import { UserDB } from './data/dataModel/user.entity';
-import { AbsenceDB } from './data/dataModel/absence.entity';
-import { ActivityDB } from './data/dataModel/activity.entity';
-import { CRADB } from './data/dataModel/cra.entity';
-import { HolidayDB } from './data/dataModel/holiday.entity';
-import { ProjectDB } from './data/dataModel/project.entity';
 import { CraService } from './domain/service/cra.service';
 import { CraController } from './controllers/cra.controller';
-import { CraRepository } from './data/Repository/CraRepository';
-import { HolidayRepository } from './data/Repository/HolidayRepository';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ProjectController } from './controllers/Project.controller';
-import { ProjectRepository } from './data/Repository/ProjectRepository';
-import { CollabController } from './controllers/Collab.controller';
 import { HolidayController } from './controllers/Holiday.controller';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
-import { RegulDB } from './data/dataModel/regul.entity';
 import { ExportService } from './domain/service/export.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './domain/service/auth.service';
+import { MongoModule } from '@app/mongo/mongo.module';
+import { CollabRepository } from '@app/repositories/collab.repository';
+import { CraRepository } from '@app/repositories/cra.repository';
+import { HolidayRepository } from '@app/repositories/holiday.repository';
+import { ProjectRepository } from '@app/repositories/project.repository';
+import { CollabController } from '@app/controllers/collab.controller';
 
-let dotEnvPath = '.env_dev';
+let dotEnvPath = '.env';
 
 if (process.env.NODE_ENV) {
   dotEnvPath = `.env_${process.env.NODE_ENV}`;
@@ -38,26 +30,7 @@ console.log('env is ', dotEnvPath);
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: dotEnvPath }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT) || 3306,
-      username: process.env.DATABASE_USER || 'cra_user',
-      password: process.env.DATABASE_PASSWORD || 'proxym',
-      database: process.env.DATABASE_DATABASE || 'proxym_cra',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      // dropSchema: true,
-    }),
-    TypeOrmModule.forFeature([
-      UserDB,
-      AbsenceDB,
-      ActivityDB,
-      CRADB,
-      HolidayDB,
-      ProjectDB,
-      RegulDB,
-    ]),
+    MongoModule.register({ uri: process.env.MONGO_URI }),
     ScheduleModule.forRoot(),
     JwtModule.register({
       global: true,
@@ -73,7 +46,6 @@ console.log('env is ', dotEnvPath);
     AuthController,
   ],
   providers: [
-    AppService,
     CraApplication,
     CraService,
     AuthService,

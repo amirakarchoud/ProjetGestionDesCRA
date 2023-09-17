@@ -9,7 +9,6 @@ import { Regul } from './Regul';
 import { Action } from './action.enum';
 
 export class CRA {
-  private _id: number;
   private _holidays: Holiday[] = [];
   private _absences: Absence[] = [];
   private _activites: Activity[] = [];
@@ -20,8 +19,8 @@ export class CRA {
   private _etat: Etat = Etat.unsubmitted;
   private _status: Status = Status.Open;
   private _history: Regul[] = [];
+
   constructor(
-    id: number,
     month: number,
     year: number,
     collab: Collab,
@@ -29,7 +28,6 @@ export class CRA {
     etat: Etat,
     status: Status,
   ) {
-    this._id = id;
     this._month = month;
     this._year = year;
     this._date = date;
@@ -39,6 +37,10 @@ export class CRA {
     this._status = status;
   }
 
+  public get id(): string {
+    return `${this.month}-${this.year}-${this._collab.email}`;
+  }
+
   public closeCra() {
     this._status = Status.Closed;
   }
@@ -46,6 +48,7 @@ export class CRA {
   public get history(): Regul[] {
     return this._history;
   }
+
   public set history(reguls: Regul[]) {
     this._history = reguls;
   }
@@ -53,6 +56,7 @@ export class CRA {
   public get status(): Status {
     return this._status;
   }
+
   public set status(stat: Status) {
     this._status = stat;
   }
@@ -60,6 +64,7 @@ export class CRA {
   public get etat(): Etat {
     return this._etat;
   }
+
   public set etat(etat: Etat) {
     this._etat = etat;
   }
@@ -89,10 +94,7 @@ export class CRA {
     const absences = this._absences.filter(
       (absence) => this.formatDate(absence.date) === this.formatDate(date),
     );
-    if (activities.length + absences.length > 1) {
-      return true;
-    }
-    return false;
+    return activities.length + absences.length > 1;
   }
 
   calculateBusinessDays(year: number, month: number): number {
@@ -124,9 +126,11 @@ export class CRA {
   public get absences(): Absence[] {
     return this._absences;
   }
+
   public set absences(abs: Absence[]) {
     this._absences = abs;
   }
+
   public set holidays(holidays: Holiday[]) {
     this._holidays = holidays;
   }
@@ -165,7 +169,7 @@ export class CRA {
 
     //check if regul
     if (this._status == Status.Closed) {
-      this._history.push(new Regul(0, new Date(), Action.Add, activity));
+      this._history.push(new Regul(new Date(), Action.Add, activity));
     }
 
     this._activites.push(activity);
@@ -199,7 +203,7 @@ export class CRA {
 
     //check if regul
     if (this._status == Status.Closed) {
-      this._history.push(new Regul(0, new Date(), Action.Add, absence));
+      this._history.push(new Regul(new Date(), Action.Add, absence));
     }
 
     this._absences.push(absence);
@@ -220,17 +224,13 @@ export class CRA {
   }
 
   verifyTotalDays(): boolean {
-    if (this.calculateEmptyDays() == 0) return true;
-    return false;
-  }
-
-  public get id(): number {
-    return this._id;
+    return this.calculateEmptyDays() == 0;
   }
 
   public get month(): number {
     return this._month;
   }
+
   public get year(): number {
     return this._year;
   }
@@ -238,6 +238,7 @@ export class CRA {
   public get date(): Date {
     return this._date;
   }
+
   public get collab(): Collab {
     return this._collab;
   }
@@ -284,7 +285,7 @@ export class CRA {
       ) {
         //check if regul
         if (this._status == Status.Closed) {
-          this._history.push(new Regul(0, new Date(), Action.Delete, abs));
+          this._history.push(new Regul(new Date(), Action.Delete, abs));
         }
         this.absences.splice(index, 1);
       }
@@ -299,7 +300,7 @@ export class CRA {
         act.matin === matin
       ) {
         if (this._status == Status.Closed) {
-          this._history.push(new Regul(0, new Date(), Action.Delete, act));
+          this._history.push(new Regul(new Date(), Action.Delete, act));
         }
         this.activities.splice(index, 1);
       }
@@ -378,6 +379,7 @@ export class CRA {
     this._etat = Etat.submitted;
     return true;
   }
+
   public getActivityCountByProject(): Map<string, number> {
     const projectActivityCountMap: Map<string, number> = new Map();
     for (const activity of this._activites) {
@@ -393,5 +395,39 @@ export class CRA {
     }
 
     return projectActivityCountMap;
+  }
+
+  mapToJson(): any {
+    return {
+      _id: this.id,
+      _holidays: this._holidays,
+      _absences: this._absences,
+      _activites: this._activites,
+      _month: this._month,
+      _year: this._year,
+      _collab: this._collab,
+      _date: this._date,
+      _etat: this._etat,
+      _status: this._status,
+      _history: this._history,
+    };
+  }
+
+  static fromJson(json: any): CRA {
+    const cra = new CRA(
+      json._month,
+      json._year,
+      Collab.fromJson(json._collab),
+      json._date,
+      json._etat,
+      json._status,
+    );
+
+    cra._holidays = json._holidays;
+    cra._absences = json._absences.map((abs) => Absence.fromJson(abs));
+    cra._activites = json._activites.map((act) => Activity.fromJson(act));
+    cra._history = json._history;
+
+    return cra;
   }
 }

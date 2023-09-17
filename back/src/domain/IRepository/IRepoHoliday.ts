@@ -1,4 +1,4 @@
-import { Holiday } from '../model/Holiday';
+import { Holiday } from '@app/domain/model/Holiday';
 
 export interface IRepoHoliday {
   findAll(): Promise<Holiday[]>;

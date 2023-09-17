@@ -4,7 +4,7 @@ export class Activity {
   private _project: Project;
   private _matin: boolean;
   private _date: Date;
-  private _craId: number;
+  private _craId: string;
   toJSON(): object {
     return {
       matin: this._matin,
@@ -13,7 +13,7 @@ export class Activity {
     };
   }
 
-  constructor(projet: Project, matin: boolean, date: Date, cra: number) {
+  constructor(projet: Project, matin: boolean, date: Date, cra: string) {
     if (date == null) {
       throw new Error('cannot have a null attribut');
     }
@@ -40,7 +40,20 @@ export class Activity {
   public get matin(): boolean {
     return this._matin;
   }
-  public get cra(): number {
+  public get cra(): string {
     return this._craId;
+  }
+
+  static fromJson(json: any): Activity {
+    if (!json) {
+      throw new Error('Invalid JSON data');
+    }
+
+    return new Activity(
+      json._project,
+      json._matin,
+      new Date(json._date),
+      json._cra,
+    );
   }
 }
