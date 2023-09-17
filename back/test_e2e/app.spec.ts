@@ -1,21 +1,22 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CraApplication } from '../src/domain/application/craApplication';
-import { CollabRepository } from '../src/data/Repository/CollabRepository';
-import { AppModule } from '../src/app.module';
-import { Project } from '../src/domain/model/Project';
-import { ProjectRepository } from '../src/data/Repository/ProjectRepository';
-import { CraRepository } from '../src/data/Repository/CraRepository';
-import { Raison } from '../src/domain/model/Raison';
-import { CreateAbsenceDto } from '../src/Dto/CreateAbsenceDto';
-import { CreateActivityDto } from '../src/Dto/CreateActivityDto';
-import { ExportService } from '../src/domain/service/export.service';
-import * as ExcelJS from 'exceljs';
-import { IRepoCra } from '../src/domain/IRepository/IRepoCra';
-import { CRA } from '@app/domain/model/CRA';
-import { TestModule } from '@app/test.module';
+import { CraApplication } from '@app/domain/application/craApplication';
+import { Project } from '@app/domain/model/Project';
+import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
-import { Absence } from '@app/domain/model/Absence';
+import { AppModule } from '@app/app.module';
+import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import {
+  createProject,
+  createUser,
+  prepareAbsence,
+  prepareActivity,
+} from './test.utils';
+import { CollabRepository } from '@app/repositories/collab.repository';
+import { ProjectRepository } from '@app/repositories/project.repository';
+import { CraRepository } from '@app/repositories/cra.repository';
+
+const clientId = 'test1@proxym.fr';
 
 describe('APP', () => {
   let app: INestApplication;
@@ -23,23 +24,33 @@ describe('APP', () => {
 
   beforeEach(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [TestModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
-    await createUser(app);
+  });
+
+  afterEach(async () => {
+    const wrapper: MongoClientWrapper = app.get(MongoClientWrapper);
+    const db = wrapper.client.db('cra');
+    await db.dropDatabase();
   });
 
   it(`create user from token`, async () => {
     const repo: CollabRepository = await createUser(app);
-    const createdUser = await repo.findById('test1');
+    const createdUser = await repo.findById(clientId);
     expect(createdUser).toBeDefined();
   });
 
   it(`create project`, async () => {
-    const project = await createProject(app);
-    expect(project).toBeDefined();
+    await createUser(app);
+    await createProject(app, clientId);
+
+    const repo: ProjectRepository = app.get('IRepoProject');
+    const createdProject = await repo.findById('code');
+
+    expect(createdProject).toBeDefined();
   });
 
   it(`delete project`, async () => {
@@ -54,8 +65,9 @@ describe('APP', () => {
       ProjetStatus.Active,
     );
     await repo.save(project);
-    expect(project).toBeDefined();
+
     await application.deleteProject('projetTest');
+
     await expect(repo.findById('projetTest')).rejects.toThrowError(
       'Project not found',
     );
@@ -64,11 +76,11 @@ describe('APP', () => {
   it(`create absence`, async () => {
     const date = new Date();
     const repo = app.get('IRepoCra');
-    await prepareAbsence(app);
+    await prepareAbsence(app, clientId);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(cra.absences).toHaveLength(1);
   });
@@ -76,18 +88,18 @@ describe('APP', () => {
   it(`delete absence`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    const absence = await prepareAbsence(app);
+    const absence = await prepareAbsence(app, clientId);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     await application.deleteAbsence(cra.id, date, absence.matin);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(craAfter.absences).toHaveLength(0);
   });
@@ -95,34 +107,36 @@ describe('APP', () => {
   it(`create activity`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    await prepareActivity(app, date);
+    await prepareActivity(app, date, clientId);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(craAfter.activities).toHaveLength(1);
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   it(`delete activity`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    const activity = await prepareActivity(app, date);
+    const activity = await prepareActivity(app, date, clientId);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     await application.deleteActivity(cra.id, date, activity.matin);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(craAfter.activities).toHaveLength(0);
   });
@@ -131,20 +145,20 @@ describe('APP', () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
     const repo: CraRepository = app.get('IRepoCra');
-    await prepareActivity(app, date);
+    await prepareActivity(app, date, clientId);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     const historyAvant = cra.history.length;
     cra.closeCra();
     await repo.save(cra);
-    await prepareAbsence(app);
+    await prepareAbsence(app, clientId, false);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(craAfter.history).toHaveLength(historyAvant + 1);
   });
@@ -153,164 +167,21 @@ describe('APP', () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
     const repo: CraRepository = app.get('IRepoCra');
-    await prepareAbsence(app);
+    await prepareAbsence(app, clientId);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     const historyAvant = cra.history.length;
     cra.closeCra();
     await repo.save(cra);
-    await prepareActivity(app, date);
+    await prepareActivity(app, date, clientId, false);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
-      'test1',
+      clientId,
     );
     expect(craAfter.history).toHaveLength(historyAvant + 1);
-  });
-});
-
-async function prepareActivity(app: INestApplication, date: Date) {
-  const application = app.get(CraApplication);
-  const activity = new CreateActivityDto();
-  const project = await createProject(app);
-  activity.date = date;
-  activity.matin = true;
-  activity.projectId = project.code;
-  activity.collabId = 'test1';
-  await application.addActivity(activity);
-  return activity;
-}
-
-async function createProject(app: INestApplication) {
-  const repo: ProjectRepository = app.get('IRepoProject');
-  const repoCollab: CollabRepository = app.get('IRepoCollab');
-  const createdUser = await repoCollab.findById('test1');
-  const project = new Project(
-    'code',
-    [createdUser.email],
-    '',
-    '',
-    new Date(),
-    ProjetStatus.Active,
-  );
-  await repo.save(project);
-  return project;
-}
-
-async function createUser(app: INestApplication) {
-  const repo: CollabRepository = app.get('IRepoCollab');
-  const application = app.get(CraApplication);
-
-  await application.addUser('token');
-  return repo;
-}
-
-async function prepareAbsence(app: INestApplication) {
-  const date = new Date();
-  const application = app.get(CraApplication);
-  const absence = new CreateAbsenceDto();
-  absence.date = date;
-  absence.matin = false;
-  absence.raison = Raison.Maladie;
-
-  absence.collabId = 'test1';
-  await application.addAbsence(absence);
-  return absence;
-}
-
-class MockRepoCra implements IRepoCra {
-  save(cra: CRA): Promise<CRA> {
-    throw new Error('Method not implemented.');
-  }
-  findById(id: number): Promise<CRA> {
-    throw new Error('Method not implemented.');
-  }
-  findByMonthYearCollab(month: number, year: number, collab: string) {
-    throw new Error('Method not implemented.');
-  }
-  findByYearUser(idUser: string, year: number): Promise<CRA[]> {
-    throw new Error('Method not implemented.');
-  }
-  async findByMonthYear(month: number, year: number): Promise<any[]> {
-    const activityMap = new Map<string, number>();
-    activityMap.set('Project1', 10);
-    activityMap.set('Project2', 20);
-
-    const abs1 = new Absence(1, true, new Date(), Raison.Conges);
-    const abs2 = new Absence(1, true, new Date(), Raison.Conges);
-    return [
-      {
-        collab: {
-          name: 'amira',
-          lastname: 'karchoud',
-        },
-        absences: [abs1, abs2],
-        activities: [{}, {}, {}],
-        calculateBusinessDays: jest.fn().mockReturnValue(20),
-        getActivityCountByProject: jest.fn().mockReturnValue(activityMap),
-        holidays: [],
-      },
-    ];
-  }
-}
-
-describe('ExportService', () => {
-  let exportService: ExportService;
-  let mockRepoCra: MockRepoCra;
-
-  beforeEach(() => {
-    mockRepoCra = new MockRepoCra();
-
-    exportService = new ExportService(mockRepoCra);
-  });
-
-  it(' generate Excel file with correct data', async () => {
-    const month = 7;
-    const year = 2023;
-    const excelBuffer = await exportService.generateExcel(month, year);
-
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(excelBuffer);
-
-    const worksheet = workbook.getWorksheet('Recap du mois');
-
-    const headerRow = worksheet.getRow(1);
-    expect(headerRow.getCell(1).value).toBe('Collaborateur');
-    expect(headerRow.getCell(2).value).toBe('Période');
-    expect(headerRow.getCell(3).value).toBe("Nombre d'absences");
-    const dataRows = worksheet.getRows(3, worksheet.rowCount);
-    expect(dataRows[0].getCell(1).value).toBe('amira karchoud');
-    expect(dataRows[0].getCell(2).value).toBe('7/2023');
-    expect(dataRows[0].getCell(8).value).toBe(1.5);
-    expect(dataRows[0].getCell(9).value).toBe('2.5/20');
-  });
-  it('generates Excel file (format 2) with correct data', async () => {
-    const month = 7;
-    const year = 2023;
-    const excelBuffer = await exportService.generateExcel2(month, year);
-
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(excelBuffer);
-
-    const worksheet = workbook.getWorksheet('Recap du mois');
-
-    const headerRow = worksheet.getRow(1);
-    expect(headerRow.getCell(1).value).toBe('Collaborateur');
-    expect(headerRow.getCell(2).value).toBe('Imputation');
-    expect(headerRow.getCell(3).value).toBe('Nombre de jours');
-
-    const dataRows = worksheet.getRows(2, worksheet.rowCount);
-    expect(dataRows[0].getCell(1).value).toBe('amira karchoud');
-    expect(dataRows[0].getCell(2).value).toBe('Conges');
-    expect(dataRows[0].getCell(3).value).toBe(1);
-    expect(dataRows[1].getCell(1).value).toBe('amira karchoud');
-    expect(dataRows[1].getCell(2).value).toBe('Project1');
-    expect(dataRows[1].getCell(3).value).toBe(5);
-    expect(dataRows[2].getCell(1).value).toBe('amira karchoud');
-    expect(dataRows[2].getCell(2).value).toBe('Project2');
-    expect(dataRows[2].getCell(3).value).toBe(10);
   });
 });

@@ -1,4 +1,4 @@
-import { CreateAbsenceDto } from '../../Dto/CreateAbsenceDto';
+import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { IRepoCollab } from '../IRepository/IRepoCollab';
 import { IRepoCra } from '../IRepository/IRepoCra';
 import { IRepoHoliday } from '../IRepository/IRepoHoliday';
@@ -6,7 +6,7 @@ import { Absence } from '../model/Absence';
 import { CRA } from '../model/CRA';
 import { Inject, Injectable } from '@nestjs/common';
 import { Etat } from '../model/etat.enum';
-import { CreateActivityDto } from '../../Dto/CreateActivityDto';
+import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../model/Activity';
 import { IRepoProject } from '../IRepository/IRepoProject';
 import { Status } from '@app/domain/model/Status';
@@ -20,7 +20,7 @@ export class CraService {
     @Inject('IRepoHoliday') private readonly repoHoliday: IRepoHoliday,
   ) {}
 
-  async deleteAbsence(id: number, date: Date, matin: boolean) {
+  async deleteAbsence(id: string, date: Date, matin: boolean) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
     cra.deleteAbsence(date, matin);
@@ -36,9 +36,9 @@ export class CraService {
       dateAbs.getFullYear(),
       createAbsenceDto.collabId,
     );
+
     if (!cra) {
       cra = new CRA(
-        0,
         dateAbs.getMonth() + 1,
         dateAbs.getFullYear(),
         user,
@@ -52,12 +52,13 @@ export class CraService {
       );
       await this.repoCra.save(cra);
     }
-    cra = (await this.repoCra.findByMonthYearCollab(
+
+    cra = await this.repoCra.findByMonthYearCollab(
       dateAbs.getMonth() + 1,
       dateAbs.getFullYear(),
       createAbsenceDto.collabId,
-    )) as CRA;
-    console.log('cra etat here = ' + cra.etat);
+    );
+
     //create absence
     const absence = new Absence(
       cra.id,
@@ -73,7 +74,7 @@ export class CraService {
     return absence;
   }
 
-  async deleteActivity(id: number, date: Date, matin: boolean) {
+  async deleteActivity(id: string, date: Date, matin: boolean) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
     cra.deleteActivity(date, matin);
@@ -94,7 +95,6 @@ export class CraService {
     );
     if (!cra) {
       cra = new CRA(
-        0,
         dateAct.getMonth() + 1,
         dateAct.getFullYear(),
         user,

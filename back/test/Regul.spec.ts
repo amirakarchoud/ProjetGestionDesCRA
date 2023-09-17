@@ -7,11 +7,10 @@ describe('Regul ', () => {
   it('est creee correctement ', () => {
     //Given
     const date = new Date();
-    const absence = new Absence(1, true, date, Raison.Conges);
-    const regul = new Regul(1, date, Action.Add, absence);
+    const absence = new Absence('1', true, date, Raison.Conges);
+    const regul = new Regul(date, Action.Add, absence);
 
     //Then
-    expect(regul.id).toBe(1);
     expect(regul.date).toBe(date);
     expect(regul.action).toBe(Action.Add);
     expect(regul.target).toBe(absence);

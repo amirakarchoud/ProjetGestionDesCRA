@@ -6,8 +6,8 @@ import { IRepoProject } from '../IRepository/IRepoProject';
 import { Project } from '../model/Project';
 import { IRepoCra } from '../IRepository/IRepoCra';
 import { CraService } from '../service/cra.service';
-import { CreateAbsenceDto } from '../../Dto/CreateAbsenceDto';
-import { CreateActivityDto } from '@app/Dto/CreateActivityDto';
+import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
+import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Holiday } from '../model/Holiday';
 import { IRepoHoliday } from '../IRepository/IRepoHoliday';
 
@@ -27,7 +27,12 @@ export class CraApplication {
 
   async addUser(jwtToken: string) {
     console.log('craqpp add user');
-    const collab = new Collab('test1', 'test', 'last name test', Role.admin);
+    const collab = new Collab(
+      'test1@proxym.fr',
+      'test',
+      'last name test',
+      Role.admin,
+    );
     collab.password = '123';
     console.log('collab' + collab.email);
     await this.collabRepository.save(collab);
@@ -42,7 +47,7 @@ export class CraApplication {
   }
 
   async updateProject(project: Project) {
-    return await this.projectRepository.update(project);
+    await this.projectRepository.update(project);
   }
 
   async getProjectById(id: string) {
@@ -60,7 +65,7 @@ export class CraApplication {
     return await this.craService.addAbsence(absence);
   }
 
-  async deleteAbsence(idCra: number, date: Date, matin: boolean) {
+  async deleteAbsence(idCra: string, date: Date, matin: boolean) {
     return await this.craService.deleteAbsence(idCra, date, matin);
   }
 
@@ -68,7 +73,7 @@ export class CraApplication {
     return await this.craService.addActivity(activity);
   }
 
-  async deleteActivity(idCra: number, date: Date, matin: boolean) {
+  async deleteActivity(idCra: string, date: Date, matin: boolean) {
     return await this.craService.deleteActivity(idCra, date, matin);
   }
 
@@ -76,13 +81,13 @@ export class CraApplication {
     return await this.craRepository.findByMonthYearCollab(month, year, idUser);
   }
 
-  async submitCra(idCra: number) {
+  async submitCra(idCra: string) {
     const cra = await this.craRepository.findById(idCra);
     cra.SubmitCra();
     return await this.craRepository.save(cra);
   }
 
-  async getEmptyDates(idCra: number) {
+  async getEmptyDates(idCra: string) {
     const cra = await this.craRepository.findById(idCra);
     return cra.getAvailableDatesOfCra();
   }
@@ -111,13 +116,13 @@ export class CraApplication {
     return await this.craService.closeAllMonthCra(month, year);
   }
 
-  async addCollab(collab: Collab): Promise<Collab> {
-    return await this.collabRepository.save(collab);
+  async addCollab(collab: Collab): Promise<void> {
+    await this.collabRepository.save(collab);
   }
 
   async desactivateProject(code: string) {
     const project = await this.projectRepository.findById(code);
     project.desctivateProject();
-    return await this.projectRepository.save(project);
+    await this.projectRepository.save(project);
   }
 }
