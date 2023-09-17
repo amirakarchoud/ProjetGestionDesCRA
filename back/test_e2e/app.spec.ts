@@ -33,8 +33,7 @@ describe('APP', () => {
 
   afterEach(async () => {
     const wrapper: MongoClientWrapper = app.get(MongoClientWrapper);
-    const db = wrapper.client.db('cra');
-    await db.dropDatabase();
+    await wrapper.db.dropDatabase();
   });
 
   it(`create user from token`, async () => {

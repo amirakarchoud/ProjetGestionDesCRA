@@ -46,8 +46,7 @@ export class ProjectRepository implements IRepoProject {
 
   async findByUser(idUser: string): Promise<Project[]> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
-
-    const projectDoc = await collection.find({});
+    await collection.find({});
 
     const docs = [];
     for await (const doc of collection.find({
@@ -84,6 +83,7 @@ export class ProjectRepository implements IRepoProject {
         _id: updatedProject.code,
       },
       updatedProject,
+      {upsert: true}
     );
   }
 

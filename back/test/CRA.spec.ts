@@ -361,7 +361,7 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    cra.holidays = [new Holiday(1, new Date('2023-07-14'), '14 juillet')];
+    cra.holidays = [new Holiday(new Date('2023-07-14'), '14 juillet')];
     const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
     const absence2 = new Absence(cra.id, false, new Date(), Raison.Maladie);
 
