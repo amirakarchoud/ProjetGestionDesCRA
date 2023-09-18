@@ -69,6 +69,8 @@ build_backend:
       - "$CI_PROJECT_DIR/ci_configs"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      changes: 
+        - back/**/*
 
 build_frontend:
   stage: build
@@ -90,6 +92,8 @@ build_frontend:
       - "$CI_PROJECT_DIR/ci_configs"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      changes: 
+        - front/**/*
 
 ######################################################################################################
 # dockerise section
@@ -114,6 +118,8 @@ dockerise_backend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_back
+      changes: 
+        - back/**/*
 
 dockerise_frontend:
   stage: dockerize
@@ -135,6 +141,8 @@ dockerise_frontend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
+      changes: 
+        - front/**/*
 
 ######################################################################################################
 # deploy section
@@ -153,6 +161,8 @@ deploy_backend:
       variables:
         VALUES_PATH: ci_configs/k8s/backend/values-dev.yml
         ENV: dev
+      changes: 
+        - back/**/*
 
 deploy_frontend:
   stage: deploy
@@ -168,3 +178,5 @@ deploy_frontend:
       variables:
         VALUES_PATH: ci_configs/k8s/frontend/values-dev.yml
         ENV: dev
+      changes: 
+        - front/**/*
