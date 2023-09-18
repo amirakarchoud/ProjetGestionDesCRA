@@ -14,7 +14,7 @@ stages:
   before_script:
     - echo "deleting npmrc file if exists" && rm -rf .npmrc .yarnrc
     - echo "creating fresh npmrc config, please consider not sharing npmrc in the repo"
-    - npm config set 'always-auth' 'true'
+    - echo "always-auth=true" >> ~/.npmrc 
     - echo "registry=https://repos.proxym-group.net/repository/npm-group/" >> ~/.npmrc
     - npm config set "//repos.proxym-group.net/repository/npm-group/:_authToken" "${NPMTOKEN}"
 
