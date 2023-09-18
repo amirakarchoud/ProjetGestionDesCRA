@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class deleteActivityAbsenceDto {
+export class DeleteActivityAbsenceDto {
   @ApiProperty()
-  id: number;
+  id: string;
   @ApiProperty()
   date: Date;
   @ApiProperty()

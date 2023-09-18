@@ -1,28 +1,35 @@
 services:
 
-  database:
-    image: mariadb
-    expose:
-      - 3306:3306
+  mongo:
+    image: mongo
+    restart: always
     environment:
-      MARIADB_USER: root
-      MARIADB_ROOT_PASSWORD: root
-      MARIADB_ROOT_HOST: backend
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: [ "CMD-SHELL", "if [ -f '/run/mysqld/mysqld.sock' ]; then return 0; fi" ]
-      interval: 2s
-      timeout: 1s
-      retries: 10
-      start_period: 2s
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: cra
     networks:
-      - cra_net
+      cra_net:
+        ipv4_address: 172.28.0.3
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    networks:
+      cra_net:
+        ipv4_address: 172.28.0.4
 
   backend:
     image: node:18-alpine3.17
+    profiles:
+      - back
     depends_on:
-      database:
+      mongo:
         condition: service_healthy
     volumes:
       - ../back:/build
@@ -42,6 +49,8 @@ services:
 
   frontend:
     image: node:18-alpine3.17
+    profiles:
+      - front
     volumes:
       - ../front:/build
     expose:
@@ -61,4 +70,4 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/16
-          ip_range: 172.28.0.3/16
+          ip_range: 172.28.0.16/16

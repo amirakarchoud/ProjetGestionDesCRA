@@ -1,16 +1,7 @@
 import { Project } from '../domain/model/Project';
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
-import { CreateProjectDto } from '../Dto/CreateProjectDto';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { CreateProjectDto } from '@app/dtos/CreateProjectDto';
 import { CraApplication } from '../domain/application/craApplication';
-import { AuthGuard } from '@app/guards/auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 //@UseGuards(AuthGuard)
@@ -35,7 +26,8 @@ export class ProjectController {
       new Date(createProjectDto.date),
       createProjectDto.status,
     );
-    return await this.craApplication.addProject(project);
+    await this.craApplication.addProject(project);
+    return await this.craApplication.getProjectById(project.code);
   }
 
   @Get('all')
@@ -75,7 +67,7 @@ export class ProjectController {
   })
   async updateProject(
     @Body() createProjectDto: CreateProjectDto,
-  ): Promise<Project> {
+  ): Promise<void> {
     const project = new Project(
       createProjectDto.code,
       createProjectDto.collabs,
@@ -84,7 +76,7 @@ export class ProjectController {
       new Date(createProjectDto.date),
       createProjectDto.status,
     );
-    return await this.craApplication.updateProject(project);
+    await this.craApplication.updateProject(project);
   }
 
   @Get('search/:id')
@@ -102,7 +94,7 @@ export class ProjectController {
     summary: 'Desactiver un projet par code(id)',
     description: "Desactiver un projet en fonction de l'identifiant fourni.",
   })
-  async desactivateProject(@Param('id') projectId: string): Promise<Project> {
-    return await this.craApplication.desactivateProject(projectId);
+  async desactivateProject(@Param('id') projectId: string): Promise<void> {
+    await this.craApplication.desactivateProject(projectId);
   }
 }

@@ -25,7 +25,6 @@ describe('Un CRA ', () => {
     //given
     const today = new Date();
     const cra = new CRA(
-      1,
       3,
       2023,
       new Collab('user', 'test', 'last name', Role.admin),
@@ -47,7 +46,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -74,7 +72,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -104,7 +101,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       6,
       date.getFullYear(),
       collab,
@@ -131,7 +127,6 @@ describe('Un CRA ', () => {
     //Given
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       6,
       2050,
       collab,
@@ -157,7 +152,6 @@ describe('Un CRA ', () => {
     //Given
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       6,
       2050,
       collab,
@@ -179,7 +173,6 @@ describe('Un CRA ', () => {
     //given
     const today = new Date();
     const cra = new CRA(
-      1,
       3,
       2023,
       new Collab('user', 'test', 'last name', Role.admin),
@@ -200,7 +193,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -222,7 +214,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -244,7 +235,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -271,7 +261,6 @@ describe('Un CRA ', () => {
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -317,7 +306,6 @@ describe('Un CRA ', () => {
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -366,7 +354,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -374,7 +361,7 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
-    cra.holidays = [new Holiday(1, new Date('2023-07-14'), '14 juillet')];
+    cra.holidays = [new Holiday(new Date('2023-07-14'), '14 juillet')];
     const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
     const absence2 = new Absence(cra.id, false, new Date(), Raison.Maladie);
 
@@ -393,7 +380,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -412,7 +398,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -433,7 +418,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -458,7 +442,6 @@ describe('Un CRA ', () => {
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -480,7 +463,6 @@ describe('Un CRA ', () => {
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,
@@ -504,7 +486,6 @@ describe('Un CRA ', () => {
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     projet.addCollab(collab.email);
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -551,7 +532,6 @@ describe('Un CRA ', () => {
     projet2.addCollab(collab.email);
 
     const cra = new CRA(
-      1,
       date.getMonth(),
       date.getFullYear(),
       collab,
@@ -579,7 +559,6 @@ describe('Un CRA ', () => {
     const month = 8;
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       month,
       year,
       collab,
@@ -598,7 +577,6 @@ describe('Un CRA ', () => {
     const periode = true;
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       8,
       2023,
       collab,
@@ -618,7 +596,6 @@ describe('Un CRA ', () => {
     const periode = true;
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       8,
       2023,
       collab,
@@ -647,7 +624,6 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
-      1,
       date.getMonth() + 1,
       date.getFullYear(),
       collab,

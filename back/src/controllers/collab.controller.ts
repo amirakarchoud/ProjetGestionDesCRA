@@ -33,6 +33,10 @@ export class CollabController {
     description: 'Ajoute un nouveau collaborateur.',
   })
   async addCollab(@Body() collab: Collab): Promise<Collab> {
-    return await this.craApplication.addCollab(collab);
+    await this.craApplication.addCollab(collab);
+    const collabs = await this.craApplication.getAllCollabsByIds([
+      collab.email,
+    ]);
+    return collabs.find((c) => c.email === collab.email);
   }
 }

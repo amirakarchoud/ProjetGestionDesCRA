@@ -1,9 +1,9 @@
-import { Holiday } from '../model/Holiday';
+import { Holiday } from '@app/domain/model/Holiday';
 
 export interface IRepoHoliday {
   findAll(): Promise<Holiday[]>;
+  save(holiday: Holiday): Promise<void>;
   findByDate(date: Date): Promise<Holiday[]>;
-  fetchAndStoreHolidays();
-  checkDateIsHoliday(date: Date): Promise<boolean>;
   findForCra(month: number, year: number): Promise<Holiday[]>;
+  deleteAll(): Promise<void>;
 }
