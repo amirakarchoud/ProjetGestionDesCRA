@@ -42,7 +42,7 @@ sonarqube:
   script:
     - echo "sonar running..."
     - npm test -- --coverage
-    - sonar-scanner -Dsonar.host.url="${SONAR_URL}" -Dsonar.login="${SONAR_TOKEN}" -Dsonar.sources="api" -Dsonar.projectVersion="${CI_COMMIT_REF_NAME}" -Dsonar.analysis.projectId="${CI_PROJECT_ID}" -Dsonar.projectKey="${SONAR_PROJECT_KEY}" -Dsonar.projectName="${SONAR_PROJECT_NAME}" -Dsonar.qualitygate.wait=true -Dsonar.branch.name="$CI_COMMIT_BRANCH"
+    - sonar-scanner -Dsonar.host.url="${SONAR_URL}" -Dsonar.login="${SONAR_TOKEN}" -Dsonar.sources="src" -Dsonar.projectVersion="${CI_COMMIT_REF_NAME}" -Dsonar.analysis.projectId="${CI_PROJECT_ID}" -Dsonar.projectKey="${SONAR_PROJECT_KEY}" -Dsonar.projectName="${SONAR_PROJECT_NAME}" -Dsonar.qualitygate.wait=true -Dsonar.branch.name="$CI_COMMIT_BRANCH"
     #allow_failure: true
   variables:
     SONAR_PROJECT_BASE_DIR: "${CI_PROJECT_DIR}"
