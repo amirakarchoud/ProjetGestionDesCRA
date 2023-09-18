@@ -1,0 +1,20 @@
+replicacount: 1 
+name:
+  deployment: "frontend-dev"
+  service: "frontend-dev"
+  ingress: "frontend-dev"
+  configmap: "frontend-dev"
+
+image:
+  repository: gitlab-registry.proxym-group.net/proxym-france/proxym-compte-rendu-activite/frontend
+  tag: dev
+  pullPolicy: Always
+  pullsecrets: gitlab-auth
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  ingressClassName: nginx-demo
+  host: cr-web.demo.proxym-it.net

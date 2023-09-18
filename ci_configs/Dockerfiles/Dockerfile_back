@@ -1,0 +1,4 @@
+FROM gitlab-registry.proxym-group.net/docker/node:18.17
+WORKDIR /app
+COPY back/dist /app/
+CMD [ "npm" , "start" ]

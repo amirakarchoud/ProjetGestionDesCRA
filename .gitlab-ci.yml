@@ -1,0 +1,168 @@
+# Author: Boualleiguie Adam Isslem
+
+image: gitlab-registry.proxym-group.net/docker/node:18.17
+
+stages:
+  - build
+  - dockerize
+  - deploy
+
+# global definition section
+
+# nexus auth
+.nexus_auth:
+  before_script:
+    - echo "deleting npmrc file if exists" && rm -rf .npmrc .yarnrc
+    - echo "creating fresh npmrc config, please consider not sharing npmrc in the repo"
+    - npm config set 'always-auth' 'true'
+    - echo "registry=https://repos.proxym-group.net/repository/npm-group/" >> ~/.npmrc
+    - npm config set "//repos.proxym-group.net/repository/npm-group/:_authToken" "${NPMTOKEN}"
+
+# dockerise
+.dockerise:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  tags:
+    - docker
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --single-snapshot --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE_PATH} --destination $CI_REGISTRY_IMAGE/${IMAGE_NAME}:${TAG}
+
+# k8s deployment
+.k8s_deploy:
+  image: gitlab-registry.proxym-group.net/docker/helm:3
+  tags:
+    - docker
+  before_script:
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${K8S_CA_DATA}
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab --namespace=${K8S_NAMESPACE}
+    - kubectl config use-context default
+  script:
+    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
+    - helm upgrade --install  $PROJECT-$ENV --version 0.3.1 -f ${CI_PROJECT_DIR}/${VALUES_PATH}  proxym/angular
+
+######################################################################################################################
+# build section
+
+build_backend:
+  stage: build
+  tags:
+    - docker
+  before_script:
+    - !reference [.nexus_auth, before_script]
+  script:
+    - cd $CI_PROJECT_DIR/back
+    - npm ci
+    - npm run build
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "1 hours"
+    paths:
+      - "$CI_PROJECT_DIR/back/dist"
+      - "$CI_PROJECT_DIR/ci_configs"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+build_frontend:
+  stage: build
+  tags:
+    - docker
+  before_script:
+    - !reference [.nexus_auth, before_script]
+  script:
+    - cd $CI_PROJECT_DIR/front
+    - npm ci
+    - npm run build
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "1 hours"
+    paths:
+      - "$CI_PROJECT_DIR/front/build"
+      - "$CI_PROJECT_DIR/ci_configs"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+
+######################################################################################################
+# dockerise section
+
+dockerise_backend:
+  stage: dockerize
+  extends: .dockerise
+  variables:
+    IMAGE_NAME: backend
+  needs:
+    - job: build_backend
+      artifacts: true
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "1 hours"
+    paths:
+      - $CI_PROJECT_DIR/ci_configs
+  rules:
+    # specify branch
+    - if: $CI_COMMIT_BRANCH == "main"
+      variables:
+        TAG: dev
+        DOCKER_FILE_PATH: $CI_PROJECT_DIR/ci_configs/Dockerfiles/Dockerfile_back
+
+dockerise_frontend:
+  stage: dockerize
+  extends: .dockerise
+  variables:
+    IMAGE_NAME: frontend
+  needs:
+    - job: build_frontend
+      artifacts: true
+  artifacts:
+    untracked: false
+    when: on_success
+    expire_in: "1 hours"
+    paths:
+      - $CI_PROJECT_DIR/ci_configs
+  rules:
+    # specify branch
+    - if: $CI_COMMIT_BRANCH == "main"
+      variables:
+        TAG: dev
+        DOCKER_FILE_PATH: $CI_PROJECT_DIR/ci_configs/Dockerfiles/Dockerfile_front
+
+######################################################################################################
+# deploy section
+
+deploy_backend:
+  stage: deploy
+  extends: .k8s_deploy
+  variables:
+    GIT_STRATEGY: none
+    PROJECT: backend
+  needs:
+    - job: dockerise_backend
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      variables:
+        VALUES_PATH: $CI_PROJECT_DIR/ci_configs/k8s/backend/values-dev.yml
+        ENV: dev
+
+deploy_frontend:
+  stage: deploy
+  extends: .k8s_deploy
+  variables:
+    GIT_STRATEGY: none
+    PROJECT: frontend
+  needs:
+    - job: dockerise_frontend
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      variables:
+        VALUES_PATH: $CI_PROJECT_DIR/ci_configs/k8s/frontend/values-dev.yml
+        ENV: dev
