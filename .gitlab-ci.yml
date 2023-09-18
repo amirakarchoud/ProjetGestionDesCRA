@@ -56,6 +56,7 @@ build_backend:
   before_script:
     - !reference [.nexus_auth, before_script]
   script:
+    - export CI=false
     - cd $CI_PROJECT_DIR/back
     - npm ci
     - npm run build
@@ -76,6 +77,7 @@ build_frontend:
   before_script:
     - !reference [.nexus_auth, before_script]
   script:
+    - export CI=false
     - cd $CI_PROJECT_DIR/front
     - npm ci
     - npm run build
@@ -112,8 +114,6 @@ dockerise_backend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_back
-      changes: 
-        - back/**/*
 
 dockerise_frontend:
   stage: dockerize
@@ -135,8 +135,6 @@ dockerise_frontend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
-      changes: 
-        - front/**/*
 
 ######################################################################################################
 # deploy section
