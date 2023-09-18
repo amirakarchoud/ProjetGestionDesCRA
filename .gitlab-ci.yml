@@ -111,7 +111,7 @@ dockerise_backend:
     - if: $CI_COMMIT_BRANCH == "main"
       variables:
         TAG: dev
-        DOCKER_FILE_PATH: $CI_PROJECT_DIR/ci_configs/Dockerfiles/Dockerfile_back
+        DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_back
 
 dockerise_frontend:
   stage: dockerize
@@ -132,7 +132,7 @@ dockerise_frontend:
     - if: $CI_COMMIT_BRANCH == "main"
       variables:
         TAG: dev
-        DOCKER_FILE_PATH: $CI_PROJECT_DIR/ci_configs/Dockerfiles/Dockerfile_front
+        DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
 
 ######################################################################################################
 # deploy section
