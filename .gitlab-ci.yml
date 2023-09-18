@@ -1,7 +1,7 @@
 image: gitlab-registry.proxym-group.net/docker/node:18
 
 variables:
-  NODE_VERSION: "12.18"
+  NODE_VERSION: "18"
   CHART_VERSION: "0.3.2"
   RELEASE_NAME: CRA-APP
 
