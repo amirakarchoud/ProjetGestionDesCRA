@@ -13,7 +13,7 @@ stages:
 
 cache:
   paths:
-    - node_modules/
+    - back/node_modules/
 
 install_dependencies:
   #image: node:alpine
@@ -27,12 +27,12 @@ install_dependencies:
     - npm ci
   artifacts:
     paths:
-      - node_modules/
+      - back/node_modules/
     expire_in: 1 day
 
 sonarqube:
   stage: sonarqube
-  image: gitlab-registry.proxym-group.net/docker/node:12.16
+  image: gitlab-registry.proxym-group.net/docker/node:18.17
   tags:
     - docker
   before_script:
@@ -72,6 +72,7 @@ docker_build_dev:
     - sonarqube
   only:
     - develop
+    - /^feature\/.+$/
 
 docker_build_qa:
   stage: docker_build
@@ -109,11 +110,12 @@ deploy_dev:
     - kubectl config use-context default
   script:
     - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
-    - helm upgrade senior-tt-bo-${IMAGE_TAG} proxym/node --install --version ${CHART_VERSION} -f values-dev.yaml --set image.repository=${CI_REGISTRY_IMAGE},image.tag=${IMAGE_TAG}
+    - helm upgrade cra-app-${IMAGE_TAG} proxym/node --install --version ${CHART_VERSION} -f values-dev.yaml --set image.repository=${CI_REGISTRY_IMAGE},image.tag=${IMAGE_TAG}
   dependencies:
     - docker_build_dev
   only:
     - develop
+    - /^feature\/.+$/
 
 deploy_qa:
   stage: deploy
