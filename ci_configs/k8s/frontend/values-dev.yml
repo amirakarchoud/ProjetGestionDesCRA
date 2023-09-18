@@ -17,4 +17,4 @@ service:
 
 ingress:
   ingressClassName: nginx-demo
-  host: cr-web.demo.proxym-it.net
+  host: cra-web.demo.proxym-it.net
