@@ -11,6 +11,8 @@ spec:
       labels:
         app: "pxf-cra-mongo"
     spec:
+      imagePullSecrets:
+        - name: gitlab-auth
       containers:
         - name: "pxf-cra-mongodb"
           env:
@@ -44,6 +46,8 @@ spec:
       labels:
         app: "pxf-cra-backend"
     spec:
+      imagePullSecrets:
+        - name: gitlab-auth
       containers:
         - name: "pxf-cra-mongodb"
           env:
