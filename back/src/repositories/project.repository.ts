@@ -83,7 +83,7 @@ export class ProjectRepository implements IRepoProject {
         _id: updatedProject.code,
       },
       updatedProject,
-      {upsert: true}
+      { upsert: true },
     );
   }
 
