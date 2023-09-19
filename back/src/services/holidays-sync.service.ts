@@ -1,17 +1,21 @@
 import { Cron } from '@nestjs/schedule';
 import { environment } from '../environment/environment';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { IRepoHoliday } from '@app/domain/IRepository/IRepoHoliday';
 import { Holiday } from '@app/domain/model/Holiday';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
 
 @Injectable()
-export class HolidaysSyncService {
+export class HolidaysSyncService implements OnApplicationBootstrap {
   constructor(
     @Inject('IRepoHoliday') private holidayRepository: IRepoHoliday,
     @Inject(HttpHolidayFetchService)
     private holidayHttpService: HttpHolidayFetchService,
   ) {}
+
+  async onApplicationBootstrap(): Promise<void> {
+    await this.fetchAndStoreHolidays();
+  }
 
   @Cron('0 0 1 1 *')
   async fetchAndStoreHolidays(): Promise<void> {
@@ -28,7 +32,7 @@ export class HolidaysSyncService {
         const holiday = new Holiday(date, name as string);
         await this.holidayRepository.save(holiday);
       }
-      console.log('done fetching holidays');
+      console.log('Done fetching holidays');
     } catch (error) {
       console.error('Error fetching holidays:', error);
       throw error;

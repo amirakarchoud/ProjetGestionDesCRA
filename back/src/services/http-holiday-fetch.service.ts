@@ -1,4 +1,4 @@
-import https from 'https';
+import * as https from 'https';
 import { Injectable } from '@nestjs/common';
 import { HolidayFetchService } from '@app/services/holiday-fetch.service';
 
