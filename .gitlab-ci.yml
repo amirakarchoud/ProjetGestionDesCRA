@@ -55,13 +55,15 @@ build_backend:
   script:
     - export CI=false
     - cd $CI_PROJECT_DIR/back
-    - npm ci --omit=dev
+    - npm ci
     - npm run build:prod
+    - npm ci --omit=dev
   artifacts:
     untracked: false
     when: on_success
     expire_in: "1 hours"
     paths:
+      - "$CI_PROJECT_DIR/back/node_modules"
       - "$CI_PROJECT_DIR/back/dist"
       - "$CI_PROJECT_DIR/ci_configs"
   rules:
