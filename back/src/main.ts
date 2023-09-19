@@ -20,9 +20,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cors());
 
-  let hostname = process.env.HOSTNAME || 'localhost';
-  console.log('Hostname is', hostname);
-
-  await app.listen(8080, hostname, () => {});
+  await app.listen(8080);
 }
 bootstrap();
