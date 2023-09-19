@@ -21,8 +21,20 @@ export class CraRepository implements IRepoCra {
     return CRA.fromJson(doc);
   }
 
-  findByMonthYear(month: number, year: number): Promise<CRA[]> {
-    return Promise.resolve([]);
+  public async findByMonthYear(month: number, year: number): Promise<CRA[]> {
+    const collection = this.wrapper.getCollection(CRAS_COLLECTION);
+    const docs = await collection.find({
+      _month: month,
+      _year: year,
+    });
+
+    const cras = [];
+
+    for await (const craDoc of docs) {
+      cras.push(CRA.fromJson(craDoc));
+    }
+
+    return cras;
   }
 
   async findByMonthYearCollab(
@@ -44,8 +56,20 @@ export class CraRepository implements IRepoCra {
     return CRA.fromJson(doc);
   }
 
-  findByYearUser(idUser: string, year: number): Promise<CRA[]> {
-    return Promise.resolve([]);
+  async findByYearUser(idUser: string, year: number): Promise<CRA[]> {
+    const collection = this.wrapper.getCollection(CRAS_COLLECTION);
+    const docs = await collection.find({
+      _year: year,
+      '_collab._email': idUser,
+    });
+
+    const cras = [];
+
+    for await (const craDoc of docs) {
+      cras.push(CRA.fromJson(craDoc));
+    }
+
+    return cras;
   }
 
   async save(cra: CRA): Promise<void> {

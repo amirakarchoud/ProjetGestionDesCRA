@@ -7,6 +7,8 @@ import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { Raison } from '@app/domain/model/Raison';
 import { CollabRepository } from '@app/repositories/collab.repository';
 import { ProjectRepository } from '@app/repositories/project.repository';
+import { Collab } from '@app/domain/model/Collab';
+import { Role } from '@app/domain/model/Role';
 
 export async function prepareActivity(
   app: INestApplication,
@@ -15,7 +17,7 @@ export async function prepareActivity(
   insertUser = true,
 ) {
   if (insertUser) {
-    await createUser(app);
+    await createUser(app, clientId);
   }
   const application = app.get(CraApplication);
   const activity = new CreateActivityDto();
@@ -44,11 +46,10 @@ export async function createProject(app: INestApplication, clientId: string) {
   return project;
 }
 
-export async function createUser(app: INestApplication) {
+export async function createUser(app: INestApplication, userId: string) {
   const repo: CollabRepository = app.get('IRepoCollab');
-  const application = app.get(CraApplication);
+  await repo.save(new Collab(userId, 'some name', 'last name', Role.user));
 
-  await application.addUser('token');
   return repo;
 }
 
@@ -58,7 +59,7 @@ export async function prepareAbsence(
   insertUser = true,
 ) {
   if (insertUser) {
-    await createUser(app);
+    await createUser(app, clientId);
   }
   const date = new Date();
   const application = app.get(CraApplication);

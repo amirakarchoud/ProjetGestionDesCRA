@@ -39,13 +39,13 @@ describe('APP', () => {
   });
 
   it(`create user from token`, async () => {
-    const repo: CollabRepository = await createUser(app);
+    const repo: CollabRepository = await createUser(app, clientId);
     const createdUser = await repo.findById(clientId);
     expect(createdUser).toBeDefined();
   });
 
   it(`create project`, async () => {
-    await createUser(app);
+    await createUser(app, clientId);
     await createProject(app, clientId);
 
     const repo: ProjectRepository = app.get('IRepoProject');
@@ -84,6 +84,27 @@ describe('APP', () => {
       clientId,
     );
     expect(cra.absences).toHaveLength(1);
+  });
+
+  it('can be found by month and year', async () => {
+    const date = new Date();
+    const repo: CraRepository = app.get('IRepoCra');
+    await prepareAbsence(app, clientId);
+    const cra = await repo.findByMonthYear(
+      date.getMonth() + 1,
+      date.getFullYear(),
+    );
+    expect(cra).toHaveLength(1);
+  });
+
+  it('can be found by year for a user', async () => {
+    const date = new Date();
+    const repo: CraRepository = app.get('IRepoCra');
+    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, 'seconduser@proxym.fr');
+
+    const cra = await repo.findByYearUser(clientId, date.getFullYear());
+    expect(cra).toHaveLength(1);
   });
 
   it(`delete absence`, async () => {

@@ -38,4 +38,15 @@ describe('Holidays', () => {
     const allHolidays = await holidayRepo.findAll();
     expect(allHolidays).toHaveLength(11);
   });
+
+  it('Can be queries by date', async () => {
+    const holidaysSyncService = app.get(HolidaysSyncService);
+    const holidayRepo = app.get<IRepoHoliday>('IRepoHoliday');
+
+    await holidaysSyncService.fetchAndStoreHolidays(2023);
+
+    const holiday = await holidayRepo.findByDate(new Date('01/01/2023'));
+
+    expect(holiday.name).toBe('1er janvier');
+  });
 });

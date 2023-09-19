@@ -18,10 +18,12 @@ export class HolidaysSyncService implements OnApplicationBootstrap {
   }
 
   @Cron('0 0 1 1 *')
-  async fetchAndStoreHolidays(): Promise<void> {
+  async fetchAndStoreHolidays(year?: number): Promise<void> {
     console.log('fetching holidays');
     await this.holidayRepository.deleteAll();
-    const year = new Date().getFullYear();
+    if (!year) {
+      year = new Date().getFullYear();
+    }
     const url = `${environment.apiUrl}${year}.json`;
 
     try {
