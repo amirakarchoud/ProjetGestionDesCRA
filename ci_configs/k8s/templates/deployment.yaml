@@ -60,7 +60,6 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
-
           image: gitlab-registry.proxym-group.net/proxym-france/proxym-compte-rendu-activite/backend:dev
           ports:
             - containerPort: 8080
