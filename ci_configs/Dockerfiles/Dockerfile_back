@@ -2,7 +2,6 @@ FROM gitlab-registry.proxym-group.net/docker/node:18.17
 
 COPY dist /app/
 COPY node_modules /app/node_modules
-COPY .env* /app/
 
 WORKDIR /app
 
