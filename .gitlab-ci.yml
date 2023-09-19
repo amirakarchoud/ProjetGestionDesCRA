@@ -7,18 +7,14 @@ stages:
   - dockerize
   - deploy
 
-# global definition section
-
-# nexus auth
 .nexus_auth:
   before_script:
     - echo "deleting npmrc file if exists" && rm -rf .npmrc .yarnrc
     - echo "creating fresh npmrc config, please consider not sharing npmrc in the repo"
-    - echo "always-auth=true" >> ~/.npmrc 
+    - echo "always-auth=true" >> ~/.npmrc
     - echo "registry=https://repos.proxym-group.net/repository/npm-group/" >> ~/.npmrc
     - npm config set "//repos.proxym-group.net/repository/npm-group/:_authToken" "${NPMTOKEN}"
 
-# dockerise
 .dockerise:
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -27,9 +23,10 @@ stages:
     - docker
   variables:
     GIT_STRATEGY: none
-  script:
+  before_script:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --single-snapshot --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE_PATH} --destination $CI_REGISTRY_IMAGE/${IMAGE_NAME}:${TAG}
+  script:
+    - /kaniko/executor --context $CI_PROJECT_DIR/back --single-snapshot --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE_PATH} --destination $CI_REGISTRY_IMAGE/${IMAGE_NAME}:${TAG}
 
 # k8s deployment
 .k8s_deploy:
@@ -58,8 +55,8 @@ build_backend:
   script:
     - export CI=false
     - cd $CI_PROJECT_DIR/back
-    - npm ci
-    - npm run build
+    - npm ci --omit=dev
+    - npm run build:prod
   artifacts:
     untracked: false
     when: on_success
@@ -69,7 +66,7 @@ build_backend:
       - "$CI_PROJECT_DIR/ci_configs"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      changes: 
+      changes:
         - back/**/*
 
 build_frontend:
@@ -92,7 +89,7 @@ build_frontend:
       - "$CI_PROJECT_DIR/ci_configs"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
-      changes: 
+      changes:
         - front/**/*
 
 ######################################################################################################
@@ -118,7 +115,7 @@ dockerise_backend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_back
-      changes: 
+      changes:
         - back/**/*
 
 dockerise_frontend:
@@ -141,7 +138,7 @@ dockerise_frontend:
       variables:
         TAG: dev
         DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
-      changes: 
+      changes:
         - front/**/*
 
 ######################################################################################################
@@ -161,7 +158,7 @@ deploy_backend:
       variables:
         VALUES_PATH: ci_configs/k8s/backend/values-dev.yml
         ENV: dev
-      changes: 
+      changes:
         - back/**/*
 
 deploy_frontend:
@@ -178,5 +175,5 @@ deploy_frontend:
       variables:
         VALUES_PATH: ci_configs/k8s/frontend/values-dev.yml
         ENV: dev
-      changes: 
+      changes:
         - front/**/*
