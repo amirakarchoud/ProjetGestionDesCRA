@@ -41,7 +41,7 @@ stages:
     - kubectl config use-context default
   script:
 #    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
-    - helm upgrade --install pxf-cra-$ENV ./back
+    - helm upgrade --install pxf-cra-$ENV ci_configs/k8s
 
 ######################################################################################################################
 # build section
