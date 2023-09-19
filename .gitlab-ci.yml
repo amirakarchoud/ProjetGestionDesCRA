@@ -40,8 +40,8 @@ stages:
     - kubectl config set-context default --cluster=k8s --user=gitlab --namespace=${K8S_NAMESPACE}
     - kubectl config use-context default
   script:
-    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
-    - helm upgrade --install  $PROJECT-$ENV --version 0.3.1 -f ${CI_PROJECT_DIR}/${VALUES_PATH}  proxym/angular
+#    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
+    - helm upgrade --install pxf-cra-$ENV ./back
 
 ######################################################################################################################
 # build section
@@ -71,29 +71,29 @@ build_backend:
       changes:
         - back/**/*
 
-build_frontend:
-  stage: build
-  tags:
-    - docker
-  before_script:
-    - !reference [.nexus_auth, before_script]
-  script:
-    - export CI=false
-    - cd $CI_PROJECT_DIR/front
-    - npm ci
-    - npm run build
-  artifacts:
-    untracked: false
-    when: on_success
-    expire_in: "1 hours"
-    paths:
-      - "$CI_PROJECT_DIR/front/build"
-      - "$CI_PROJECT_DIR/ci_configs"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      changes:
-        - front/**/*
-
+#build_frontend:
+#  stage: build
+#  tags:
+#    - docker
+#  before_script:
+#    - !reference [.nexus_auth, before_script]
+#  script:
+#    - export CI=false
+#    - cd $CI_PROJECT_DIR/front
+#    - npm ci
+#    - npm run build
+#  artifacts:
+#    untracked: false
+#    when: on_success
+#    expire_in: "1 hours"
+#    paths:
+#      - "$CI_PROJECT_DIR/front/build"
+#      - "$CI_PROJECT_DIR/ci_configs"
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == "main"
+#      changes:
+#        - front/**/*
+#
 ######################################################################################################
 # dockerise section
 
@@ -120,28 +120,28 @@ dockerise_backend:
       changes:
         - back/**/*
 
-dockerise_frontend:
-  stage: dockerize
-  extends: .dockerise
-  variables:
-    IMAGE_NAME: frontend
-  needs:
-    - job: build_frontend
-      artifacts: true
-  artifacts:
-    untracked: false
-    when: on_success
-    expire_in: "1 hours"
-    paths:
-      - $CI_PROJECT_DIR/ci_configs
-  rules:
-    # specify branch
-    - if: $CI_COMMIT_BRANCH == "main"
-      variables:
-        TAG: dev
-        DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
-      changes:
-        - front/**/*
+#dockerise_frontend:
+#  stage: dockerize
+#  extends: .dockerise
+#  variables:
+#    IMAGE_NAME: frontend
+#  needs:
+#    - job: build_frontend
+#      artifacts: true
+#  artifacts:
+#    untracked: false
+#    when: on_success
+#    expire_in: "1 hours"
+#    paths:
+#      - $CI_PROJECT_DIR/ci_configs
+#  rules:
+#    # specify branch
+#    - if: $CI_COMMIT_BRANCH == "main"
+#      variables:
+#        TAG: dev
+#        DOCKER_FILE_PATH: ci_configs/Dockerfiles/Dockerfile_front
+#      changes:
+#        - front/**/*
 
 ######################################################################################################
 # deploy section
@@ -162,20 +162,20 @@ deploy_backend:
         ENV: dev
       changes:
         - back/**/*
-
-deploy_frontend:
-  stage: deploy
-  extends: .k8s_deploy
-  variables:
-    GIT_STRATEGY: none
-    PROJECT: frontend
-  needs:
-    - job: dockerise_frontend
-      artifacts: true
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      variables:
-        VALUES_PATH: ci_configs/k8s/frontend/values-dev.yml
-        ENV: dev
-      changes:
-        - front/**/*
+#
+#deploy_frontend:
+#  stage: deploy
+#  extends: .k8s_deploy
+#  variables:
+#    GIT_STRATEGY: none
+#    PROJECT: frontend
+#  needs:
+#    - job: dockerise_frontend
+#      artifacts: true
+#  rules:
+#    - if: $CI_COMMIT_BRANCH == "main"
+#      variables:
+#        VALUES_PATH: ci_configs/k8s/frontend/values-dev.yml
+#        ENV: dev
+#      changes:
+#        - front/**/*

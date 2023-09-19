@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxf-cra-mongodb
+spec:
+  selector:
+    app: pxf-cra-mongo
+  ports:
+    - targetPort: 27017
+      port: 27017

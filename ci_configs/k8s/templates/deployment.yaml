@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "pxf-cra-mongo-deployment"
+spec:
+  selector:
+    matchLabels:
+      app: "pxf-cra-mongo"
+  template:
+    metadata:
+      labels:
+        app: "pxf-cra-mongo"
+    spec:
+      containers:
+        - name: "pxf-cra-mongodb"
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: example
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          image: mongo
+          ports:
+            - containerPort: 27017
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "pxf-cra-backend-deployment"
+spec:
+  selector:
+    matchLabels:
+      app: "pxf-cra-backend"
+  template:
+    metadata:
+      labels:
+        app: "pxf-cra-backend"
+    spec:
+      containers:
+        - name: "pxf-cra-mongodb"
+          env:
+            - name: NODE_ENV
+              value: "dev"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+          image: gitlab-registry.proxym-group.net/proxym-france/proxym-compte-rendu-activite/backend:dev
+          ports:
+            - containerPort: 8080
+
