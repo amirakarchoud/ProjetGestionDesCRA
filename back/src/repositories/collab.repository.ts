@@ -40,8 +40,21 @@ export class CollabRepository implements IRepoCollab {
     return Collab.fromJson(foundUser);
   }
 
-  findByIds(ids: string[]): Promise<Collab[]> {
-    return Promise.resolve([]);
+  async findByIds(ids: string[]): Promise<Collab[]> {
+    const usersCollection = this.wrapper.db.collection<{ _id: string }>(
+      'users',
+    );
+
+    const allUsers = [];
+    const findCursor = usersCollection.find({
+      _id: { $in: ids },
+    });
+
+    for await (const userDoc of findCursor) {
+      allUsers.push(Collab.fromJson(userDoc));
+    }
+
+    return allUsers;
   }
 
   async save(user: Collab): Promise<void> {

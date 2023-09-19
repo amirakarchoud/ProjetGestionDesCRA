@@ -9,7 +9,6 @@ let app: INestApplication;
 
 async function bootstrap() {
   app = await NestFactory.create(AppModule, new ExpressAdapter());
-  await app.init();
   const config = new DocumentBuilder()
     .setTitle('Gestion des cra')
     .setDescription('The cra API description')

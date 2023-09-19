@@ -15,6 +15,8 @@ import {
 import { CollabRepository } from '@app/repositories/collab.repository';
 import { ProjectRepository } from '@app/repositories/project.repository';
 import { CraRepository } from '@app/repositories/cra.repository';
+import { Collab } from '@app/domain/model/Collab';
+import { Role } from '@app/domain/model/Role';
 
 const clientId = 'test1@proxym.fr';
 
@@ -182,5 +184,24 @@ describe('APP', () => {
       clientId,
     );
     expect(craAfter.history).toHaveLength(historyAvant + 1);
+  });
+
+  it('finds users by list of ids', async () => {
+    const repo: CollabRepository = app.get('IRepoCollab');
+    await repo.save(
+      new Collab('collab1@proxym.fr', 'aleks', 'kirilov', Role.user),
+    );
+    await repo.save(
+      new Collab('collab2@proxym.fr', 'clément', 'sensen', Role.user),
+    );
+
+    const craApp: CraApplication = app.get(CraApplication);
+
+    const collabs = await craApp.getAllCollabsByIds([
+      'collab1@proxym.fr',
+      'collab2@proxym.fr',
+    ]);
+
+    expect(collabs).toHaveLength(2);
   });
 });
