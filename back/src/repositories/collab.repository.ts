@@ -12,8 +12,17 @@ export class CollabRepository implements IRepoCollab {
     private wrapper: MongoClientWrapper,
   ) {}
 
-  findAll(): Promise<Collab[]> {
-    return Promise.resolve([]);
+  async findAll(): Promise<Collab[]> {
+    const usersCollection = this.wrapper.db.collection<{ _id: string }>(
+      'users',
+    );
+
+    const allUsers = [];
+    for await (const userDoc of usersCollection.find()) {
+      allUsers.push(Collab.fromJson(userDoc));
+    }
+
+    return allUsers;
   }
 
   async findById(id: string): Promise<Collab> {
