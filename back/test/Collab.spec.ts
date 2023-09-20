@@ -2,11 +2,12 @@ import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 describe('Collaborateur ', () => {
   //Given
   const projet = new Project(
-    '123',
+    new ProjectCode('123'),
     [],
     '',
     '',
@@ -43,7 +44,7 @@ describe('Collaborateur ', () => {
     //given
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     //when
-    collab.addProject(projet);
+    collab.addProject(projet.code);
     //then
     expect(collab.projects).toHaveLength(1);
   });

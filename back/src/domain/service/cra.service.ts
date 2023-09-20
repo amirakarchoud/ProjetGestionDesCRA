@@ -10,6 +10,7 @@ import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../model/Activity';
 import { IRepoProject } from '../IRepository/IRepoProject';
 import { Status } from '@app/domain/model/Status';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 @Injectable()
 export class CraService {
@@ -85,7 +86,7 @@ export class CraService {
     const dateAct = new Date(createActivityDto.date);
     const user = await this.repoCollab.findById(createActivityDto.collabId);
     const project = await this.repoProject.findById(
-      createActivityDto.projectId,
+      new ProjectCode(createActivityDto.projectId),
     );
     // Check if the specified CRA exists
     let cra = await this.repoCra.findByMonthYearCollab(

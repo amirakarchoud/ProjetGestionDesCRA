@@ -6,8 +6,22 @@ import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 describe('Une activite ', () => {
+  let projet: Project;
+
+  beforeEach(() => {
+    projet = new Project(
+      new ProjectCode('123'),
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+  });
+
   it('ne peut pas avoir des attributs null', () => {
     //given
     const date = new Date();
@@ -21,14 +35,6 @@ describe('Une activite ', () => {
       Status.Open,
     );
 
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     //Then
 
@@ -58,14 +64,6 @@ describe('Une activite ', () => {
       Status.Open,
     );
 
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     //When
     const activity = new Activity(projet, true, new Date(), cra.id);
@@ -87,15 +85,6 @@ describe('Une activite ', () => {
       Status.Open,
     );
     //When
-
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, new Date(), cra.id);
 
@@ -117,14 +106,6 @@ describe('Une activite ', () => {
     );
     //When
 
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, date, cra.id);
 
@@ -144,15 +125,6 @@ describe('Une activite ', () => {
       Status.Open,
     );
     //When
-
-    const projet = new Project(
-      '123',
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
     projet.addCollab(collab.email);
     const activity = new Activity(projet, true, date, cra.id);
 

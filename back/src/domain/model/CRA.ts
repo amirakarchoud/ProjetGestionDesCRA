@@ -7,6 +7,7 @@ import { Status } from './Status';
 import { Holiday } from './Holiday';
 import { Regul } from './Regul';
 import { Action } from './action.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 export class CRA {
   private _holidays: Holiday[] = [];
@@ -380,8 +381,8 @@ export class CRA {
     return true;
   }
 
-  public getActivityCountByProject(): Map<string, number> {
-    const projectActivityCountMap: Map<string, number> = new Map();
+  public getActivityCountByProject(): Map<ProjectCode, number> {
+    const projectActivityCountMap: Map<ProjectCode, number> = new Map();
     for (const activity of this._activites) {
       const projectCode = activity.project.code;
       if (projectActivityCountMap.has(projectCode)) {

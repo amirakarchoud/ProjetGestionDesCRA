@@ -4,6 +4,7 @@ import { Project } from '@app/domain/model/Project';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { EnhancedOmit, InferIdType } from 'mongodb';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 const PROJECT_COLLECTION = 'projects';
 
@@ -14,10 +15,10 @@ export class ProjectRepository implements IRepoProject {
     private wrapper: MongoClientWrapper,
   ) {}
 
-  async delete(id: string): Promise<void> {
+  async delete(id: ProjectCode): Promise<void> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
     await collection.deleteOne({
-      _id: id,
+      _id: id.value,
     });
   }
 
@@ -31,10 +32,10 @@ export class ProjectRepository implements IRepoProject {
     return docs.map(this.mapProject);
   }
 
-  async findById(id: string): Promise<Project> {
+  async findById(id: ProjectCode): Promise<Project> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
     const projectDoc = await collection.findOne({
-      _id: id,
+      _id: id.value,
     });
 
     if (!projectDoc) {
@@ -58,7 +59,7 @@ export class ProjectRepository implements IRepoProject {
     return docs.map(this.mapProject);
   }
 
-  findLikeById(id: string): Promise<Project[]> {
+  findLikeById(id: ProjectCode): Promise<Project[]> {
     throw new Error('Operation not implemented');
   }
 
@@ -68,7 +69,7 @@ export class ProjectRepository implements IRepoProject {
     );
 
     await projectsCollection.insertOne({
-      _id: project.code,
+      _id: project.code.value,
       ...project,
     });
   }
@@ -93,12 +94,12 @@ export class ProjectRepository implements IRepoProject {
     },
   ) {
     return new Project(
-      projectDoc._id,
+      new ProjectCode(projectDoc._id),
       projectDoc['_collabs'],
       projectDoc['_name'],
       projectDoc['_client'],
       projectDoc['_date'],
-      ProjetStatus[projectDoc['status']],
+      ProjetStatus[projectDoc['_status']],
     );
   }
 }

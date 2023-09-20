@@ -11,10 +11,11 @@ import { Holiday } from '@app/domain/model/Holiday';
 import { Status } from '@app/domain/model/Status';
 import { Action } from '@app/domain/model/action.enum';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 describe('Un CRA ', () => {
   const projet = new Project(
-    '123',
+    new ProjectCode('123'),
     [],
     '',
     '',
@@ -513,7 +514,7 @@ describe('Un CRA ', () => {
     const date = new Date();
     const collab = new Collab('user', 'test', 'last name', Role.admin);
     const projet1 = new Project(
-      'P001',
+      new ProjectCode('P001'),
       [],
       '',
       '',
@@ -521,7 +522,7 @@ describe('Un CRA ', () => {
       ProjetStatus.Active,
     );
     const projet2 = new Project(
-      'P002',
+      new ProjectCode('P002'),
       [],
       '',
       '',
@@ -604,7 +605,7 @@ describe('Un CRA ', () => {
       Status.Open,
     );
     const projet = new Project(
-      'P001',
+      new ProjectCode('P001'),
       [],
       '',
       '',
@@ -632,7 +633,7 @@ describe('Un CRA ', () => {
       Status.Open,
     );
     const projet = new Project(
-      'P001',
+      new ProjectCode('P001'),
       [],
       '',
       '',

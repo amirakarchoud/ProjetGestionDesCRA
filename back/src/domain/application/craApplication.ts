@@ -10,6 +10,7 @@ import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Holiday } from '../model/Holiday';
 import { IRepoHoliday } from '../IRepository/IRepoHoliday';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 @Injectable()
 export class CraApplication {
@@ -50,11 +51,11 @@ export class CraApplication {
     await this.projectRepository.update(project);
   }
 
-  async getProjectById(id: string) {
+  async getProjectById(id: ProjectCode) {
     return await this.projectRepository.findById(id);
   }
 
-  async deleteProject(id: string) {
+  async deleteProject(id: ProjectCode) {
     return await this.projectRepository.delete(id);
   }
 
@@ -104,7 +105,7 @@ export class CraApplication {
     return await this.collabRepository.findByIds(ids);
   }
 
-  async getProjectsLikeId(id: string) {
+  async getProjectsLikeId(id: ProjectCode) {
     return await this.projectRepository.findLikeById(id);
   }
 
@@ -120,7 +121,7 @@ export class CraApplication {
     await this.collabRepository.save(collab);
   }
 
-  async desactivateProject(code: string) {
+  async desactivateProject(code: ProjectCode) {
     const project = await this.projectRepository.findById(code);
     project.desctivateProject();
     await this.projectRepository.save(project);

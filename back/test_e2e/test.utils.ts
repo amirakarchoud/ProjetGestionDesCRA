@@ -9,6 +9,7 @@ import { CollabRepository } from '@app/repositories/collab.repository';
 import { ProjectRepository } from '@app/repositories/project.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 export async function prepareActivity(
   app: INestApplication,
@@ -24,7 +25,7 @@ export async function prepareActivity(
   const project = await createProject(app, clientId);
   activity.date = date;
   activity.matin = true;
-  activity.projectId = project.code;
+  activity.projectId = project.code.value;
   activity.collabId = clientId;
   await application.addActivity(activity);
   return activity;
@@ -35,7 +36,7 @@ export async function createProject(app: INestApplication, clientId: string) {
   const repoCollab: CollabRepository = app.get('IRepoCollab');
   const createdUser = await repoCollab.findById(clientId);
   const project = new Project(
-    'code',
+    new ProjectCode('code'),
     [createdUser.email],
     '',
     '',

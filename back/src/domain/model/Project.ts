@@ -1,14 +1,16 @@
 import { ProjetStatus } from './projetStatus.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
+
 export class Project {
-  private _collabs: string[] = [];
-  private _code: string;
-  private _name: string;
-  private _client: string;
-  private _date: Date;
+  private readonly _collabs: string[] = [];
+  private readonly _code: ProjectCode;
+  private readonly _name: string;
+  private readonly _client: string;
+  private readonly _date: Date;
   private _status: ProjetStatus = ProjetStatus.Active;
 
   constructor(
-    code: string,
+    code: ProjectCode,
     collabs: string[],
     name: string,
     client: string,
@@ -33,7 +35,7 @@ export class Project {
     return this._collabs;
   }
 
-  public get code(): string {
+  public get code(): ProjectCode {
     return this._code;
   }
 

@@ -17,6 +17,7 @@ import { ProjectRepository } from '@app/repositories/project.repository';
 import { CraRepository } from '@app/repositories/cra.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 const clientId = 'test1@proxym.fr';
 
@@ -49,16 +50,17 @@ describe('APP', () => {
     await createProject(app, clientId);
 
     const repo: ProjectRepository = app.get('IRepoProject');
-    const createdProject = await repo.findById('code');
+    const createdProject = await repo.findById(new ProjectCode('code'));
 
-    expect(createdProject).toBeDefined();
+    expect(createdProject.code).toEqual(new ProjectCode('code'));
+    expect(createdProject.status).toEqual(ProjetStatus.Active);
   });
 
   it(`delete project`, async () => {
     const repo: ProjectRepository = app.get('IRepoProject');
     const application = app.get(CraApplication);
     const project = new Project(
-      'projetTest',
+      new ProjectCode('projetTest'),
       [],
       '',
       '',
@@ -67,11 +69,11 @@ describe('APP', () => {
     );
     await repo.save(project);
 
-    await application.deleteProject('projetTest');
+    await application.deleteProject(new ProjectCode('projetTest'));
 
-    await expect(repo.findById('projetTest')).rejects.toThrowError(
-      'Project not found',
-    );
+    await expect(
+      repo.findById(new ProjectCode('projetTest')),
+    ).rejects.toThrowError('Project not found');
   });
 
   it(`create absence`, async () => {
