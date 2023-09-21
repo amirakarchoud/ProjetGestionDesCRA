@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CRA } from '@app/domain/model/CRA';
 import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 const CRAS_COLLECTION = 'CRAs';
 
@@ -40,13 +41,13 @@ export class CraRepository implements IRepoCra {
   async findByMonthYearCollab(
     month: number,
     year: number,
-    collab: string,
+    collabEmail: CollabEmail,
   ): Promise<CRA> {
     const collection = this.wrapper.getCollection(CRAS_COLLECTION);
     const doc = await collection.findOne({
       _month: month,
       _year: year,
-      '_collab._email': collab,
+      _collab: collabEmail.value,
     });
 
     if (!doc) {
@@ -56,11 +57,11 @@ export class CraRepository implements IRepoCra {
     return CRA.fromJson(doc);
   }
 
-  async findByYearUser(idUser: string, year: number): Promise<CRA[]> {
+  async findByYearUser(collabEmail: CollabEmail, year: number): Promise<CRA[]> {
     const collection = this.wrapper.getCollection(CRAS_COLLECTION);
     const docs = await collection.find({
       _year: year,
-      '_collab._email': idUser,
+      _collab: collabEmail.value,
     });
 
     const cras = [];
@@ -77,7 +78,7 @@ export class CraRepository implements IRepoCra {
     const count = await collection.countDocuments({
       _month: cra.month,
       _year: cra.year,
-      '_collab._email': cra.collab.email,
+      _collab: cra.collab.value,
     });
 
     if (count === 0) {

@@ -12,6 +12,7 @@ import { Status } from '@app/domain/model/Status';
 import { Action } from '@app/domain/model/action.enum';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 describe('Un CRA ', () => {
   const projet = new Project(
@@ -22,13 +23,20 @@ describe('Un CRA ', () => {
     new Date(),
     ProjetStatus.Active,
   );
+  const collab = new Collab(
+    new CollabEmail('user@proxym.fr'),
+    'test',
+    'last name',
+    Role.admin,
+  );
+
   it('peut supprimer des absences', () => {
     //given
     const today = new Date();
     const cra = new CRA(
       3,
       2023,
-      new Collab('user', 'test', 'last name', Role.admin),
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -45,11 +53,10 @@ describe('Un CRA ', () => {
   it('ne peut pas contenir 2 activites ou absences dans le meme creneau', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -71,11 +78,10 @@ describe('Un CRA ', () => {
   it('ne peut pas contenir plus que 2 activites ou absences par jour', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -100,11 +106,10 @@ describe('Un CRA ', () => {
   it('ne peut pas ajouter une absence apres le 5 du mois suivant', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       6,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -126,11 +131,10 @@ describe('Un CRA ', () => {
 
   it(' peut ajouter une absence dans le futur', () => {
     //Given
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       6,
       2050,
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -151,11 +155,10 @@ describe('Un CRA ', () => {
 
   it('ne peut pas ajouter une activité dans le futur', () => {
     //Given
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       6,
       2050,
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -176,7 +179,7 @@ describe('Un CRA ', () => {
     const cra = new CRA(
       3,
       2023,
-      new Collab('user', 'test', 'last name', Role.admin),
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -192,11 +195,11 @@ describe('Un CRA ', () => {
   it('peut ajouter/contenir des activites ', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -213,11 +216,11 @@ describe('Un CRA ', () => {
   it('peut ajouter/contenir des absences ', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -234,11 +237,11 @@ describe('Un CRA ', () => {
   it('ne peut pas etre soumis si il contient des jours vides ', () => {
     //Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -259,12 +262,12 @@ describe('Un CRA ', () => {
     // Given
 
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     projet.addCollab(collab.email);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -304,12 +307,12 @@ describe('Un CRA ', () => {
   it('peut retourner les dates vides', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     projet.addCollab(collab.email);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -353,11 +356,10 @@ describe('Un CRA ', () => {
   it('un jour férié nest pas considérer comme une date vide', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -379,11 +381,10 @@ describe('Un CRA ', () => {
   it('peut etre cloturé', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -397,11 +398,10 @@ describe('Un CRA ', () => {
   it('cree une regul en cas dajout dune absence apres sa cloture ', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Closed,
@@ -417,11 +417,10 @@ describe('Un CRA ', () => {
   it('cree une regul en cas de suppression dune absence apres sa cloture ', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -440,12 +439,12 @@ describe('Un CRA ', () => {
   it('cree une regul en cas dajout dune activite apres sa cloture ', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     projet.addCollab(collab.email);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Closed,
@@ -461,12 +460,12 @@ describe('Un CRA ', () => {
   it('cree une regul en cas de suppression dune activite apres sa cloture ', () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     projet.addCollab(collab.email);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -484,12 +483,12 @@ describe('Un CRA ', () => {
   it("peut retourner le nombre d'activités par projet", () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     projet.addCollab(collab.email);
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -512,7 +511,7 @@ describe('Un CRA ', () => {
   it("peut retourner le nombre d'activités pour plusieurs projets", () => {
     // Given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const projet1 = new Project(
       new ProjectCode('P001'),
       [],
@@ -535,7 +534,7 @@ describe('Un CRA ', () => {
     const cra = new CRA(
       date.getMonth(),
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -558,11 +557,11 @@ describe('Un CRA ', () => {
     // given
     const year = 2023;
     const month = 8;
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       month,
       year,
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -576,11 +575,11 @@ describe('Un CRA ', () => {
 
   it('retourne true si la date ou periode ne figure pas deja dans le cra', () => {
     const periode = true;
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       8,
       2023,
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -595,11 +594,11 @@ describe('Un CRA ', () => {
 
   it('retourne false si la date et la periode est deja remplie dans le cra', () => {
     const periode = true;
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       8,
       2023,
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -623,11 +622,11 @@ describe('Un CRA ', () => {
   it('calcul le nombre de jours vides/non remplis du mois', () => {
     // given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,

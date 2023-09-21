@@ -1,8 +1,9 @@
 import { ProjetStatus } from './projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export class Project {
-  private readonly _collabs: string[] = [];
+  private readonly _collabs: CollabEmail[] = [];
   private readonly _code: ProjectCode;
   private readonly _name: string;
   private readonly _client: string;
@@ -11,7 +12,7 @@ export class Project {
 
   constructor(
     code: ProjectCode,
-    collabs: string[],
+    collabs: CollabEmail[],
     name: string,
     client: string,
     date: Date,
@@ -27,11 +28,11 @@ export class Project {
     this._date = date;
     this._status = status;
   }
-  addCollab(collab: string) {
+  addCollab(collab: CollabEmail) {
     this._collabs.push(collab);
   }
 
-  public get collabs(): string[] {
+  public get collabs(): CollabEmail[] {
     return this._collabs;
   }
 

@@ -3,6 +3,7 @@ import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 describe('Collaborateur ', () => {
   //Given
@@ -15,13 +16,26 @@ describe('Collaborateur ', () => {
     ProjetStatus.Active,
   );
 
+  const collabAdmin = new Collab(
+    new CollabEmail('user-admin@proxym.fr'),
+    'test',
+    'last name',
+    Role.admin,
+  );
+  const collabUser = new Collab(
+    new CollabEmail('user@proxym.fr'),
+    'test',
+    'last name',
+    Role.user,
+  );
+
   it('est cree correctement ', () => {
     //given
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const collab = collabAdmin;
     collab.password = 'pass';
     //then
     expect(collab.role).toBe(Role.admin);
-    expect(collab.email).toBe('user');
+    expect(collab.email).toEqual(collabAdmin.email);
     expect(collab.name).toBe('test');
     expect(collab.password).toBe('pass');
     expect(collab.lastname).toBe('last name');
@@ -29,20 +43,18 @@ describe('Collaborateur ', () => {
 
   it('peut avoir le role admin ', () => {
     //given
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     //then
-    expect(collab.role).toBe(Role.admin);
+    expect(collabAdmin.role).toBe(Role.admin);
   });
 
   it('peut avoir le role user ', () => {
     //given
-    const collab = new Collab('user', 'test', 'last name', Role.user);
     //then
-    expect(collab.role).toBe(Role.user);
+    expect(collabUser.role).toBe(Role.user);
   });
   it('peut avoir des projets ', () => {
     //given
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
+    const collab = collabAdmin;
     //when
     collab.addProject(projet.code);
     //then

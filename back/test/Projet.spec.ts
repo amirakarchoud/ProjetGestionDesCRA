@@ -3,10 +3,16 @@ import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 describe('Un projet ', () => {
   //Given
-  const collab = new Collab('user', 'test', 'last name', Role.admin);
+  const collab = new Collab(
+    new CollabEmail('user@proxym.fr'),
+    'test',
+    'last name',
+    Role.admin,
+  );
 
   it('ne peut pas avoir des attributs null', () => {
     expect(

@@ -18,8 +18,9 @@ import { CraRepository } from '@app/repositories/cra.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
-const clientId = 'test1@proxym.fr';
+const clientId = new CollabEmail('test1@proxym.fr');
 
 describe('APP', () => {
   let app: INestApplication;
@@ -103,7 +104,7 @@ describe('APP', () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
     await prepareAbsence(app, clientId);
-    await prepareAbsence(app, 'seconduser@proxym.fr');
+    await prepareAbsence(app, new CollabEmail('seconduser@proxym.fr'));
 
     const cra = await repo.findByYearUser(clientId, date.getFullYear());
     expect(cra).toHaveLength(1);
@@ -212,17 +213,27 @@ describe('APP', () => {
   it('finds users by list of ids', async () => {
     const repo: CollabRepository = app.get('IRepoCollab');
     await repo.save(
-      new Collab('collab1@proxym.fr', 'aleks', 'kirilov', Role.user),
+      new Collab(
+        new CollabEmail('collab1@proxym.fr'),
+        'aleks',
+        'kirilov',
+        Role.user,
+      ),
     );
     await repo.save(
-      new Collab('collab2@proxym.fr', 'clément', 'sensen', Role.user),
+      new Collab(
+        new CollabEmail('collab2@proxym.fr'),
+        'clément',
+        'sensen',
+        Role.user,
+      ),
     );
 
     const craApp: CraApplication = app.get(CraApplication);
 
     const collabs = await craApp.getAllCollabsByIds([
-      'collab1@proxym.fr',
-      'collab2@proxym.fr',
+      new CollabEmail('collab1@proxym.fr'),
+      new CollabEmail('collab2@proxym.fr'),
     ]);
 
     expect(collabs).toHaveLength(2);

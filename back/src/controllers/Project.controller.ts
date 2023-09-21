@@ -4,6 +4,7 @@ import { CreateProjectDto } from '@app/dtos/CreateProjectDto';
 import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des projets')
@@ -19,14 +20,7 @@ export class ProjectController {
   async addProject(
     @Body() createProjectDto: CreateProjectDto,
   ): Promise<Project> {
-    const project = new Project(
-      new ProjectCode(createProjectDto.code),
-      createProjectDto.collabs,
-      createProjectDto.name,
-      createProjectDto.client,
-      new Date(createProjectDto.date),
-      createProjectDto.status,
-    );
+    const project = this.mapToDomain(createProjectDto);
     await this.craApplication.addProject(project);
     return await this.craApplication.getProjectById(project.code);
   }
@@ -69,14 +63,7 @@ export class ProjectController {
   async updateProject(
     @Body() createProjectDto: CreateProjectDto,
   ): Promise<void> {
-    const project = new Project(
-      new ProjectCode(createProjectDto.code),
-      createProjectDto.collabs,
-      createProjectDto.name,
-      createProjectDto.client,
-      new Date(createProjectDto.date),
-      createProjectDto.status,
-    );
+    const project = this.mapToDomain(createProjectDto);
     await this.craApplication.updateProject(project);
   }
 
@@ -97,5 +84,18 @@ export class ProjectController {
   })
   async desactivateProject(@Param('id') projectId: string): Promise<void> {
     await this.craApplication.desactivateProject(new ProjectCode(projectId));
+  }
+
+  private mapToDomain(createProjectDto: CreateProjectDto) {
+    return new Project(
+      new ProjectCode(createProjectDto.code),
+      createProjectDto.collabs.map(
+        (collabString) => new CollabEmail(collabString),
+      ),
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
+    );
   }
 }

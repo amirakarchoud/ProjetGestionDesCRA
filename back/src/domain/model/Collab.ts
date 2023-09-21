@@ -1,16 +1,17 @@
 import { Role } from './Role';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export class Collab {
-  private _role: Role;
+  private readonly _email: CollabEmail;
   private readonly _name: string;
   private readonly _lastname: string;
-  private readonly _email: string;
+  private _role: Role;
   private readonly _projects: ProjectCode[] = [];
   private _password: string;
 
   constructor(
-    email: string,
+    email: CollabEmail,
     name: string,
     lastname: string,
     role: Role,
@@ -35,7 +36,7 @@ export class Collab {
     return this._lastname;
   }
 
-  public get email(): string {
+  public get email(): CollabEmail {
     return this._email;
   }
 
@@ -60,7 +61,7 @@ export class Collab {
 
   static fromJson(json: any): Collab {
     return new Collab(
-      json._email,
+      new CollabEmail(json._id),
       json._name,
       json._lastname,
       json._role,

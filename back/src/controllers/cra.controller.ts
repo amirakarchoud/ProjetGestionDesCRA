@@ -18,6 +18,7 @@ import { DeleteActivityAbsenceDto } from '@app/dtos/deleteActivityAbsenceDto';
 import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
@@ -36,8 +37,7 @@ export class CraController {
     @Body() createAbsenceDto: CreateAbsenceDto,
   ): Promise<Absence> {
     try {
-      const result = await this.craApp.addAbsence(createAbsenceDto);
-      return result;
+      return await this.craApp.addAbsence(createAbsenceDto);
     } catch (error) {
       if (error.message.includes('it is a holiday')) {
         throw new HttpException(
@@ -214,7 +214,11 @@ export class CraController {
     @Param('month') month: number,
     @Param('year') year: number,
   ) {
-    return await this.craApp.getCraByCollabMonthYear(idUser, month, year);
+    return await this.craApp.getCraByCollabMonthYear(
+      new CollabEmail(idUser),
+      month,
+      year,
+    );
   }
 
   @Post('submit/:id')
@@ -245,7 +249,7 @@ export class CraController {
   })
   async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
     console.log('user cra by year');
-    return await this.craApp.userYearCra(idUser, year);
+    return await this.craApp.userYearCra(new CollabEmail(idUser), year);
   }
 
   @Get('monthCra/:month/:year')

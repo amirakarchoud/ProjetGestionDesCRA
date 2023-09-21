@@ -10,11 +10,12 @@ import { ProjectRepository } from '@app/repositories/project.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export async function prepareActivity(
   app: INestApplication,
   date: Date,
-  clientId: string,
+  clientId: CollabEmail,
   insertUser = true,
 ) {
   if (insertUser) {
@@ -26,12 +27,15 @@ export async function prepareActivity(
   activity.date = date;
   activity.matin = true;
   activity.projectId = project.code.value;
-  activity.collabId = clientId;
+  activity.collabId = clientId.value;
   await application.addActivity(activity);
   return activity;
 }
 
-export async function createProject(app: INestApplication, clientId: string) {
+export async function createProject(
+  app: INestApplication,
+  clientId: CollabEmail,
+) {
   const repo: ProjectRepository = app.get('IRepoProject');
   const repoCollab: CollabRepository = app.get('IRepoCollab');
   const createdUser = await repoCollab.findById(clientId);
@@ -47,7 +51,7 @@ export async function createProject(app: INestApplication, clientId: string) {
   return project;
 }
 
-export async function createUser(app: INestApplication, userId: string) {
+export async function createUser(app: INestApplication, userId: CollabEmail) {
   const repo: CollabRepository = app.get('IRepoCollab');
   await repo.save(new Collab(userId, 'some name', 'last name', Role.user));
 
@@ -56,7 +60,7 @@ export async function createUser(app: INestApplication, userId: string) {
 
 export async function prepareAbsence(
   app: INestApplication,
-  clientId: string,
+  clientId: CollabEmail,
   insertUser = true,
 ) {
   if (insertUser) {
@@ -69,7 +73,7 @@ export async function prepareAbsence(
   absence.matin = false;
   absence.raison = Raison.Maladie;
 
-  absence.collabId = clientId;
+  absence.collabId = clientId.value;
   await application.addAbsence(absence);
   return absence;
 }
