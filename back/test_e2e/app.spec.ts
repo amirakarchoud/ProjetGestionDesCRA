@@ -17,8 +17,10 @@ import { ProjectRepository } from '@app/repositories/project.repository';
 import { CraRepository } from '@app/repositories/cra.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
-const clientId = 'test1@proxym.fr';
+const clientId = new CollabEmail('test1@proxym.fr');
 
 describe('APP', () => {
   let app: INestApplication;
@@ -39,26 +41,27 @@ describe('APP', () => {
   });
 
   it(`create user from token`, async () => {
-    const repo: CollabRepository = await createUser(app);
+    const repo: CollabRepository = await createUser(app, clientId);
     const createdUser = await repo.findById(clientId);
     expect(createdUser).toBeDefined();
   });
 
   it(`create project`, async () => {
-    await createUser(app);
+    await createUser(app, clientId);
     await createProject(app, clientId);
 
     const repo: ProjectRepository = app.get('IRepoProject');
-    const createdProject = await repo.findById('code');
+    const createdProject = await repo.findById(new ProjectCode('code'));
 
-    expect(createdProject).toBeDefined();
+    expect(createdProject.code).toEqual(new ProjectCode('code'));
+    expect(createdProject.status).toEqual(ProjetStatus.Active);
   });
 
   it(`delete project`, async () => {
     const repo: ProjectRepository = app.get('IRepoProject');
     const application = app.get(CraApplication);
     const project = new Project(
-      'projetTest',
+      new ProjectCode('projetTest'),
       [],
       '',
       '',
@@ -67,11 +70,11 @@ describe('APP', () => {
     );
     await repo.save(project);
 
-    await application.deleteProject('projetTest');
+    await application.deleteProject(new ProjectCode('projetTest'));
 
-    await expect(repo.findById('projetTest')).rejects.toThrowError(
-      'Project not found',
-    );
+    await expect(
+      repo.findById(new ProjectCode('projetTest')),
+    ).rejects.toThrowError('Project not found');
   });
 
   it(`create absence`, async () => {
@@ -84,6 +87,27 @@ describe('APP', () => {
       clientId,
     );
     expect(cra.absences).toHaveLength(1);
+  });
+
+  it('can be found by month and year', async () => {
+    const date = new Date();
+    const repo: CraRepository = app.get('IRepoCra');
+    await prepareAbsence(app, clientId);
+    const cra = await repo.findByMonthYear(
+      date.getMonth() + 1,
+      date.getFullYear(),
+    );
+    expect(cra).toHaveLength(1);
+  });
+
+  it('can be found by year for a user', async () => {
+    const date = new Date();
+    const repo: CraRepository = app.get('IRepoCra');
+    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, new CollabEmail('seconduser@proxym.fr'));
+
+    const cra = await repo.findByYearUser(clientId, date.getFullYear());
+    expect(cra).toHaveLength(1);
   });
 
   it(`delete absence`, async () => {
@@ -189,17 +213,27 @@ describe('APP', () => {
   it('finds users by list of ids', async () => {
     const repo: CollabRepository = app.get('IRepoCollab');
     await repo.save(
-      new Collab('collab1@proxym.fr', 'aleks', 'kirilov', Role.user),
+      new Collab(
+        new CollabEmail('collab1@proxym.fr'),
+        'aleks',
+        'kirilov',
+        Role.user,
+      ),
     );
     await repo.save(
-      new Collab('collab2@proxym.fr', 'clément', 'sensen', Role.user),
+      new Collab(
+        new CollabEmail('collab2@proxym.fr'),
+        'clément',
+        'sensen',
+        Role.user,
+      ),
     );
 
     const craApp: CraApplication = app.get(CraApplication);
 
     const collabs = await craApp.getAllCollabsByIds([
-      'collab1@proxym.fr',
-      'collab2@proxym.fr',
+      new CollabEmail('collab1@proxym.fr'),
+      new CollabEmail('collab2@proxym.fr'),
     ]);
 
     expect(collabs).toHaveLength(2);

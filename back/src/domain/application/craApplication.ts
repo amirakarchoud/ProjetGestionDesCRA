@@ -1,4 +1,4 @@
-import { Collab } from '../../domain/model/Collab';
+import { Collab } from '@app/domain/model/Collab';
 import { IRepoCollab } from '../IRepository/IRepoCollab';
 import { Inject, Injectable } from '@nestjs/common';
 import { Role } from '../model/Role';
@@ -10,6 +10,8 @@ import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Holiday } from '../model/Holiday';
 import { IRepoHoliday } from '../IRepository/IRepoHoliday';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 @Injectable()
 export class CraApplication {
@@ -28,7 +30,7 @@ export class CraApplication {
   async addUser(jwtToken: string) {
     console.log('craqpp add user');
     const collab = new Collab(
-      'test1@proxym.fr',
+      new CollabEmail('test1@proxym.fr'),
       'test',
       'last name test',
       Role.admin,
@@ -50,11 +52,11 @@ export class CraApplication {
     await this.projectRepository.update(project);
   }
 
-  async getProjectById(id: string) {
+  async getProjectById(id: ProjectCode) {
     return await this.projectRepository.findById(id);
   }
 
-  async deleteProject(id: string) {
+  async deleteProject(id: ProjectCode) {
     return await this.projectRepository.delete(id);
   }
 
@@ -77,7 +79,7 @@ export class CraApplication {
     return await this.craService.deleteActivity(idCra, date, matin);
   }
 
-  async getCraByCollabMonthYear(idUser: string, month: number, year: number) {
+  async getCraByCollabMonthYear(idUser: CollabEmail, month: number, year: number) {
     return await this.craRepository.findByMonthYearCollab(month, year, idUser);
   }
 
@@ -92,7 +94,7 @@ export class CraApplication {
     return cra.getAvailableDatesOfCra();
   }
 
-  async userYearCra(idUser: string, year: number) {
+  async userYearCra(idUser: CollabEmail, year: number) {
     return await this.craRepository.findByYearUser(idUser, year);
   }
 
@@ -100,11 +102,11 @@ export class CraApplication {
     return await this.collabRepository.findAll();
   }
 
-  async getAllCollabsByIds(ids: string[]) {
+  async getAllCollabsByIds(ids: CollabEmail[]) {
     return await this.collabRepository.findByIds(ids);
   }
 
-  async getProjectsLikeId(id: string) {
+  async getProjectsLikeId(id: ProjectCode) {
     return await this.projectRepository.findLikeById(id);
   }
 
@@ -120,7 +122,7 @@ export class CraApplication {
     await this.collabRepository.save(collab);
   }
 
-  async desactivateProject(code: string) {
+  async desactivateProject(code: ProjectCode) {
     const project = await this.projectRepository.findById(code);
     project.desctivateProject();
     await this.projectRepository.save(project);

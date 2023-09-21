@@ -1,19 +1,27 @@
-import { Project } from './Project';
 import { Role } from './Role';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export class Collab {
+  private readonly _email: CollabEmail;
+  private readonly _name: string;
+  private readonly _lastname: string;
   private _role: Role;
-  private _name: string;
-  private _lastname: string;
-  private _email: string;
-  private _projects: Project[] = [];
+  private readonly _projects: ProjectCode[] = [];
   private _password: string;
 
-  constructor(email: string, name: string, lastname: string, role: Role) {
+  constructor(
+    email: CollabEmail,
+    name: string,
+    lastname: string,
+    role: Role,
+    projects: ProjectCode[] = [],
+  ) {
     this._lastname = lastname;
     this._name = name;
     this._email = email;
     this._role = role;
+    this._projects = projects;
   }
 
   public get password(): string {
@@ -28,12 +36,8 @@ export class Collab {
     return this._lastname;
   }
 
-  public get email(): string {
+  public get email(): CollabEmail {
     return this._email;
-  }
-
-  public set email(em: string) {
-    this._email = em;
   }
 
   public get role(): Role {
@@ -43,19 +47,25 @@ export class Collab {
     this._role = role;
   }
 
-  addProject(arg0: Project) {
-    this._projects.push(arg0);
+  addProject(project: ProjectCode) {
+    this._projects.push(project);
   }
 
   public get name(): string {
     return this._name;
   }
 
-  public get projects(): Project[] {
+  public get projects(): ProjectCode[] {
     return this._projects;
   }
 
   static fromJson(json: any): Collab {
-    return new Collab(json._email, json._name, json._lastname, json._role);
+    return new Collab(
+      new CollabEmail(json._id),
+      json._name,
+      json._lastname,
+      json._role,
+      json._projects || [],
+    );
   }
 }

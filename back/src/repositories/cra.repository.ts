@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CRA } from '@app/domain/model/CRA';
 import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 const CRAS_COLLECTION = 'CRAs';
 
@@ -21,20 +22,32 @@ export class CraRepository implements IRepoCra {
     return CRA.fromJson(doc);
   }
 
-  findByMonthYear(month: number, year: number): Promise<CRA[]> {
-    return Promise.resolve([]);
+  public async findByMonthYear(month: number, year: number): Promise<CRA[]> {
+    const collection = this.wrapper.getCollection(CRAS_COLLECTION);
+    const docs = await collection.find({
+      _month: month,
+      _year: year,
+    });
+
+    const cras = [];
+
+    for await (const craDoc of docs) {
+      cras.push(CRA.fromJson(craDoc));
+    }
+
+    return cras;
   }
 
   async findByMonthYearCollab(
     month: number,
     year: number,
-    collab: string,
+    collabEmail: CollabEmail,
   ): Promise<CRA> {
     const collection = this.wrapper.getCollection(CRAS_COLLECTION);
     const doc = await collection.findOne({
       _month: month,
       _year: year,
-      '_collab._email': collab,
+      _collab: collabEmail.value,
     });
 
     if (!doc) {
@@ -44,8 +57,20 @@ export class CraRepository implements IRepoCra {
     return CRA.fromJson(doc);
   }
 
-  findByYearUser(idUser: string, year: number): Promise<CRA[]> {
-    return Promise.resolve([]);
+  async findByYearUser(collabEmail: CollabEmail, year: number): Promise<CRA[]> {
+    const collection = this.wrapper.getCollection(CRAS_COLLECTION);
+    const docs = await collection.find({
+      _year: year,
+      _collab: collabEmail.value,
+    });
+
+    const cras = [];
+
+    for await (const craDoc of docs) {
+      cras.push(CRA.fromJson(craDoc));
+    }
+
+    return cras;
   }
 
   async save(cra: CRA): Promise<void> {
@@ -53,7 +78,7 @@ export class CraRepository implements IRepoCra {
     const count = await collection.countDocuments({
       _month: cra.month,
       _year: cra.year,
-      '_collab._email': cra.collab.email,
+      _collab: cra.collab.value,
     });
 
     if (count === 0) {

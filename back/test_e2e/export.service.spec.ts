@@ -1,15 +1,17 @@
 import { ExportService } from '@app/domain/service/export.service';
 import { MockRepoCra } from './cra.repo.mock';
 import * as ExcelJS from 'exceljs';
+import { CollabRepoMock } from './collab.repo.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
   let mockRepoCra: MockRepoCra;
+  let mockCollabRepo: CollabRepoMock;
 
   beforeEach(() => {
     mockRepoCra = new MockRepoCra();
-
-    exportService = new ExportService(mockRepoCra);
+    mockCollabRepo = new CollabRepoMock();
+    exportService = new ExportService(mockRepoCra, mockCollabRepo);
   });
 
   it(' generate Excel file with correct data', async () => {

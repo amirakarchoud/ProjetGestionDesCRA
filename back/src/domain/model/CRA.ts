@@ -7,6 +7,8 @@ import { Status } from './Status';
 import { Holiday } from './Holiday';
 import { Regul } from './Regul';
 import { Action } from './action.enum';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export class CRA {
   private _holidays: Holiday[] = [];
@@ -14,7 +16,7 @@ export class CRA {
   private _activites: Activity[] = [];
   private _month: number;
   private _year: number;
-  private _collab: Collab;
+  private _collab: CollabEmail;
   private _date: Date;
   private _etat: Etat = Etat.unsubmitted;
   private _status: Status = Status.Open;
@@ -23,7 +25,7 @@ export class CRA {
   constructor(
     month: number,
     year: number,
-    collab: Collab,
+    collab: CollabEmail,
     date: Date,
     etat: Etat,
     status: Status,
@@ -38,7 +40,7 @@ export class CRA {
   }
 
   public get id(): string {
-    return `${this.month}-${this.year}-${this._collab.email}`;
+    return `${this.month}-${this.year}-${this._collab.value}`;
   }
 
   public closeCra() {
@@ -239,7 +241,7 @@ export class CRA {
     return this._date;
   }
 
-  public get collab(): Collab {
+  public get collab(): CollabEmail {
     return this._collab;
   }
 
@@ -380,8 +382,8 @@ export class CRA {
     return true;
   }
 
-  public getActivityCountByProject(): Map<string, number> {
-    const projectActivityCountMap: Map<string, number> = new Map();
+  public getActivityCountByProject(): Map<ProjectCode, number> {
+    const projectActivityCountMap: Map<ProjectCode, number> = new Map();
     for (const activity of this._activites) {
       const projectCode = activity.project.code;
       if (projectActivityCountMap.has(projectCode)) {
@@ -405,7 +407,7 @@ export class CRA {
       _activites: this._activites,
       _month: this._month,
       _year: this._year,
-      _collab: this._collab,
+      _collab: this._collab.value,
       _date: this._date,
       _etat: this._etat,
       _status: this._status,
@@ -417,7 +419,7 @@ export class CRA {
     const cra = new CRA(
       json._month,
       json._year,
-      Collab.fromJson(json._collab),
+      new CollabEmail(json._collab),
       json._date,
       json._etat,
       json._status,

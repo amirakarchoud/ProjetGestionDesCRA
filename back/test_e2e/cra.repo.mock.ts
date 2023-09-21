@@ -2,6 +2,7 @@ import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 import { CRA } from '@app/domain/model/CRA';
 import { Absence } from '@app/domain/model/Absence';
 import { Raison } from '@app/domain/model/Raison';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 export class MockRepoCra implements IRepoCra {
   save(cra: CRA): Promise<void> {
@@ -15,12 +16,12 @@ export class MockRepoCra implements IRepoCra {
   findByMonthYearCollab(
     month: number,
     year: number,
-    collab: string,
+    collab: CollabEmail,
   ): Promise<CRA> {
     throw new Error('Method not implemented.');
   }
 
-  findByYearUser(idUser: string, year: number): Promise<CRA[]> {
+  findByYearUser(idUser: CollabEmail, year: number): Promise<CRA[]> {
     throw new Error('Method not implemented.');
   }
 

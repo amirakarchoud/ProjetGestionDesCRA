@@ -3,6 +3,8 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { CreateProjectDto } from '@app/dtos/CreateProjectDto';
 import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des projets')
@@ -18,14 +20,7 @@ export class ProjectController {
   async addProject(
     @Body() createProjectDto: CreateProjectDto,
   ): Promise<Project> {
-    const project = new Project(
-      createProjectDto.code,
-      createProjectDto.collabs,
-      createProjectDto.name,
-      createProjectDto.client,
-      new Date(createProjectDto.date),
-      createProjectDto.status,
-    );
+    const project = this.mapToDomain(createProjectDto);
     await this.craApplication.addProject(project);
     return await this.craApplication.getProjectById(project.code);
   }
@@ -57,7 +52,7 @@ export class ProjectController {
       "Récupère les détails d'un projet en fonction de l'identifiant fourni.",
   })
   async getById(@Param('id') projectId: string): Promise<Project> {
-    return await this.craApplication.getProjectById(projectId);
+    return await this.craApplication.getProjectById(new ProjectCode(projectId));
   }
 
   @Put('update')
@@ -68,14 +63,7 @@ export class ProjectController {
   async updateProject(
     @Body() createProjectDto: CreateProjectDto,
   ): Promise<void> {
-    const project = new Project(
-      createProjectDto.code,
-      createProjectDto.collabs,
-      createProjectDto.name,
-      createProjectDto.client,
-      new Date(createProjectDto.date),
-      createProjectDto.status,
-    );
+    const project = this.mapToDomain(createProjectDto);
     await this.craApplication.updateProject(project);
   }
 
@@ -86,7 +74,7 @@ export class ProjectController {
       "Effectue une recherche de projets en fonction de l'identifiant fourni.",
   })
   async getProjectsSearch(@Param('id') id: string): Promise<Project[]> {
-    return await this.craApplication.getProjectsLikeId(id);
+    return await this.craApplication.getProjectsLikeId(new ProjectCode(id));
   }
 
   @Post('desactivate/:id')
@@ -95,6 +83,19 @@ export class ProjectController {
     description: "Desactiver un projet en fonction de l'identifiant fourni.",
   })
   async desactivateProject(@Param('id') projectId: string): Promise<void> {
-    await this.craApplication.desactivateProject(projectId);
+    await this.craApplication.desactivateProject(new ProjectCode(projectId));
+  }
+
+  private mapToDomain(createProjectDto: CreateProjectDto) {
+    return new Project(
+      new ProjectCode(createProjectDto.code),
+      createProjectDto.collabs.map(
+        (collabString) => new CollabEmail(collabString),
+      ),
+      createProjectDto.name,
+      createProjectDto.client,
+      new Date(createProjectDto.date),
+      createProjectDto.status,
+    );
   }
 }

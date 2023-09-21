@@ -10,6 +10,8 @@ import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../model/Activity';
 import { IRepoProject } from '../IRepository/IRepoProject';
 import { Status } from '@app/domain/model/Status';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 @Injectable()
 export class CraService {
@@ -29,19 +31,22 @@ export class CraService {
 
   async addAbsence(createAbsenceDto: CreateAbsenceDto) {
     const dateAbs = new Date(createAbsenceDto.date);
-    const user = await this.repoCollab.findById(createAbsenceDto.collabId);
+
+    const collabEmail = new CollabEmail(createAbsenceDto.collabId);
+    const user = await this.repoCollab.findById(collabEmail);
+
     // Check if the specified CRA exists
     let cra = await this.repoCra.findByMonthYearCollab(
       dateAbs.getMonth() + 1,
       dateAbs.getFullYear(),
-      createAbsenceDto.collabId,
+      new CollabEmail(createAbsenceDto.collabId),
     );
 
     if (!cra) {
       cra = new CRA(
         dateAbs.getMonth() + 1,
         dateAbs.getFullYear(),
-        user,
+        user.email,
         new Date(),
         Etat.unsubmitted,
         Status.Open,
@@ -56,7 +61,7 @@ export class CraService {
     cra = await this.repoCra.findByMonthYearCollab(
       dateAbs.getMonth() + 1,
       dateAbs.getFullYear(),
-      createAbsenceDto.collabId,
+      new CollabEmail(createAbsenceDto.collabId),
     );
 
     //create absence
@@ -83,21 +88,24 @@ export class CraService {
 
   async addActivity(createActivityDto: CreateActivityDto) {
     const dateAct = new Date(createActivityDto.date);
-    const user = await this.repoCollab.findById(createActivityDto.collabId);
+
+    const collabEmail = new CollabEmail(createActivityDto.collabId);
+    const user = await this.repoCollab.findById(collabEmail);
+
     const project = await this.repoProject.findById(
-      createActivityDto.projectId,
+      new ProjectCode(createActivityDto.projectId),
     );
     // Check if the specified CRA exists
     let cra = await this.repoCra.findByMonthYearCollab(
       dateAct.getMonth() + 1,
       dateAct.getFullYear(),
-      createActivityDto.collabId,
+      new CollabEmail(createActivityDto.collabId),
     );
     if (!cra) {
       cra = new CRA(
         dateAct.getMonth() + 1,
         dateAct.getFullYear(),
-        user,
+        user.email,
         new Date(),
         Etat.unsubmitted,
         Status.Open,
@@ -108,11 +116,11 @@ export class CraService {
       );
       await this.repoCra.save(cra);
     }
-    cra = (await this.repoCra.findByMonthYearCollab(
+    cra = await this.repoCra.findByMonthYearCollab(
       dateAct.getMonth() + 1,
       dateAct.getFullYear(),
-      createActivityDto.collabId,
-    )) as CRA;
+      new CollabEmail(createActivityDto.collabId),
+    );
     //create absence
     const activity = new Activity(
       project,

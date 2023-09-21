@@ -5,16 +5,23 @@ import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 describe('Une absence ', () => {
+  const collab = new Collab(
+    new CollabEmail('user@proxym.fr'),
+    'test',
+    'last name',
+    Role.admin,
+  );
+
   it('ne peut pas avoir des attributs null', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -39,11 +46,10 @@ describe('Une absence ', () => {
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -60,11 +66,10 @@ describe('Une absence ', () => {
   it('peut avoir un raison', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,
@@ -79,11 +84,10 @@ describe('Une absence ', () => {
   it('est associee a une date', () => {
     //given
     const date = new Date();
-    const collab = new Collab('user', 'test', 'last name', Role.admin);
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
-      collab,
+      collab.email,
       new Date(),
       Etat.unsubmitted,
       Status.Open,

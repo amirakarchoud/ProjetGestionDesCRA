@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IRepoCollab } from '@app/domain/IRepository/IRepoCollab';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { Collab } from '@app/domain/model/Collab';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 const USER_COLLECTION = 'users';
 
@@ -25,29 +26,29 @@ export class CollabRepository implements IRepoCollab {
     return allUsers;
   }
 
-  async findById(id: string): Promise<Collab> {
+  async findById(id: CollabEmail): Promise<Collab> {
     const usersCollection = this.wrapper.db.collection<{ _id: string }>(
       'users',
     );
     const foundUser = await usersCollection.findOne({
-      _id: id,
+      _id: id.value,
     });
 
     if (!foundUser) {
-      throw new Error(`User "${id}" not found`);
+      throw new Error(`User "${id.value}" not found`);
     }
 
     return Collab.fromJson(foundUser);
   }
 
-  async findByIds(ids: string[]): Promise<Collab[]> {
+  async findByIds(ids: CollabEmail[]): Promise<Collab[]> {
     const usersCollection = this.wrapper.db.collection<{ _id: string }>(
       'users',
     );
 
     const allUsers = [];
     const findCursor = usersCollection.find({
-      _id: { $in: ids },
+      _id: { $in: ids.map((email) => email.value) },
     });
 
     for await (const userDoc of findCursor) {
@@ -59,7 +60,7 @@ export class CollabRepository implements IRepoCollab {
 
   async save(user: Collab): Promise<void> {
     const doc = {
-      _id: user.email,
+      _id: user.email.value,
       ...user,
     };
 
