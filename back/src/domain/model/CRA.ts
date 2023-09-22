@@ -1,7 +1,6 @@
 import { ForbiddenException } from '@nestjs/common';
 import { Absence } from './Absence';
 import { Activity } from './Activity';
-import { Collab } from './Collab';
 import { Etat } from './etat.enum';
 import { Status } from './Status';
 import { Holiday } from './Holiday';
@@ -9,6 +8,8 @@ import { Regul } from './Regul';
 import { Action } from './action.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Raison } from '@app/domain/model/Raison';
+import { Percentage } from '@app/domain/percentage.type';
 
 export class CRA {
   private _holidays: Holiday[] = [];
@@ -17,7 +18,6 @@ export class CRA {
   private _month: number;
   private _year: number;
   private _collab: CollabEmail;
-  private _date: Date;
   private _etat: Etat = Etat.unsubmitted;
   private _status: Status = Status.Open;
   private _history: Regul[] = [];
@@ -26,17 +26,19 @@ export class CRA {
     month: number,
     year: number,
     collab: CollabEmail,
-    date: Date,
     etat: Etat,
     status: Status,
   ) {
     this._month = month;
     this._year = year;
-    this._date = date;
     this._collab = collab;
     this._holidays = [];
     this._etat = etat;
     this._status = status;
+  }
+
+  private today() {
+    return new Date();
   }
 
   public get id(): string {
@@ -69,34 +71,6 @@ export class CRA {
 
   public set etat(etat: Etat) {
     this._etat = etat;
-  }
-
-  checkActivityOrAbsenceExists(date: Date, matin: boolean): boolean {
-    const existingActivity = this._activites.find(
-      (activity) =>
-        this.formatDate(activity.date) === this.formatDate(date) &&
-        activity.matin === matin,
-    );
-    if (existingActivity) {
-      return true;
-    }
-
-    const existingAbsence = this._absences.find(
-      (absence) =>
-        this.formatDate(absence.date) === this.formatDate(date) &&
-        absence.matin === matin,
-    );
-    if (existingAbsence) {
-      return true;
-    }
-
-    const activities = this._activites.filter(
-      (activity) => this.formatDate(activity.date) === this.formatDate(date),
-    );
-    const absences = this._absences.filter(
-      (absence) => this.formatDate(absence.date) === this.formatDate(date),
-    );
-    return activities.length + absences.length > 1;
   }
 
   calculateBusinessDays(year: number, month: number): number {
@@ -151,19 +125,23 @@ export class CRA {
     });
 
     // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.checkActivityOrAbsenceExists(dateAct, activity.matin)) {
+    if (this.getAvailableTime(dateAct) < activity.percentage) {
       //cra
       throw new Error('FULL day or period');
     }
 
+    // if(this.hasActivity(dateAct, activity.project)) {
+    //  TODO
+    // throw
+    // }
+
     //test if you have the right to add according to the date constraint
 
-    const today = new Date();
     const beforeFiveDays = new Date(); //fel CRA
-    beforeFiveDays.setDate(today.getDate() - 5);
+    beforeFiveDays.setDate(this.today().getDate() - 5);
 
     if (
-      dateAct.getMonth() != today.getMonth() &&
+      dateAct.getMonth() != this.today().getMonth() &&
       beforeFiveDays.getMonth() != dateAct.getMonth()
     ) {
       throw new ForbiddenException();
@@ -187,7 +165,7 @@ export class CRA {
     });
 
     // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.checkActivityOrAbsenceExists(dateAbs, absence.matin)) {
+    if (this.getAvailableTime(dateAbs) < absence.percentage) {
       //cra
       throw new Error('FULL day or period');
     }
@@ -237,39 +215,27 @@ export class CRA {
     return this._year;
   }
 
-  public get date(): Date {
-    return this._date;
-  }
-
   public get collab(): CollabEmail {
     return this._collab;
   }
 
-  verifyDateNotInCRA(date: Date, periode: boolean): boolean {
+  getAvailableTime(date: Date): Percentage {
     const formattedDate = this.formatDate(new Date(date));
 
-    const hasActivity = this._activites.filter(
+    const activities = this._activites.filter(
       (activity) => this.formatDate(activity.date) === formattedDate,
     );
 
-    const hasAbsence = this._absences.filter(
+    const absences = this._absences.filter(
       (absence) => this.formatDate(absence.date) === formattedDate,
     );
 
     // const hasHoliday = this._holidays.filter(holiday => this.formatDate(holiday.date) === formattedDate);
 
-    const num = hasActivity.length + hasAbsence.length;
-
-    if (num === 0) {
-      return true;
-    } else if (num > 1) {
-      return false;
-    } else {
-      const existingItem = hasActivity[0] || hasAbsence[0];
-      const existingMatin = existingItem.matin;
-
-      return existingMatin !== periode;
-    }
+    return (100 -
+      [...activities, ...absences]
+        .map((act) => act.percentage)
+        .reduce((prev, cur: Percentage) => cur + prev, 0)) as Percentage;
   }
 
   formatDate(date: Date): string {
@@ -279,11 +245,11 @@ export class CRA {
     return `${year}-${month}-${day}`;
   }
 
-  deleteAbsence(date: Date, matin: boolean) {
+  deleteAbsence(date: Date, raison: Raison) {
     this.absences.forEach((abs, index) => {
       if (
         this.formatDate(abs.date) === this.formatDate(date) &&
-        abs.matin === matin
+        abs.raison === raison
       ) {
         //check if regul
         if (this._status == Status.Closed) {
@@ -294,12 +260,11 @@ export class CRA {
     });
   }
 
-  deleteActivity(date: Date, matin: boolean) {
+  deleteActivity(date: Date, project: ProjectCode) {
     this.activities.forEach((act, index) => {
       if (
-        this.formatDate(new Date(act.date)) ===
-          this.formatDate(new Date(date)) &&
-        act.matin === matin
+        this.formatDate(act.date) === this.formatDate(date) &&
+        act.project.value === project.value
       ) {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(new Date(), Action.Delete, act));
@@ -385,7 +350,7 @@ export class CRA {
   public getActivityCountByProject(): Map<ProjectCode, number> {
     const projectActivityCountMap: Map<ProjectCode, number> = new Map();
     for (const activity of this._activites) {
-      const projectCode = activity.project.code;
+      const projectCode = activity.project;
       if (projectActivityCountMap.has(projectCode)) {
         projectActivityCountMap.set(
           projectCode,
@@ -408,7 +373,6 @@ export class CRA {
       _month: this._month,
       _year: this._year,
       _collab: this._collab.value,
-      _date: this._date,
       _etat: this._etat,
       _status: this._status,
       _history: this._history,
@@ -420,7 +384,6 @@ export class CRA {
       json._month,
       json._year,
       new CollabEmail(json._collab),
-      json._date,
       json._etat,
       json._status,
     );

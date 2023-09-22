@@ -22,24 +22,23 @@ describe('Une absence ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collab.email,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
     expect(
-      () => new Absence(null, true, new Date(), Raison.Maladie),
+      () => new Absence(null, 100, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
     expect(
       () => new Absence(cra.id, null, new Date(), Raison.Maladie),
     ).toThrowError('cannot have a null attribut');
 
-    expect(() => new Absence(cra.id, true, null, Raison.Maladie)).toThrowError(
+    expect(() => new Absence(cra.id, 100, null, Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
     );
 
-    expect(() => new Absence(cra.id, true, new Date(), null)).toThrowError(
+    expect(() => new Absence(cra.id, 100, new Date(), null)).toThrowError(
       'cannot have a null attribut',
     );
   });
@@ -50,12 +49,11 @@ describe('Une absence ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collab.email,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, true, date, Raison.Maladie);
+    const absence = new Absence(cra.id, 100, date, Raison.Maladie);
 
     //Then
     expect(absence).toBeDefined();
@@ -70,12 +68,11 @@ describe('Une absence ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collab.email,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, true, new Date(), Raison.Maladie);
+    const absence = new Absence(cra.id, 100, new Date(), Raison.Maladie);
 
     //Then
     expect(absence.raison).toBe(Raison.Maladie);
@@ -88,12 +85,11 @@ describe('Une absence ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collab.email,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, true, date, Raison.Maladie);
+    const absence = new Absence(cra.id, 100, date, Raison.Maladie);
 
     //Then
     expect(absence.date).toBe(date);

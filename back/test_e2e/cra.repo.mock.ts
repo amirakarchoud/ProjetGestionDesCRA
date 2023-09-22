@@ -30,8 +30,8 @@ export class MockRepoCra implements IRepoCra {
     activityMap.set('Project1', 10);
     activityMap.set('Project2', 20);
 
-    const abs1 = new Absence('1', true, new Date(), Raison.Conges);
-    const abs2 = new Absence('1', true, new Date(), Raison.Conges);
+    const abs1 = new Absence('1', 0, new Date(), Raison.Conges);
+    const abs2 = new Absence('1', 0, new Date(), Raison.Conges);
     return [
       {
         collab: {

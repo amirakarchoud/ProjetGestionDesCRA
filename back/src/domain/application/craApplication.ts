@@ -12,6 +12,7 @@ import { Holiday } from '../model/Holiday';
 import { IRepoHoliday } from '../IRepository/IRepoHoliday';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Raison } from '@app/domain/model/Raison';
 
 @Injectable()
 export class CraApplication {
@@ -67,19 +68,23 @@ export class CraApplication {
     return await this.craService.addAbsence(absence);
   }
 
-  async deleteAbsence(idCra: string, date: Date, matin: boolean) {
-    return await this.craService.deleteAbsence(idCra, date, matin);
+  async deleteAbsence(idCra: string, date: Date, raison: Raison) {
+    return await this.craService.deleteAbsence(idCra, date, raison);
   }
 
   async addActivity(activity: CreateActivityDto) {
     return await this.craService.addActivity(activity);
   }
 
-  async deleteActivity(idCra: string, date: Date, matin: boolean) {
-    return await this.craService.deleteActivity(idCra, date, matin);
+  async deleteActivity(idCra: string, date: Date, project: ProjectCode) {
+    return await this.craService.deleteActivity(idCra, date, project);
   }
 
-  async getCraByCollabMonthYear(idUser: CollabEmail, month: number, year: number) {
+  async getCraByCollabMonthYear(
+    idUser: CollabEmail,
+    month: number,
+    year: number,
+  ) {
     return await this.craRepository.findByMonthYearCollab(month, year, idUser);
   }
 

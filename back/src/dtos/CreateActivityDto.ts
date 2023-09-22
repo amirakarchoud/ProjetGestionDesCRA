@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Percentage } from '@app/domain/percentage.type';
 
 export class CreateActivityDto {
   @ApiProperty()
   date: Date;
   @ApiProperty()
-  matin: boolean;
+  percentage: Percentage;
   @ApiProperty()
   collabId: string;
   @ApiProperty()

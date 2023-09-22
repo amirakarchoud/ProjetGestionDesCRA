@@ -12,6 +12,7 @@ import { IRepoProject } from '../IRepository/IRepoProject';
 import { Status } from '@app/domain/model/Status';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Raison } from '@app/domain/model/Raison';
 
 @Injectable()
 export class CraService {
@@ -22,10 +23,10 @@ export class CraService {
     @Inject('IRepoHoliday') private readonly repoHoliday: IRepoHoliday,
   ) {}
 
-  async deleteAbsence(id: string, date: Date, matin: boolean) {
+  async deleteAbsence(id: string, date: Date, raison: Raison) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
-    cra.deleteAbsence(date, matin);
+    cra.deleteAbsence(date, raison);
     return await this.repoCra.save(cra);
   }
 
@@ -47,7 +48,6 @@ export class CraService {
         dateAbs.getMonth() + 1,
         dateAbs.getFullYear(),
         user.email,
-        new Date(),
         Etat.unsubmitted,
         Status.Open,
       );
@@ -67,7 +67,7 @@ export class CraService {
     //create absence
     const absence = new Absence(
       cra.id,
-      createAbsenceDto.matin,
+      createAbsenceDto.percentage,
       createAbsenceDto.date,
       createAbsenceDto.raison,
     );
@@ -79,10 +79,10 @@ export class CraService {
     return absence;
   }
 
-  async deleteActivity(id: string, date: Date, matin: boolean) {
+  async deleteActivity(id: string, date: Date, project: ProjectCode) {
     const cra = await this.repoCra.findById(id);
     cra.etat = Etat.unsubmitted;
-    cra.deleteActivity(date, matin);
+    cra.deleteActivity(date, project);
     return await this.repoCra.save(cra);
   }
 
@@ -106,7 +106,6 @@ export class CraService {
         dateAct.getMonth() + 1,
         dateAct.getFullYear(),
         user.email,
-        new Date(),
         Etat.unsubmitted,
         Status.Open,
       );
@@ -123,8 +122,8 @@ export class CraService {
     );
     //create absence
     const activity = new Activity(
-      project,
-      createActivityDto.matin,
+      project.code,
+      createActivityDto.percentage,
       dateAct,
       cra.id,
     );

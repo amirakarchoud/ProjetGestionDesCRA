@@ -25,9 +25,9 @@ export async function prepareActivity(
   const activity = new CreateActivityDto();
   const project = await createProject(app, clientId);
   activity.date = date;
-  activity.matin = true;
   activity.projectId = project.code.value;
   activity.collabId = clientId.value;
+  activity.percentage = 100;
   await application.addActivity(activity);
   return activity;
 }
@@ -70,7 +70,7 @@ export async function prepareAbsence(
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
   absence.date = date;
-  absence.matin = false;
+  absence.percentage = 0;
   absence.raison = Raison.Maladie;
 
   absence.collabId = clientId.value;
