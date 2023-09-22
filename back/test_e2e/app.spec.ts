@@ -19,12 +19,24 @@ import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Raison } from '@app/domain/model/Raison';
 
 const clientId = new CollabEmail('test1@proxym.fr');
 
 describe('APP', () => {
   let app: INestApplication;
   let moduleRef: TestingModule = null;
+
+  afterAll(async () => {
+    if (app) {
+      try {
+        await moduleRef.close();
+        await app.close();
+      } catch (e) {
+        console.error('Problem closing app', e);
+      }
+    }
+  });
 
   beforeEach(async () => {
     moduleRef = await Test.createTestingModule({
@@ -113,14 +125,14 @@ describe('APP', () => {
   it(`delete absence`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    const absence = await prepareAbsence(app, clientId);
+    await prepareAbsence(app, clientId);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
       clientId,
     );
-    await application.deleteAbsence(cra.id, date, absence.matin);
+    await application.deleteAbsence(cra.id, date, Raison.Maladie);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -150,14 +162,14 @@ describe('APP', () => {
   it(`delete activity`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    const activity = await prepareActivity(app, date, clientId);
+    await prepareActivity(app, date, clientId);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
       clientId,
     );
-    await application.deleteActivity(cra.id, date, activity.matin);
+    await application.deleteActivity(cra.id, date, new ProjectCode('code'));
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),

@@ -19,6 +19,7 @@ import { ExportService } from '@app/domain/service/export.service';
 import { Response } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { ProjectCode } from '@app/domain/model/project.code';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
@@ -95,7 +96,7 @@ export class CraController {
     return await this.craApp.deleteAbsence(
       delAbsenceDto.id,
       new Date(delAbsenceDto.date),
-      delAbsenceDto.matin,
+      delAbsenceDto.raison,
     );
   }
 
@@ -109,7 +110,7 @@ export class CraController {
       await this.craApp.deleteAbsence(
         delAbsenceDto.id,
         new Date(delAbsenceDto.date),
-        delAbsenceDto.matin,
+        delAbsenceDto.raison,
       );
     }
   }
@@ -182,7 +183,7 @@ export class CraController {
     return await this.craApp.deleteActivity(
       delActivityDto.id,
       delActivityDto.date,
-      delActivityDto.matin,
+      new ProjectCode(delActivityDto.projectCode),
     );
   }
 
@@ -198,7 +199,7 @@ export class CraController {
       await this.craApp.deleteActivity(
         delActivityDto.id,
         delActivityDto.date,
-        delActivityDto.matin,
+        new ProjectCode(delActivityDto.projectCode),
       );
     }
   }

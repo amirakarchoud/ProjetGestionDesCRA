@@ -29,7 +29,6 @@ describe('Une activite ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collabEmail,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
@@ -37,15 +36,15 @@ describe('Une activite ', () => {
     projet.addCollab(collabEmail);
     //Then
 
-    expect(() => new Activity(null, true, new Date(), cra.id)).toThrowError(
+    expect(() => new Activity(null, 100, new Date(), cra.id)).toThrowError(
       'cannot have a null attribut',
     );
 
-    expect(() => new Activity(projet, null, new Date(), cra.id)).toThrowError(
-      'cannot have a null attribut',
-    );
+    expect(
+      () => new Activity(projet.code, null, new Date(), cra.id),
+    ).toThrowError('cannot have a null attribut');
 
-    expect(() => new Activity(projet, true, null, cra.id)).toThrowError(
+    expect(() => new Activity(projet.code, 100, null, cra.id)).toThrowError(
       'cannot have a null attribut',
     );
   });
@@ -57,14 +56,13 @@ describe('Une activite ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collabEmail,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
 
     projet.addCollab(collabEmail);
     //When
-    const activity = new Activity(projet, true, new Date(), cra.id);
+    const activity = new Activity(projet.code, 100, new Date(), cra.id);
 
     //Then
     expect(activity).toBeDefined();
@@ -77,16 +75,15 @@ describe('Une activite ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collabEmail,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet, true, new Date(), cra.id);
+    const activity = new Activity(projet.code, 100, new Date(), cra.id);
 
     //Then
-    expect(activity.project).toBe(projet);
+    expect(activity.project).toEqual(new ProjectCode('123'));
   });
 
   it('est associee a une date', () => {
@@ -96,14 +93,13 @@ describe('Une activite ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collabEmail,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
 
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet, true, date, cra.id);
+    const activity = new Activity(projet.code, 100, date, cra.id);
 
     //Then
     expect(activity.date).toBe(date);
@@ -115,13 +111,12 @@ describe('Une activite ', () => {
       date.getMonth() + 1,
       date.getFullYear(),
       collabEmail,
-      new Date(),
       Etat.unsubmitted,
       Status.Open,
     );
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet, true, date, cra.id);
+    const activity = new Activity(projet.code, 100, date, cra.id);
 
     //Then
     expect(activity.cra).toBe(cra.id);

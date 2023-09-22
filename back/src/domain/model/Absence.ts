@@ -1,19 +1,20 @@
 import { Raison } from './Raison';
+import { Percentage } from '@app/domain/percentage.type';
 
 export class Absence {
-  private _matin: boolean;
+  private _percentage: Percentage;
   private _date: Date;
   private _raison: Raison;
   private _craId: string;
   toJSON(): object {
     return {
-      matin: this._matin,
+      matin: this._percentage,
       date: this._date,
       raison: this._raison,
     };
   }
 
-  constructor(cra: string, matin: boolean, date: Date, raison: Raison) {
+  constructor(cra: string, percentage: Percentage, date: Date, raison: Raison) {
     if (raison == null) {
       throw new Error('cannot have a null attribut');
     }
@@ -23,11 +24,11 @@ export class Absence {
     if (cra == null) {
       throw new Error('cannot have a null attribut');
     }
-    if (matin == null) {
+    if (percentage == null) {
       throw new Error('cannot have a null attribut');
     }
     this._craId = cra;
-    this._matin = matin;
+    this._percentage = percentage;
     this._date = date;
     this._raison = raison;
   }
@@ -36,8 +37,8 @@ export class Absence {
     return this._craId;
   }
 
-  public get matin(): boolean {
-    return this._matin;
+  public get percentage(): Percentage {
+    return this._percentage;
   }
 
   public get date(): Date {
@@ -55,7 +56,7 @@ export class Absence {
 
     return new Absence(
       json._craId,
-      json._matin,
+      json._percentage,
       new Date(json._date),
       json._raison,
     );

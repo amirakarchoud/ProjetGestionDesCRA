@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Raison } from '@app/domain/model/Raison';
 
 export class DeleteActivityAbsenceDto {
   @ApiProperty()
@@ -6,5 +7,7 @@ export class DeleteActivityAbsenceDto {
   @ApiProperty()
   date: Date;
   @ApiProperty()
-  matin: boolean;
+  raison: Raison;
+  @ApiProperty()
+  projectCode: string;
 }

@@ -1,0 +1,245 @@
+use cra;
+
+db.users.insertMany(
+  [
+    {
+      "_email": "achref.ferchichi@proxym.fr",
+      "_name": "Achref",
+      "_role": "collab",
+      "_lastname": "FERCHICHI",
+      "_password": ""
+    },
+    {
+      "_email": "aleksandar.kirilov@proxym.fr",
+      "_name": "Aleksandar",
+      "_role": "collab",
+      "_lastname": "KIRILOV",
+      "_password": ""
+    },
+    {
+      "_email": "anais.miloux@proxym.fr",
+      "_name": "Anais ",
+      "_role": "collab",
+      "_lastname": "MILOUX",
+      "_password": ""
+    },
+    {
+      "_email": "arnaud.buso@proxym.fr",
+      "_name": "arnaud",
+      "_role": "collab",
+      "_lastname": "BUSO",
+      "_password": ""
+    },
+    {
+      "_email": "charfeddine.znaidi@proxym.fr",
+      "_name": "Charfeddine",
+      "_role": "collab",
+      "_lastname": "ZNAIDI",
+      "_password": ""
+    },
+    {
+      "_email": "chedli.lakhdhar@proxym.fr",
+      "_name": "chedli",
+      "_role": "collab",
+      "_lastname": "LAKHDHAR",
+      "_password": ""
+    },
+    {
+      "_email": "chihebeddine.mahdhi@proxym.fr",
+      "_name": "chihebeddine",
+      "_role": "collab",
+      "_lastname": "MAHDHI",
+      "_password": ""
+    },
+    {
+      "_email": "christophe.to@proxym.fr",
+      "_name": "christophe",
+      "_role": "collab",
+      "_lastname": "TO",
+      "_password": ""
+    },
+    {
+      "_email": "clement.sansen@proxym.fr",
+      "_name": "clement",
+      "_role": "collab",
+      "_lastname": "SANSEN",
+      "_password": ""
+    },
+    {
+      "_email": "erick.de.muynck@proxym.fr",
+      "_name": "Erick",
+      "_role": "collab",
+      "_lastname": "DE MUYNCK",
+      "_password": ""
+    },
+    {
+      "_email": "fathi.jemli@proxym.fr",
+      "_name": "Fathi",
+      "_role": "collab",
+      "_lastname": "JEMLI",
+      "_password": ""
+    },
+    {
+      "_email": "gregoire.guenot@proxym.fr",
+      "_name": "Grégoire",
+      "_role": "admin",
+      "_lastname": "GUENOT",
+      "_password": ""
+    },
+    {
+      "_email": "hamdi.jaziri@proxym-it.com",
+      "_name": "Hamdi",
+      "_role": "collab",
+      "_lastname": "JAZIRI",
+      "_password": ""
+    },
+    {
+      "_email": "heba.sboui@proxym.fr",
+      "_name": "Heba",
+      "_role": "collab",
+      "_lastname": "SBOUI",
+      "_password": ""
+    },
+    {
+      "_email": "houssem.khouaja@proxym.fr",
+      "_name": "houssem eddine",
+      "_role": "collab",
+      "_lastname": "KHOUAJA",
+      "_password": ""
+    },
+    {
+      "_email": "ilyes.belfekih@proxym.fr",
+      "_name": "ilyes",
+      "_role": "collab",
+      "_lastname": "BELFKIH",
+      "_password": ""
+    },
+    {
+      "_email": "jugurta.aouragh@proxym.fr",
+      "_name": "jugurta",
+      "_role": "collab",
+      "_lastname": "AOURAGH",
+      "_password": ""
+    },
+    {
+      "_email": "lazhar.othmeni@proxym-it.com",
+      "_name": "Lazhar",
+      "_role": "collab",
+      "_lastname": "OTHMENI",
+      "_password": ""
+    },
+    {
+      "_email": "m.hadroug@proxym-group.com",
+      "_name": "Mohamed Hedi",
+      "_role": "collab",
+      "_lastname": "HADROUG",
+      "_password": ""
+    },
+    {
+      "_email": "majdi.marzouk@proxym.fr",
+      "_name": "Majdi",
+      "_role": "collab",
+      "_lastname": "MARZOUK",
+      "_password": ""
+    },
+    {
+      "_email": "marion.lederle@proxym.fr",
+      "_name": "Marion",
+      "_role": "collab",
+      "_lastname": "LEDERLE",
+      "_password": ""
+    },
+    {
+      "_email": "maroua.mechmech@proxym-it.com",
+      "_name": "Maroua",
+      "_role": "collab",
+      "_lastname": "MECHMECH",
+      "_password": ""
+    },
+    {
+      "_email": "med-taher.ben-torkia@proxym-it.com",
+      "_name": "Mohamed Taher",
+      "_role": "collab",
+      "_lastname": "BEN TORKIA",
+      "_password": ""
+    },
+    {
+      "_email": "mohamed.mama@proxym-group.com",
+      "_name": "Mohamed",
+      "_role": "collab",
+      "_lastname": "MAMA",
+      "_password": ""
+    },
+    {
+      "_email": "nathalie.sarri@proxym.fr",
+      "_name": "nathalie",
+      "_role": "collab",
+      "_lastname": "SARRI",
+      "_password": ""
+    },
+    {
+      "_email": "oussama.ben-kahla@proxym-it.com",
+      "_name": "Oussama",
+      "_role": "collab",
+      "_lastname": "BEN KAHLA",
+      "_password": ""
+    },
+    {
+      "_email": "oussama.lahmadi@proxym-it.com",
+      "_name": "Oussama",
+      "_role": "collab",
+      "_lastname": "LAHMADI",
+      "_password": ""
+    },
+    {
+      "_email": "pauline.febvey@proxym.fr",
+      "_name": "pauline",
+      "_role": "collab",
+      "_lastname": "FEBVEY",
+      "_password": ""
+    },
+    {
+      "_email": "rym.smai@proxym.fr",
+      "_name": "rym",
+      "_role": "collab",
+      "_lastname": "SMAI",
+      "_password": ""
+    },
+    {
+      "_email": "saber.jaziri@proxym-it.com",
+      "_name": "Saber",
+      "_role": "collab",
+      "_lastname": "JAZIRI",
+      "_password": ""
+    },
+    {
+      "_email": "samuel.antunes@proxym.fr",
+      "_name": "Samuel MARQUES",
+      "_role": "collab",
+      "_lastname": "ANTUNES",
+      "_password": ""
+    },
+    {
+      "_email": "samy.bacha@proxym.fr",
+      "_name": "Samy",
+      "_role": "collab",
+      "_lastname": "BACHA",
+      "_password": ""
+    },
+    {
+      "_email": "sofien.touati@proxym-it.com",
+      "_name": "Sofien",
+      "_role": "collab",
+      "_lastname": "TOUATI",
+      "_password": ""
+    },
+    {
+      "_email": "taha.souilah@proxym.fr",
+      "_name": "Taha",
+      "_role": "collab",
+      "_lastname": "SOUILAH",
+      "_password": ""
+    }
+  ])
+
+
