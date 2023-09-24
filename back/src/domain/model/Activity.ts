@@ -9,8 +9,9 @@ export class Activity {
   toJSON(): object {
     return {
       percentage: this._percentage,
-      date: this._date,
-      project: this._project,
+      date: this._date.toISOString(),
+      project: this._project.value,
+      craId: this._craId,
     };
   }
 

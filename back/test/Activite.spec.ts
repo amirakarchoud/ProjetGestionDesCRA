@@ -121,4 +121,20 @@ describe('Une activite ', () => {
     //Then
     expect(activity.cra).toBe(cra.id);
   });
+
+  it('peut être converti en json', () => {
+    const activity = new Activity(
+      new ProjectCode('proj'),
+      25,
+      new Date('2023-09-01'),
+      'cra-1',
+    );
+
+    expect(activity.toJSON()).toEqual({
+      craId: 'cra-1',
+      date: '2023-09-01T00:00:00.000Z',
+      percentage: 25,
+      project: 'proj',
+    });
+  });
 });
