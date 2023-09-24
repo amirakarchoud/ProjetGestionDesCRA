@@ -4,4 +4,5 @@ const config = require('./jest.config.js');
 module.exports = {
   ...config,
   testRegex: '/test_e2e/.*\\.spec\\.ts$',
+  forceExit: true,
 };
