@@ -5,6 +5,7 @@ import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { EnhancedOmit, InferIdType } from 'mongodb';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CollabEmail } from '@app/domain/model/collab.email';
 
 const PROJECT_COLLECTION = 'projects';
 
@@ -92,10 +93,10 @@ export class ProjectRepository implements IRepoProject {
     projectDoc: EnhancedOmit<{ _id: string }, '_id'> & {
       _id: InferIdType<{ _id: string }>;
     },
-  ) {
+  ): Project {
     return new Project(
       new ProjectCode(projectDoc._id),
-      projectDoc['_collabs'],
+      projectDoc['_collabs'].map((collabDoc) => new CollabEmail(collabDoc._value)),
       projectDoc['_name'],
       projectDoc['_client'],
       projectDoc['_date'],

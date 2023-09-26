@@ -1,7 +1,7 @@
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateProjectDto {
+export class ProjectDto {
   @ApiProperty()
   code: string;
   @ApiProperty()

@@ -3,7 +3,7 @@ import { CraApplication } from './domain/application/craApplication';
 import { CraService } from './domain/service/cra.service';
 import { CraController } from './controllers/cra.controller';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ProjectController } from './controllers/Project.controller';
+import { ProjectController } from './controllers/project.controller';
 import { HolidayController } from './controllers/Holiday.controller';
 import { ConfigModule } from '@nestjs/config';
 import * as process from 'process';
