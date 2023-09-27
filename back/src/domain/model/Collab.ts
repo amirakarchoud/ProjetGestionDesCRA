@@ -1,14 +1,15 @@
 import { Role } from './Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class Collab {
+  // @Exclude()
+  @Transform((params) => params.value.value)
   private readonly _email: CollabEmail;
   private readonly _name: string;
   private readonly _lastname: string;
-  private _role: Role;
   private readonly _projects: ProjectCode[] = [];
-  private _password: string;
 
   constructor(
     email: CollabEmail,
@@ -23,6 +24,18 @@ export class Collab {
     this._role = role;
     this._projects = projects;
   }
+
+  private _role: Role;
+
+  public get role(): Role {
+    return this._role;
+  }
+
+  public set role(role: Role) {
+    this._role = role;
+  }
+
+  private _password: string;
 
   public get password(): string {
     return this._password;
@@ -39,18 +52,6 @@ export class Collab {
   public get email(): CollabEmail {
     return this._email;
   }
-
-  public get role(): Role {
-    return this._role;
-  }
-  public set role(role: Role) {
-    this._role = role;
-  }
-
-  addProject(project: ProjectCode) {
-    this._projects.push(project);
-  }
-
   public get name(): string {
     return this._name;
   }
@@ -67,5 +68,9 @@ export class Collab {
       json._role,
       json._projects || [],
     );
+  }
+
+  addProject(project: ProjectCode) {
+    this._projects.push(project);
   }
 }

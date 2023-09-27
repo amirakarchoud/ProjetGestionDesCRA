@@ -98,7 +98,7 @@ export class ProjectRepository implements IRepoProject {
       projectDoc['_collabs'],
       projectDoc['_name'],
       projectDoc['_client'],
-      projectDoc['_date'],
+      projectDoc['_date'].$date,
       ProjetStatus[projectDoc['_status']],
     );
   }

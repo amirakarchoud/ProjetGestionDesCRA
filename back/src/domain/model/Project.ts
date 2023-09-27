@@ -1,14 +1,16 @@
 import { ProjetStatus } from './projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { Transform } from 'class-transformer';
 
 export class Project {
+  // @Transform((params) => params.value.map((item) => item.value))
   private readonly _collabs: CollabEmail[] = [];
+  @Transform((params) => params.value.value)
   private readonly _code: ProjectCode;
   private readonly _name: string;
   private readonly _client: string;
   private readonly _date: Date;
-  private _status: ProjetStatus = ProjetStatus.Active;
 
   constructor(
     code: ProjectCode,
@@ -28,14 +30,18 @@ export class Project {
     this._date = date;
     this._status = status;
   }
-  addCollab(collab: CollabEmail) {
-    this._collabs.push(collab);
+
+  private _status: ProjetStatus = ProjetStatus.Active;
+
+  public get status(): ProjetStatus {
+    return this._status;
   }
 
   public get collabs(): CollabEmail[] {
     return this._collabs;
   }
 
+  @Transform((value) => value.value.value)
   public get code(): ProjectCode {
     return this._code;
   }
@@ -52,8 +58,8 @@ export class Project {
     return this._date;
   }
 
-  public get status(): ProjetStatus {
-    return this._status;
+  addCollab(collab: CollabEmail) {
+    this._collabs.push(collab);
   }
 
   public desctivateProject() {
