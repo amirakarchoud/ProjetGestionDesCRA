@@ -1,12 +1,11 @@
 import { Project } from '../domain/model/Project';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { CreateProjectDto } from '@app/dtos/CreateProjectDto';
+import { ProjectDto } from '@app/dtos/project.dto';
 import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 
-//@UseGuards(AuthGuard)
 @ApiTags('Gestion des projets')
 @Controller('project')
 export class ProjectController {
@@ -17,9 +16,7 @@ export class ProjectController {
     summary: 'Ajouter un projet',
     description: 'Ajoute un nouveau projet.',
   })
-  async addProject(
-    @Body() createProjectDto: CreateProjectDto,
-  ): Promise<Project> {
+  async addProject(@Body() createProjectDto: ProjectDto): Promise<Project> {
     const project = this.mapToDomain(createProjectDto);
     await this.craApplication.addProject(project);
     return await this.craApplication.getProjectById(project.code);
@@ -30,9 +27,11 @@ export class ProjectController {
     summary: 'Liste de tous les projets',
     description: 'Récupère la liste de tous les projets enregistrés.',
   })
-  async getProjects(): Promise<Project[]> {
+  async getProjects(): Promise<ProjectDto[]> {
     console.log('getting projects back');
-    return await this.craApplication.getAllProjects();
+    return (await this.craApplication.getAllProjects()).map((proj) =>
+      mapToDto(proj),
+    );
   }
 
   @Get('user/:id')
@@ -60,9 +59,7 @@ export class ProjectController {
     summary: 'Mettre à jour un projet',
     description: "Met à jour les informations d'un projet.",
   })
-  async updateProject(
-    @Body() createProjectDto: CreateProjectDto,
-  ): Promise<void> {
+  async updateProject(@Body() createProjectDto: ProjectDto): Promise<void> {
     const project = this.mapToDomain(createProjectDto);
     await this.craApplication.updateProject(project);
   }
@@ -86,7 +83,7 @@ export class ProjectController {
     await this.craApplication.desactivateProject(new ProjectCode(projectId));
   }
 
-  private mapToDomain(createProjectDto: CreateProjectDto) {
+  private mapToDomain(createProjectDto: ProjectDto) {
     return new Project(
       new ProjectCode(createProjectDto.code),
       createProjectDto.collabs.map(
@@ -98,4 +95,15 @@ export class ProjectController {
       createProjectDto.status,
     );
   }
+}
+function mapToDto(proj: Project) {
+  const projectDto = new ProjectDto();
+  projectDto.code = proj.code.value;
+  projectDto.client = proj.client;
+  projectDto.date = proj.date;
+  projectDto.collabs = proj.collabs.map((collabMail) => collabMail.value);
+  projectDto.name = proj.name;
+  projectDto.status = proj.status;
+
+  return projectDto;
 }
