@@ -16,10 +16,10 @@ export class ProjectController {
     summary: 'Ajouter un projet',
     description: 'Ajoute un nouveau projet.',
   })
-  async addProject(@Body() createProjectDto: ProjectDto): Promise<Project> {
+  async addProject(@Body() createProjectDto: ProjectDto): Promise<ProjectDto> {
     const project = this.mapToDomain(createProjectDto);
     await this.craApplication.addProject(project);
-    return await this.craApplication.getProjectById(project.code);
+    return mapToDto(await this.craApplication.getProjectById(project.code));
   }
 
   @Get('all')
@@ -40,8 +40,10 @@ export class ProjectController {
     description:
       "Récupère la liste des projets associés à l'email de l'utilisateur fourni.",
   })
-  async getUserProjects(@Param('id') userId: string): Promise<Project[]> {
-    return await this.craApplication.getProjectsByUser(userId);
+  async getUserProjects(@Param('id') userId: string): Promise<ProjectDto[]> {
+    return (await this.craApplication.getProjectsByUser(userId)).map((value) =>
+      mapToDto(value),
+    );
   }
 
   @Get('/:id')
@@ -50,8 +52,10 @@ export class ProjectController {
     description:
       "Récupère les détails d'un projet en fonction de l'identifiant fourni.",
   })
-  async getById(@Param('id') projectId: string): Promise<Project> {
-    return await this.craApplication.getProjectById(new ProjectCode(projectId));
+  async getById(@Param('id') projectId: string): Promise<ProjectDto> {
+    return mapToDto(
+      await this.craApplication.getProjectById(new ProjectCode(projectId)),
+    );
   }
 
   @Put('update')
@@ -70,8 +74,10 @@ export class ProjectController {
     description:
       "Effectue une recherche de projets en fonction de l'identifiant fourni.",
   })
-  async getProjectsSearch(@Param('id') id: string): Promise<Project[]> {
-    return await this.craApplication.getProjectsLikeId(new ProjectCode(id));
+  async getProjectsSearch(@Param('id') id: string): Promise<ProjectDto[]> {
+    return (
+      await this.craApplication.getProjectsLikeId(new ProjectCode(id))
+    ).map((value) => mapToDto(value));
   }
 
   @Post('desactivate/:id')
@@ -96,6 +102,7 @@ export class ProjectController {
     );
   }
 }
+
 function mapToDto(proj: Project) {
   const projectDto = new ProjectDto();
   projectDto.code = proj.code.value;
