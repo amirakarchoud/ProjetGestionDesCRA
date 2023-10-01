@@ -4,7 +4,7 @@ import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { Collab } from '@app/domain/model/Collab';
 import { CollabEmail } from '@app/domain/model/collab.email';
 
-const USER_COLLECTION = 'users';
+export const USER_COLLECTION = 'users';
 
 @Injectable()
 export class CollabRepository implements IRepoCollab {

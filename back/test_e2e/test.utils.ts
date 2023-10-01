@@ -34,19 +34,32 @@ export async function prepareActivity(
 
 export async function createProject(
   app: INestApplication,
-  clientId: CollabEmail,
+  clientId?: CollabEmail,
 ) {
   const repo: ProjectRepository = app.get('IRepoProject');
   const repoCollab: CollabRepository = app.get('IRepoCollab');
-  const createdUser = await repoCollab.findById(clientId);
-  const project = new Project(
-    new ProjectCode('code'),
-    [createdUser.email],
-    '',
-    '',
-    new Date(),
-    ProjetStatus.Active,
-  );
+  let project: Project;
+
+  if (clientId) {
+    const createdUser = await repoCollab.findById(clientId);
+    project = new Project(
+      new ProjectCode('code'),
+      [createdUser.email],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+  } else {
+    project = new Project(
+      new ProjectCode('code'),
+      [],
+      '',
+      '',
+      new Date(),
+      ProjetStatus.Active,
+    );
+  }
   await repo.save(project);
   return project;
 }
