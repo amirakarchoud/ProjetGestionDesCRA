@@ -379,9 +379,19 @@ describe('Un CRA ', () => {
     const date = new Date('2023-09-01');
     const cra = createCra(projet, collab, date);
 
-    const activity = new Activity(projet.code, 50, new Date(), cra.id);
+    const activity = new Activity(
+      projet.code,
+      50,
+      new Date('2023-09-05'),
+      cra.id,
+    );
     cra.addActivity(activity);
-    const activity2 = new Activity(projet.code, 50, new Date(), cra.id);
+    const activity2 = new Activity(
+      projet.code,
+      50,
+      new Date('2023-09-05'),
+      cra.id,
+    );
 
     cra.addActivity(activity);
 
