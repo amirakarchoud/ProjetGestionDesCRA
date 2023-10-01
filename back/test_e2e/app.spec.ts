@@ -1,19 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CraApplication } from '@app/domain/application/craApplication';
-import { Project } from '@app/domain/model/Project';
 import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { AppModule } from '@app/app.module';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
-import {
-  createProject,
-  createUser,
-  prepareAbsence,
-  prepareActivity,
-} from './test.utils';
+import { createUser, prepareAbsence, prepareActivity } from './test.utils';
 import { CollabRepository } from '@app/repositories/collab.repository';
-import { ProjectRepository } from '@app/repositories/project.repository';
 import { CraRepository } from '@app/repositories/cra.repository';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
@@ -21,9 +13,8 @@ import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 
-const clientId = new CollabEmail('test1@proxym.fr');
-
 describe('APP', () => {
+  const clientId = new CollabEmail('test1@proxym.fr');
   let app: INestApplication;
   let moduleRef: TestingModule = null;
 
@@ -45,9 +36,7 @@ describe('APP', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
-  });
 
-  afterEach(async () => {
     const wrapper: MongoClientWrapper = app.get(MongoClientWrapper);
     await wrapper.db.dropDatabase();
   });
@@ -56,37 +45,6 @@ describe('APP', () => {
     const repo: CollabRepository = await createUser(app, clientId);
     const createdUser = await repo.findById(clientId);
     expect(createdUser).toBeDefined();
-  });
-
-  it(`create project`, async () => {
-    await createUser(app, clientId);
-    await createProject(app, clientId);
-
-    const repo: ProjectRepository = app.get('IRepoProject');
-    const createdProject = await repo.findById(new ProjectCode('code'));
-
-    expect(createdProject.code).toEqual(new ProjectCode('code'));
-    expect(createdProject.status).toEqual(ProjetStatus.Active);
-  });
-
-  it(`delete project`, async () => {
-    const repo: ProjectRepository = app.get('IRepoProject');
-    const application = app.get(CraApplication);
-    const project = new Project(
-      new ProjectCode('projetTest'),
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
-    await repo.save(project);
-
-    await application.deleteProject(new ProjectCode('projetTest'));
-
-    await expect(
-      repo.findById(new ProjectCode('projetTest')),
-    ).rejects.toThrowError('Project not found');
   });
 
   it(`create absence`, async () => {

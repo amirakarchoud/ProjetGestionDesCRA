@@ -6,15 +6,19 @@ import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { EnhancedOmit, InferIdType } from 'mongodb';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { USER_COLLECTION } from '@app/repositories/collab.repository';
 
 const PROJECT_COLLECTION = 'projects';
+
+export type IdType = { _id: string };
 
 @Injectable()
 export class ProjectRepository implements IRepoProject {
   constructor(
     @Inject(MongoClientWrapper)
     private wrapper: MongoClientWrapper,
-  ) {}
+  ) {
+  }
 
   async delete(id: ProjectCode): Promise<void> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
@@ -65,9 +69,30 @@ export class ProjectRepository implements IRepoProject {
   }
 
   async save(project: Project): Promise<void> {
-    const projectsCollection = this.wrapper.db.collection<{ _id: string }>(
-      PROJECT_COLLECTION,
-    );
+    const projectsCollection =
+      this.wrapper.db.collection<IdType>(PROJECT_COLLECTION);
+
+    const collabsCollection =
+      this.wrapper.db.collection<IdType>(USER_COLLECTION);
+
+    const foundCollabs = await collabsCollection
+      .find(
+        {
+          _id: {
+            $in: project.collabs.map((collab) => collab.value),
+          },
+        },
+        {
+          projection: {
+            _id: true,
+          },
+        },
+      )
+      .toArray();
+
+    if (foundCollabs.length !== project.collabs.length) {
+      throw new Error('Trying to insert a user that is not present');
+    }
 
     await projectsCollection.insertOne({
       _id: project.code.value,
@@ -76,9 +101,8 @@ export class ProjectRepository implements IRepoProject {
   }
 
   async update(updatedProject: Project): Promise<void> {
-    const projectsCollection = this.wrapper.db.collection<{ _id: string }>(
-      PROJECT_COLLECTION,
-    );
+    const projectsCollection =
+      this.wrapper.db.collection<IdType>(PROJECT_COLLECTION);
 
     await projectsCollection.updateOne(
       {
@@ -90,13 +114,15 @@ export class ProjectRepository implements IRepoProject {
   }
 
   private mapProject(
-    projectDoc: EnhancedOmit<{ _id: string }, '_id'> & {
-      _id: InferIdType<{ _id: string }>;
+    projectDoc: EnhancedOmit<IdType, '_id'> & {
+      _id: InferIdType<IdType>;
     },
   ): Project {
     return new Project(
       new ProjectCode(projectDoc._id),
-      projectDoc['_collabs'].map((collabDoc) => new CollabEmail(collabDoc._value)),
+      projectDoc['_collabs'].map(
+        (collabDoc) => new CollabEmail(collabDoc._value),
+      ),
       projectDoc['_name'],
       projectDoc['_client'],
       projectDoc['_date'].$date,

@@ -97,7 +97,7 @@ export class ProjectController {
       ),
       createProjectDto.name,
       createProjectDto.client,
-      new Date(createProjectDto.date),
+      createProjectDto.date ? new Date(createProjectDto.date) : new Date(),
       createProjectDto.status,
     );
   }
