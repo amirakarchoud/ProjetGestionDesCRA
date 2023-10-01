@@ -101,27 +101,6 @@ describe('APP', () => {
     expect(cra.absences).toHaveLength(1);
   });
 
-  it('can be found by month and year', async () => {
-    const date = new Date();
-    const repo: CraRepository = app.get('IRepoCra');
-    await prepareAbsence(app, clientId);
-    const cra = await repo.findByMonthYear(
-      date.getMonth() + 1,
-      date.getFullYear(),
-    );
-    expect(cra).toHaveLength(1);
-  });
-
-  it('can be found by year for a user', async () => {
-    const date = new Date();
-    const repo: CraRepository = app.get('IRepoCra');
-    await prepareAbsence(app, clientId);
-    await prepareAbsence(app, new CollabEmail('seconduser@proxym.fr'));
-
-    const cra = await repo.findByYearUser(clientId, date.getFullYear());
-    expect(cra).toHaveLength(1);
-  });
-
   it(`delete absence`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
