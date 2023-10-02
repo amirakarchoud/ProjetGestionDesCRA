@@ -10,7 +10,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Res,
+  Res, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
@@ -24,6 +24,7 @@ import { ProjectCode } from '@app/domain/model/project.code';
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
 @Controller('cra')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class CraController {
   constructor(
     private readonly craApp: CraApplication,
@@ -127,6 +128,8 @@ export class CraController {
       const result = await this.craApp.addActivity(createActivityDto);
       return result;
     } catch (error) {
+      console.error('An error occurred during activity add', error);
+
       if (error.message.includes('it is a holiday')) {
         throw new HttpException(
           { message: "C'est un jour ferie!" },
