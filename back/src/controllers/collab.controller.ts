@@ -1,11 +1,12 @@
 import { CraApplication } from '@app/domain/application/craApplication';
 import { Collab } from '@app/domain/model/Collab';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 
 @ApiTags('Collaborateur')
 @Controller('collab')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class CollabController {
   constructor(private readonly craApplication: CraApplication) {}
 

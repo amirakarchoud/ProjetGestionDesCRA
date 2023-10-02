@@ -1,7 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from '../domain/service/auth.service';
 
 @Controller('auth')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class AuthController {
   constructor(private authService: AuthService) {}
 

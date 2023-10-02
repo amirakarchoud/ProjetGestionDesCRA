@@ -1,10 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CraApplication } from '../domain/application/craApplication';
 import { Holiday } from '../domain/model/Holiday';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Jours feries')
 @Controller('holiday')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class HolidayController {
   constructor(private readonly craApplication: CraApplication) {}
 
