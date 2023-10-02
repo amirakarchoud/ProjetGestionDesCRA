@@ -1,5 +1,5 @@
 import { Project } from '../domain/model/Project';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProjectDto } from '@app/dtos/project.dto';
 import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -8,6 +8,7 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 
 @ApiTags('Gestion des projets')
 @Controller('project')
+@UsePipes(new ValidationPipe({ transform: true }))
 export class ProjectController {
   constructor(private readonly craApplication: CraApplication) {}
 
