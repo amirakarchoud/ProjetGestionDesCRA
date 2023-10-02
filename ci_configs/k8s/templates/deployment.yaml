@@ -15,6 +15,9 @@ spec:
         - name: gitlab-auth
       containers:
         - name: "pxf-cra-mongodb"
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-volume
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: root
@@ -30,6 +33,10 @@ spec:
           image: mongo
           ports:
             - containerPort: 27017
+      volumes:
+        - name: "mongo-volume"
+          persistentVolumeClaim:
+            claimName: "mongo-pvc"
 
 ---
 
