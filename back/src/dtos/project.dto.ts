@@ -1,6 +1,6 @@
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate } from 'class-validator';
+import { IsDate, IsISO8601 } from 'class-validator';
 
 export class ProjectDto {
   @ApiProperty()
@@ -14,7 +14,7 @@ export class ProjectDto {
   @ApiProperty()
   status: ProjetStatus;
   @ApiProperty()
-  @IsDate()
+  @IsISO8601()
   date?: Date;
   constructor() {
     this.collabs = [];
