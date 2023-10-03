@@ -91,7 +91,7 @@ describe('Un CRA ', () => {
     expect(cra.activities).toHaveLength(1);
   });
 
-  it('ne peut pas contenir plus que 2 activites ou absences par jour', () => {
+  it(`ne peut pas contenir plus que 100 d'activites ou absences par jour`, () => {
     //Given
     const date = new Date();
     const cra = new CRA(
@@ -103,7 +103,7 @@ describe('Un CRA ', () => {
     );
     projet.addCollab(collab.email);
     const activity = new Activity(projet.code, 50, new Date(), cra.id);
-    const activity2 = new Activity(projet.code, 25, new Date(), cra.id);
+    const activity2 = new Activity(projet2.code, 25, new Date(), cra.id);
     const absence = new Absence(cra.id, 50, date, Raison.Maladie);
 
     //When
@@ -203,12 +203,14 @@ describe('Un CRA ', () => {
     );
     projet.addCollab(collab.email);
     const activity = new Activity(projet.code, 50, new Date(), cra.id);
+    const activity2 = new Activity(projet2.code, 50, new Date(), cra.id);
 
     //When
     cra.addActivity(activity);
+    cra.addActivity(activity2);
 
     //Then
-    expect(cra.activities).toHaveLength(1);
+    expect(cra.activities).toHaveLength(2);
   });
 
   it('peut ajouter/contenir des absences ', () => {
@@ -223,12 +225,14 @@ describe('Un CRA ', () => {
       Status.Open,
     );
     const absence = new Absence(cra.id, 50, new Date(), Raison.Maladie);
+    const absence2 = new Absence(cra.id, 50, new Date(), Raison.RTT);
 
     //When
     cra.addAbsence(absence);
+    cra.addAbsence(absence2);
 
     //Then
-    expect(cra.absences).toHaveLength(1);
+    expect(cra.absences).toHaveLength(2);
   });
 
   it('ne peut pas etre soumis si il contient des jours vides ', () => {
@@ -385,7 +389,6 @@ describe('Un CRA ', () => {
       new Date('2023-09-05'),
       cra.id,
     );
-    cra.addActivity(activity);
     const activity2 = new Activity(
       projet.code,
       50,
