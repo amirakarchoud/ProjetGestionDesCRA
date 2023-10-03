@@ -1,0 +1,19 @@
+use cra;
+
+db.projects.insertMany(
+  [
+    {
+      "_id": "proj1",
+      _collabs: ["aleksandar.kirilov@proxym.fr"],
+      _name: "proj 1",
+      _client: "client 2",
+    },
+    {
+      "_id": "proj2",
+      _collabs: ["aleksandar.kirilov@proxym.fr"],
+      _name: "proj 2",
+      _client: "client 2",
+    },
+  ])
+
+

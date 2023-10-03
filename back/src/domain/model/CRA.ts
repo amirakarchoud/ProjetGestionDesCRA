@@ -130,10 +130,18 @@ export class CRA {
       throw new Error('FULL day or period');
     }
 
-    // if(this.hasActivity(dateAct, activity.project)) {
-    //  TODO
-    // throw
-    // }
+    const activities = this._activites.filter(
+      (existingActivity) =>
+        this.formatDate(existingActivity.date) === this.formatDate(dateAct) &&
+        existingActivity.project === activity.project,
+    );
+    if (activities.length > 0) {
+      throw new Error(
+        `There is already an activity for project "${
+          activity.project
+        }" for this date "${this.formatDate(activity.date)}"`,
+      );
+    }
 
     //test if you have the right to add according to the date constraint
 
