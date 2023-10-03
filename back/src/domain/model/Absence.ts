@@ -56,7 +56,7 @@ export class Absence {
 
     return new Absence(
       json._craId,
-      json._percentage,
+      json._percentage as Percentage,
       new Date(json._date),
       json._raison,
     );

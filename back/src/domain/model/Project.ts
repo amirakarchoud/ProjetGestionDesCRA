@@ -27,7 +27,7 @@ export class Project {
     this._collabs = collabs;
     this._name = name;
     this._client = client;
-    this._date = date;
+    this._date = date || new Date();
     this._status = status;
   }
 

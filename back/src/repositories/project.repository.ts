@@ -125,7 +125,7 @@ export class ProjectRepository implements IRepoProject {
       ),
       projectDoc['_name'],
       projectDoc['_client'],
-      projectDoc['_date'].$date,
+      projectDoc['_date'] ? projectDoc['_date'].$date : undefined,
       ProjetStatus[projectDoc['_status']],
     );
   }
