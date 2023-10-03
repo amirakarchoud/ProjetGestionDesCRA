@@ -7,7 +7,7 @@ describe('Regul ', () => {
   it('est creee correctement ', () => {
     //Given
     const date = new Date();
-    const absence = new Absence('1', 100, date, Raison.Conges);
+    const absence = new Absence(100, date, Raison.Conges);
     const regul = new Regul(date, Action.Add, absence);
 
     //Then

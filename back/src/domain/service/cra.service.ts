@@ -66,7 +66,6 @@ export class CraService {
 
     //create absence
     const absence = new Absence(
-      cra.id,
       createAbsenceDto.percentage,
       createAbsenceDto.date,
       createAbsenceDto.raison,
@@ -125,7 +124,6 @@ export class CraService {
       project.code,
       createActivityDto.percentage,
       dateAct,
-      cra.id,
     );
     // add absence to the cra
     cra.addActivity(activity);

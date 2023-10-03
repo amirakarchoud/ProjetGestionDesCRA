@@ -26,19 +26,15 @@ describe('Une absence ', () => {
       Status.Open,
     );
     //When
-    expect(
-      () => new Absence(null, 100, new Date(), Raison.Maladie),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(
-      () => new Absence(cra.id, null, new Date(), Raison.Maladie),
-    ).toThrowError('cannot have a null attribut');
-
-    expect(() => new Absence(cra.id, 100, null, Raison.Maladie)).toThrowError(
+    expect(() => new Absence(null, new Date(), Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
     );
 
-    expect(() => new Absence(cra.id, 100, new Date(), null)).toThrowError(
+    expect(() => new Absence(100, null, Raison.Maladie)).toThrowError(
+      'cannot have a null attribut',
+    );
+
+    expect(() => new Absence(100, new Date(), null)).toThrowError(
       'cannot have a null attribut',
     );
   });
@@ -53,12 +49,13 @@ describe('Une absence ', () => {
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, 100, date, Raison.Maladie);
+    const absence = new Absence(100, date, Raison.Maladie);
+    cra.addAbsence(absence);
 
     //Then
     expect(absence).toBeDefined();
-    expect(absence.cra).toBe(cra.id);
     expect(absence.date).toBe(date);
+    expect(cra.absences).toContain(absence);
   });
 
   it('peut avoir un raison', () => {
@@ -72,7 +69,7 @@ describe('Une absence ', () => {
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, 100, new Date(), Raison.Maladie);
+    const absence = new Absence(100, new Date(), Raison.Maladie);
 
     //Then
     expect(absence.raison).toBe(Raison.Maladie);
@@ -89,7 +86,7 @@ describe('Une absence ', () => {
       Status.Open,
     );
     //When
-    const absence = new Absence(cra.id, 100, date, Raison.Maladie);
+    const absence = new Absence(100, date, Raison.Maladie);
 
     //Then
     expect(absence.date).toBe(date);

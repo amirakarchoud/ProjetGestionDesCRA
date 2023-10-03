@@ -5,22 +5,16 @@ export class Activity {
   private _project: ProjectCode;
   private _percentage: Percentage;
   private _date: Date;
-  private _craId: string;
+
   toJSON(): object {
     return {
       percentage: this._percentage,
       date: this._date.toISOString(),
       project: this._project.value,
-      craId: this._craId,
     };
   }
 
-  constructor(
-    projet: ProjectCode,
-    percentage: Percentage,
-    date: Date,
-    cra: string,
-  ) {
+  constructor(projet: ProjectCode, percentage: Percentage, date: Date) {
     if (date == null) {
       throw new Error('cannot have a null attribut');
     }
@@ -33,7 +27,6 @@ export class Activity {
     this._project = projet;
     this._percentage = percentage;
     this._date = date;
-    this._craId = cra;
   }
 
   public get project(): ProjectCode {
@@ -47,9 +40,6 @@ export class Activity {
   public get percentage(): Percentage {
     return this._percentage;
   }
-  public get cra(): string {
-    return this._craId;
-  }
 
   static fromJson(json: any): Activity {
     if (!json) {
@@ -60,7 +50,6 @@ export class Activity {
       new ProjectCode(json._project._code),
       json._percentage as Percentage,
       new Date(json._date),
-      json._cra,
     );
   }
 }

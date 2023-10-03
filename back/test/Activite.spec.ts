@@ -36,15 +36,15 @@ describe('Une activite ', () => {
     projet.addCollab(collabEmail);
     //Then
 
-    expect(() => new Activity(null, 100, new Date(), cra.id)).toThrowError(
+    expect(() => new Activity(null, 100, new Date())).toThrowError(
       'cannot have a null attribut',
     );
 
-    expect(
-      () => new Activity(projet.code, null, new Date(), cra.id),
-    ).toThrowError('cannot have a null attribut');
+    expect(() => new Activity(projet.code, null, new Date())).toThrowError(
+      'cannot have a null attribut',
+    );
 
-    expect(() => new Activity(projet.code, 100, null, cra.id)).toThrowError(
+    expect(() => new Activity(projet.code, 100, null)).toThrowError(
       'cannot have a null attribut',
     );
   });
@@ -62,7 +62,7 @@ describe('Une activite ', () => {
 
     projet.addCollab(collabEmail);
     //When
-    const activity = new Activity(projet.code, 100, new Date(), cra.id);
+    const activity = new Activity(projet.code, 100, new Date());
 
     //Then
     expect(activity).toBeDefined();
@@ -80,7 +80,7 @@ describe('Une activite ', () => {
     );
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, new Date(), cra.id);
+    const activity = new Activity(projet.code, 100, new Date());
 
     //Then
     expect(activity.project).toEqual(new ProjectCode('123'));
@@ -99,11 +99,12 @@ describe('Une activite ', () => {
     //When
 
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, date, cra.id);
+    const activity = new Activity(projet.code, 100, date);
 
     //Then
     expect(activity.date).toBe(date);
   });
+
   it('est associee a un cra', () => {
     //given
     const date = new Date();
@@ -116,10 +117,11 @@ describe('Une activite ', () => {
     );
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, date, cra.id);
+    const activity = new Activity(projet.code, 100, date);
+    cra.addActivity(activity);
 
     //Then
-    expect(activity.cra).toBe(cra.id);
+    expect(cra.activities).toContain(activity);
   });
 
   it('peut être converti en json', () => {
@@ -127,11 +129,9 @@ describe('Une activite ', () => {
       new ProjectCode('proj'),
       25,
       new Date('2023-09-01'),
-      'cra-1',
     );
 
     expect(activity.toJSON()).toEqual({
-      craId: 'cra-1',
       date: '2023-09-01T00:00:00.000Z',
       percentage: 25,
       project: 'proj',
