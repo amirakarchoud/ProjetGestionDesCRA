@@ -24,7 +24,6 @@ import { ProjectCode } from '@app/domain/model/project.code';
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
 @Controller('cra')
-@UsePipes(new ValidationPipe({ transform: true }))
 export class CraController {
   constructor(
     private readonly craApp: CraApplication,

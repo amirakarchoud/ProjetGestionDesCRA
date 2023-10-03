@@ -58,7 +58,7 @@ export class Activity {
 
     return new Activity(
       new ProjectCode(json._project._code),
-      json._percentage,
+      json._percentage as Percentage,
       new Date(json._date),
       json._cra,
     );
