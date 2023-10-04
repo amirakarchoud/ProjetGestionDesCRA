@@ -10,7 +10,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  Res, UsePipes, ValidationPipe,
+  Res,
 } from '@nestjs/common';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Activity } from '../domain/model/Activity';
@@ -20,6 +20,8 @@ import { Response } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { CraDto } from '@app/dtos/cra.dto';
+import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
@@ -216,12 +218,15 @@ export class CraController {
     @Param('user') idUser: string,
     @Param('month') month: number,
     @Param('year') year: number,
-  ) {
-    return await this.craApp.getCraByCollabMonthYear(
+  ): Promise<CraDto> {
+    const projects = await this.craApp.getAllProjects();
+    const cra = await this.craApp.getCraByCollabMonthYear(
       new CollabEmail(idUser),
       month,
       year,
     );
+
+    return mapCraToCraDto(cra, projects);
   }
 
   @Post('submit/:id')
@@ -250,9 +255,14 @@ export class CraController {
     description:
       "Récupère tous les comptes rendus d'activité (CRA) d'un utilisateur pour une année donnée.",
   })
-  async userYearCra(@Param('id') idUser: string, @Param('year') year: number) {
+  async userYearCra(
+    @Param('id') idUser: string,
+    @Param('year') year: number,
+  ): Promise<CraDto[]> {
     console.log('user cra by year');
-    return await this.craApp.userYearCra(new CollabEmail(idUser), year);
+    const cras = await this.craApp.userYearCra(new CollabEmail(idUser), year);
+    const projects = await this.craApp.getAllProjects();
+    return cras.map((cra) => mapCraToCraDto(cra, projects));
   }
 
   @Get('monthCra/:month/:year')
@@ -264,8 +274,10 @@ export class CraController {
   async getMonthCra(
     @Param('month') month: number,
     @Param('year') year: number,
-  ) {
-    return await this.craApp.getMonthCra(month, year);
+  ): Promise<CraDto[]> {
+    const cras = await this.craApp.getMonthCra(month, year);
+    const projects = await this.craApp.getAllProjects();
+    return cras.map((cra) => mapCraToCraDto(cra, projects));
   }
 
   @Post('closeCras/:month/:year')

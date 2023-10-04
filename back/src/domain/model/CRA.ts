@@ -10,6 +10,7 @@ import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Percentage } from '@app/domain/percentage.type';
+import { dateMonthsEqual } from '@app/domain/model/date.utils';
 
 export class CRA {
   private _holidays: Holiday[] = [];
@@ -108,6 +109,16 @@ export class CRA {
   }
 
   public set holidays(holidays: Holiday[]) {
+    const badHoliday = holidays.find(
+      (holiday) => !dateMonthsEqual(holiday.date, this.today()),
+    );
+
+    if (badHoliday != undefined) {
+      throw new Error(
+        'Trying to add a holiday that is not for this CRA: ' +
+          JSON.stringify(badHoliday),
+      );
+    }
     this._holidays = holidays;
   }
 
@@ -178,7 +189,7 @@ export class CRA {
       throw new Error('FULL day or period');
     }
 
-    const today = new Date();
+    const today = this.today();
     const absDate = new Date(absence.date);
 
     if (
@@ -238,7 +249,14 @@ export class CRA {
       (absence) => this.formatDate(absence.date) === formattedDate,
     );
 
-    // const hasHoliday = this._holidays.filter(holiday => this.formatDate(holiday.date) === formattedDate);
+    const hasHoliday =
+      this._holidays.filter(
+        (holiday) => this.formatDate(holiday.date) === formattedDate,
+      ).length > 0;
+
+    if (hasHoliday) {
+      return 0;
+    }
 
     return (100 -
       [...activities, ...absences]
@@ -315,24 +333,7 @@ export class CRA {
   }
 
   checkDayIsFull(date: Date): boolean {
-    const existingActivity = this.activities.filter((activity) =>
-      this.isSameDate(activity.date, date),
-    );
-    if (existingActivity.length > 1) {
-      return true;
-    }
-
-    const existingAbsence = this.absences.filter((absence) =>
-      this.isSameDate(absence.date, date),
-    );
-    if (existingAbsence.length > 1) {
-      return true;
-    }
-
-    if (existingAbsence.length + existingActivity.length > 1) {
-      return true;
-    }
-    return false;
+    return this.getAvailableTime(date) < 100;
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
