@@ -327,7 +327,7 @@ describe('Un CRA ', () => {
 
   it('un jour férié nest pas considérer comme une date vide', () => {
     // Given
-    const date = new Date();
+    const date = new Date('2023-07-01');
     const cra = new CRA(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -335,6 +335,11 @@ describe('Un CRA ', () => {
       Etat.unsubmitted,
       Status.Open,
     );
+
+    cra['today'] = () => {
+      return date;
+    };
+
     cra.holidays = [new Holiday(new Date('2023-07-14'), '14 juillet')];
     const absence = new Absence(50, new Date(), Raison.Maladie);
     const absence2 = new Absence(50, new Date(), Raison.Conges);
@@ -347,6 +352,26 @@ describe('Un CRA ', () => {
     const emptyDates = cra.getAvailableDatesOfCra();
 
     expect(emptyDates).not.toContainEqual(new Date('2023-07-14'));
+  });
+
+  it('Should not allow holidays outside of cra month', () => {
+    const date = new Date('2023-01-01');
+    const cra = new CRA(
+      date.getMonth() + 1,
+      date.getFullYear(),
+      collab.email,
+      Etat.unsubmitted,
+      Status.Open,
+    );
+
+    cra['today'] = () => {
+      return date;
+    };
+
+    expect(
+      () =>
+        (cra.holidays = [new Holiday(new Date('2023-07-14'), '14 juillet')]),
+    ).toThrow();
   });
 
   it('ne permet pas 2 activités du même type pour le même projet et pour la même date', () => {
@@ -580,6 +605,19 @@ describe('Un CRA ', () => {
     const result = cra.getAvailableTime(new Date());
 
     expect(result).toBe(0);
+  });
+
+  it(`n'a pas de temps dispo pendant les holidays`, () => {
+    const cra = new CRA(9, 2023, collab.email, Etat.unsubmitted, Status.Open);
+    const date1 = new Date('2023-09-03');
+
+    cra['today'] = () => {
+      return date1;
+    };
+    cra.holidays = [new Holiday(date1, 'New Years')];
+
+    const availableTime = cra.getAvailableTime(new Date('2023-09-03'));
+    expect(availableTime).toBe(0);
   });
 
   it('calcul le nombre de jours vides/non remplis du mois', () => {
