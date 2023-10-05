@@ -10,6 +10,7 @@ import { Absence } from '@app/domain/model/Absence';
 import { Raison } from '@app/domain/model/Raison';
 import { Holiday } from '@app/domain/model/Holiday';
 import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 describe('Cra DTO Mapper', () => {
   let date;
@@ -36,9 +37,7 @@ describe('Cra DTO Mapper', () => {
       Status.Open,
     );
 
-    cra['today'] = () => {
-      return date;
-    };
+    DateProvider.setTodayDate(date);
   });
 
   it('Should map basic cra properties', () => {
@@ -107,9 +106,7 @@ describe('Cra DTO Mapper', () => {
       Status.Open,
     );
 
-    cra['today'] = () => {
-      return today;
-    };
+    DateProvider.setTodayDate(today);
 
     cra.holidays = [
       new Holiday(

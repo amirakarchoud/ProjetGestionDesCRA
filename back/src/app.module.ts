@@ -20,6 +20,7 @@ import { ProjectRepository } from '@app/repositories/project.repository';
 import { CollabController } from '@app/controllers/collab.controller';
 import { HolidaysSyncService } from '@app/services/holidays-sync.service';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
+import { ExportController } from '@app/controllers/export.controller';
 
 let dotEnvPath = '.env';
 
@@ -46,6 +47,7 @@ console.log('env is ', dotEnvPath);
     CollabController,
     HolidayController,
     AuthController,
+    ExportController,
   ],
   providers: [
     CraApplication,

@@ -1,10 +1,16 @@
-import { prepareAbsence } from './test.utils';
+import { createProject, createUser, prepareAbsence } from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@app/app.module';
 import { INestApplication } from '@nestjs/common';
 import { CraController } from '@app/controllers/cra.controller';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { Raison } from '@app/domain/model/Raison';
+import { CraApplication } from '@app/domain/application/craApplication';
+import { ProjectCode } from '@app/domain/model/project.code';
+import { CraService } from '@app/domain/service/cra.service';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 describe('CRA Controller', () => {
   let app: INestApplication;
@@ -57,5 +63,77 @@ describe('CRA Controller', () => {
       date.getFullYear(),
     );
     expect(cra).toHaveLength(1);
+  });
+
+  it('Can post cra activities by week', async () => {
+    const date = new Date('2023-09-02');
+    const nextDate = new Date('2023-09-03');
+    DateProvider.setTodayDate(new Date('2023-09-02'));
+
+    const activities: ProjectActivitiesDto[] = [
+      {
+        projectCode: 'proj1',
+        activities: [
+          {
+            date: date,
+            type: ActivityDtoType.absence,
+            percentage: 50,
+            title: Raison.Maladie,
+          },
+          {
+            date: date,
+            type: ActivityDtoType.project,
+            title: 'Fnac',
+            percentage: 50,
+          },
+        ],
+      },
+      {
+        projectCode: 'proj2',
+        activities: [
+          {
+            date: nextDate,
+            type: ActivityDtoType.absence,
+            percentage: 50,
+            title: Raison.RTT,
+          },
+          {
+            date: nextDate,
+            type: ActivityDtoType.project,
+            title: 'Darty',
+            percentage: 50,
+          },
+        ],
+      },
+    ];
+
+    await createUser(app, new CollabEmail('aleksandar.kirilov@proxym.fr'));
+    await createProject(
+      app,
+      new ProjectCode('proj1'),
+      new CollabEmail('aleksandar.kirilov@proxym.fr'),
+    );
+    await createProject(
+      app,
+      new ProjectCode('proj2'),
+      new CollabEmail('aleksandar.kirilov@proxym.fr'),
+    );
+
+    await craController.postWeek(
+      'aleksandar.kirilov@proxym.fr',
+      42,
+      activities,
+    );
+
+    const application = app.get(CraApplication);
+
+    const cra = await application.getCraByCollabMonthYear(
+      new CollabEmail('aleksandar.kirilov@proxym.fr'),
+      9,
+      2023,
+    );
+
+    expect(cra.activities).toHaveLength(2);
+    expect(cra.absences).toHaveLength(2);
   });
 });
