@@ -61,7 +61,7 @@ export class CraApplication {
     return await this.projectRepository.delete(id);
   }
 
-  async getProjectsByUser(id: string) {
+  async getProjectsByUser(id: CollabEmail) {
     return await this.projectRepository.findByUser(id);
   }
   async addAbsence(absence: CreateAbsenceDto) {

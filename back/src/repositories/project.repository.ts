@@ -50,7 +50,7 @@ export class ProjectRepository implements IRepoProject {
     return this.mapProject(projectDoc);
   }
 
-  async findByUser(idUser: string): Promise<Project[]> {
+  async findByUser(idUser: CollabEmail): Promise<Project[]> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
     await collection.find({});
 
