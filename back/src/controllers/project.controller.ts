@@ -1,5 +1,14 @@
 import { Project } from '../domain/model/Project';
-import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ProjectDto } from '@app/dtos/project.dto';
 import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -42,9 +51,9 @@ export class ProjectController {
       "Récupère la liste des projets associés à l'email de l'utilisateur fourni.",
   })
   async getUserProjects(@Param('id') userId: string): Promise<ProjectDto[]> {
-    return (await this.craApplication.getProjectsByUser(userId)).map((value) =>
-      mapToDto(value),
-    );
+    return (
+      await this.craApplication.getProjectsByUser(new CollabEmail(userId))
+    ).map((value) => mapToDto(value));
   }
 
   @Get('/:id')
