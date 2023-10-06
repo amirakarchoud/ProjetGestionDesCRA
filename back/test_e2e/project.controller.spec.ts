@@ -44,7 +44,7 @@ describe('Project controller', () => {
 
   it(`create project`, async () => {
     await createUser(app, clientId);
-    await createProject(app, clientId);
+    await createProject(app, new ProjectCode('code'), clientId);
 
     const createdProject = await projectController.getById('code');
 

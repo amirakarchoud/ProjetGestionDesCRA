@@ -11,6 +11,7 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Percentage } from '@app/domain/percentage.type';
 import { dateMonthsEqual } from '@app/domain/model/date.utils';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 export class CRA {
   private _holidays: Holiday[] = [];
@@ -36,10 +37,6 @@ export class CRA {
     this._holidays = [];
     this._etat = etat;
     this._status = status;
-  }
-
-  private today() {
-    return new Date();
   }
 
   public get id(): string {
@@ -110,7 +107,7 @@ export class CRA {
 
   public set holidays(holidays: Holiday[]) {
     const badHoliday = holidays.find(
-      (holiday) => !dateMonthsEqual(holiday.date, this.today()),
+      (holiday) => !dateMonthsEqual(holiday.date, DateProvider.today()),
     );
 
     if (badHoliday != undefined) {
@@ -157,17 +154,17 @@ export class CRA {
     //test if you have the right to add according to the date constraint
 
     const beforeFiveDays = new Date(); //fel CRA
-    beforeFiveDays.setDate(this.today().getDate() - 5);
+    beforeFiveDays.setDate(DateProvider.today().getDate() - 5);
 
     if (
-      dateAct.getMonth() != this.today().getMonth() &&
+      dateAct.getMonth() != DateProvider.today().getMonth() &&
       beforeFiveDays.getMonth() != dateAct.getMonth()
     ) {
       throw new ForbiddenException();
     }
 
     //check if regul
-    if (this._status == Status.Closed) {
+    if (this._status === Status.Closed) {
       this._history.push(new Regul(new Date(), Action.Add, activity));
     }
 
@@ -189,7 +186,7 @@ export class CRA {
       throw new Error('FULL day or period');
     }
 
-    const today = this.today();
+    const today = DateProvider.today();
     const absDate = new Date(absence.date);
 
     if (

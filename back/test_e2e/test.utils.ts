@@ -23,7 +23,7 @@ export async function prepareActivity(
   }
   const application = app.get(CraApplication);
   const activity = new CreateActivityDto();
-  const project = await createProject(app, clientId);
+  const project = await createProject(app, new ProjectCode('code'), clientId);
   activity.date = date;
   activity.projectId = project.code.value;
   activity.collabId = clientId.value;
@@ -34,6 +34,7 @@ export async function prepareActivity(
 
 export async function createProject(
   app: INestApplication,
+  code: ProjectCode,
   clientId?: CollabEmail,
 ) {
   const repo: ProjectRepository = app.get('IRepoProject');
@@ -43,7 +44,7 @@ export async function createProject(
   if (clientId) {
     const createdUser = await repoCollab.findById(clientId);
     project = new Project(
-      new ProjectCode('code'),
+      code,
       [createdUser.email],
       '',
       '',
@@ -51,14 +52,7 @@ export async function createProject(
       ProjetStatus.Active,
     );
   } else {
-    project = new Project(
-      new ProjectCode('code'),
-      [],
-      '',
-      '',
-      new Date(),
-      ProjetStatus.Active,
-    );
+    project = new Project(code, [], '', '', new Date(), ProjetStatus.Active);
   }
   await repo.save(project);
   return project;

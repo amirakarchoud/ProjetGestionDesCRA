@@ -5,6 +5,7 @@ import { Raison } from '@app/domain/model/Raison';
 export enum ActivityDtoType {
   project = 'Project',
   holiday = 'Holiday',
+  absence = 'Absence',
   blank = 'Available',
 }
 
@@ -14,4 +15,9 @@ export interface ActivityDto {
   type: ActivityDtoType | Raison;
   date: Date;
   project?: ProjectSimpleDto;
+}
+
+export interface ProjectActivitiesDto {
+  projectCode: string;
+  activities: ActivityDto[];
 }
