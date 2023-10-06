@@ -50,7 +50,7 @@ describe('APP', () => {
   it(`create absence`, async () => {
     const date = new Date();
     const repo = app.get('IRepoCra');
-    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, date, clientId);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -62,7 +62,7 @@ describe('APP', () => {
   it(`delete absence`, async () => {
     const date = new Date();
     const repo: CraRepository = app.get('IRepoCra');
-    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, date, clientId);
     const application = app.get(CraApplication);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
@@ -128,7 +128,7 @@ describe('APP', () => {
     const historyAvant = cra.history.length;
     cra.closeCra();
     await repo.save(cra);
-    await prepareAbsence(app, clientId, false);
+    await prepareAbsence(app, date, clientId, false);
     const craAfter = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -141,7 +141,7 @@ describe('APP', () => {
     const date = new Date();
     date.setDate(date.getDate() + 1);
     const repo: CraRepository = app.get('IRepoCra');
-    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, date, clientId);
     const cra = await repo.findByMonthYearCollab(
       date.getMonth() + 1,
       date.getFullYear(),

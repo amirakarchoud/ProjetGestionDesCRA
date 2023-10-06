@@ -67,13 +67,13 @@ export async function createUser(app: INestApplication, userId: CollabEmail) {
 
 export async function prepareAbsence(
   app: INestApplication,
+  date: Date,
   clientId: CollabEmail,
   insertUser = true,
 ) {
   if (insertUser) {
     await createUser(app, clientId);
   }
-  const date = new Date();
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
   absence.date = date;

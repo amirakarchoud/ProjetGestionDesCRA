@@ -13,6 +13,7 @@ import { Status } from '@app/domain/model/Status';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
+import { Collab } from '@app/domain/model/Collab';
 
 @Injectable()
 export class CraService {
@@ -44,18 +45,7 @@ export class CraService {
     );
 
     if (!cra) {
-      cra = new CRA(
-        dateAbs.getMonth() + 1,
-        dateAbs.getFullYear(),
-        user.email,
-        Etat.unsubmitted,
-        Status.Open,
-      );
-      cra.holidays = await this.repoHoliday.findForCra(
-        dateAbs.getMonth() + 1,
-        dateAbs.getFullYear(),
-      );
-      await this.repoCra.save(cra);
+      await this.createNewCra(dateAbs, user);
     }
 
     cra = await this.repoCra.findByMonthYearCollab(
@@ -101,18 +91,7 @@ export class CraService {
       new CollabEmail(createActivityDto.collabId),
     );
     if (!cra) {
-      cra = new CRA(
-        dateAct.getMonth() + 1,
-        dateAct.getFullYear(),
-        user.email,
-        Etat.unsubmitted,
-        Status.Open,
-      );
-      cra.holidays = await this.repoHoliday.findForCra(
-        dateAct.getMonth() + 1,
-        dateAct.getFullYear(),
-      );
-      await this.repoCra.save(cra);
+      await this.createNewCra(dateAct, user);
     }
     cra = await this.repoCra.findByMonthYearCollab(
       dateAct.getMonth() + 1,
@@ -131,6 +110,23 @@ export class CraService {
     await this.repoCra.save(cra);
 
     return activity;
+  }
+
+  private async createNewCra(dateAct: Date, user: Collab) {
+    const cra = new CRA(
+      dateAct.getMonth() + 1,
+      dateAct.getFullYear(),
+      user.email,
+      [],
+      [],
+      Etat.unsubmitted,
+      Status.Open,
+    );
+    cra.holidays = await this.repoHoliday.findForCra(
+      dateAct.getMonth() + 1,
+      dateAct.getFullYear(),
+    );
+    await this.repoCra.save(cra);
   }
 
   async closeAllMonthCra(month: number, year: number) {

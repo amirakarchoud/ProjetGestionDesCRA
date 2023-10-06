@@ -15,7 +15,7 @@ import { Raison } from '@app/domain/model/Raison';
 export class CraController {
   constructor(private readonly craApp: CraApplication) {}
 
-  @Post('/cra/user/:userid')
+  @Post('/cra/user/:userid/:week/:year')
   @ApiOperation({
     summary: 'Week activities',
     description:
@@ -23,6 +23,8 @@ export class CraController {
   })
   async postWeek(
     @Param('userId') collabEmail: string,
+    @Param('week') year: number,
+    @Param('year') week: number,
     @Body() activities: ProjectActivitiesDto[],
   ) {
     for (const projectActivity of activities) {

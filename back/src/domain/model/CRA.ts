@@ -28,6 +28,8 @@ export class CRA {
     month: number,
     year: number,
     collab: CollabEmail,
+    activities: Activity[],
+    absences: Absence[],
     etat: Etat,
     status: Status,
   ) {
@@ -93,16 +95,8 @@ export class CRA {
     return this._activites;
   }
 
-  public set activities(act: Activity[]) {
-    this._activites = act;
-  }
-
   public get absences(): Absence[] {
-    return this._absences;
-  }
-
-  public set absences(abs: Absence[]) {
-    this._absences = abs;
+    return [...this._absences];
   }
 
   public set holidays(holidays: Holiday[]) {
@@ -278,7 +272,7 @@ export class CRA {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(new Date(), Action.Delete, abs));
         }
-        this.absences.splice(index, 1);
+        this._absences.splice(index, 1);
       }
     });
   }
@@ -292,7 +286,7 @@ export class CRA {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(new Date(), Action.Delete, act));
         }
-        this.activities.splice(index, 1);
+        this._activites.splice(index, 1);
       }
     });
   }
@@ -390,6 +384,8 @@ export class CRA {
       json._month,
       json._year,
       new CollabEmail(json._collab),
+      [],
+      [],
       json._etat,
       json._status,
     );

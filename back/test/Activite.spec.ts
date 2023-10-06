@@ -6,6 +6,9 @@ import { Status } from '@app/domain/model/Status';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { createCra } from './utils';
+import { Collab } from '@app/domain/model/Collab';
+import { Role } from '@app/domain/model/Role';
 
 describe('Une activite ', () => {
   let projet: Project;
@@ -23,19 +26,7 @@ describe('Une activite ', () => {
   });
 
   it('ne peut pas avoir des attributs null', () => {
-    //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collabEmail,
-      Etat.unsubmitted,
-      Status.Open,
-    );
-
-    projet.addCollab(collabEmail);
     //Then
-
     expect(() => new Activity(null, 100, new Date())).toThrowError(
       'cannot have a null attribut',
     );
@@ -50,17 +41,6 @@ describe('Une activite ', () => {
   });
 
   it('peut etre cree par un collab', () => {
-    //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collabEmail,
-      Etat.unsubmitted,
-      Status.Open,
-    );
-
-    projet.addCollab(collabEmail);
     //When
     const activity = new Activity(projet.code, 100, new Date());
 
@@ -69,15 +49,6 @@ describe('Une activite ', () => {
   });
 
   it('est associee a un projet', () => {
-    //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collabEmail,
-      Etat.unsubmitted,
-      Status.Open,
-    );
     //When
     projet.addCollab(collabEmail);
     const activity = new Activity(projet.code, 100, new Date());
@@ -89,15 +60,8 @@ describe('Une activite ', () => {
   it('est associee a une date', () => {
     //given
     const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collabEmail,
-      Etat.unsubmitted,
-      Status.Open,
-    );
-    //When
 
+    //When
     projet.addCollab(collabEmail);
     const activity = new Activity(projet.code, 100, date);
 
@@ -107,14 +71,14 @@ describe('Une activite ', () => {
 
   it('est associee a un cra', () => {
     //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collabEmail,
-      Etat.unsubmitted,
-      Status.Open,
+    const collab = new Collab(
+      new CollabEmail('user@proxym.fr'),
+      'test',
+      'last name',
+      Role.admin,
     );
+    const date = new Date();
+    const cra = createCra(collab, date);
     //When
     projet.addCollab(collabEmail);
     const activity = new Activity(projet.code, 100, date);

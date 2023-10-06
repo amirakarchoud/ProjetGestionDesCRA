@@ -1,4 +1,3 @@
-import { CRA } from '@app/domain/model/CRA';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
@@ -10,7 +9,9 @@ import { Absence } from '@app/domain/model/Absence';
 import { Raison } from '@app/domain/model/Raison';
 import { Holiday } from '@app/domain/model/Holiday';
 import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
-import { DateProvider } from '@app/domain/model/date-provider';
+import { createCra } from './utils';
+import { Collab } from '@app/domain/model/Collab';
+import { Role } from '@app/domain/model/Role';
 
 describe('Cra DTO Mapper', () => {
   let date;
@@ -24,20 +25,18 @@ describe('Cra DTO Mapper', () => {
       ProjetStatus.Active,
     ),
   ];
+  const collab = new Collab(
+    new CollabEmail('user@proxym.fr'),
+    'test',
+    'last name',
+    Role.admin,
+  );
 
   let cra;
 
   beforeEach(() => {
-    date = new Date('2023/09/01');
-    cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      new CollabEmail('alex@proxym.fr'),
-      Etat.unsubmitted,
-      Status.Open,
-    );
-
-    DateProvider.setTodayDate(date);
+    date = new Date('2023/09/02');
+    cra = createCra(collab, date);
   });
 
   it('Should map basic cra properties', () => {
@@ -47,10 +46,10 @@ describe('Cra DTO Mapper', () => {
     //then
     expect(craDto).toEqual(
       expect.objectContaining({
-        id: '9-2023-alex@proxym.fr',
+        id: '9-2023-user@proxym.fr',
         month: 9,
         year: 2023,
-        collab: 'alex@proxym.fr',
+        collab: 'user@proxym.fr',
         etat: Etat.unsubmitted,
         status: Status.Open,
       }),
@@ -67,7 +66,7 @@ describe('Cra DTO Mapper', () => {
       expect.objectContaining({
         title: 'proj1',
         percentage: 75,
-        date: new Date('2023/09/01'),
+        date: date,
         type: 'Project',
         project: expect.objectContaining({
           code: 'proj1',
@@ -80,7 +79,7 @@ describe('Cra DTO Mapper', () => {
   });
 
   it('Should map absences', () => {
-    const absence = new Absence(25, date, Raison.Maladie);
+    const absence = new Absence(25, new Date('2023-09-20'), Raison.Maladie);
     cra.addAbsence(absence);
 
     const craDto = mapCraToCraDto(cra, projects);
@@ -90,23 +89,14 @@ describe('Cra DTO Mapper', () => {
         title: 'Maladie',
         percentage: 25,
         type: 'Maladie',
-        date: new Date('2023/09/01'),
+        date: new Date('2023-09-20'),
       }),
     ]);
   });
 
   it('Should map holidays', () => {
     const today = new Date('2023-01-01');
-    date = today;
-    cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      new CollabEmail('alex@proxym.fr'),
-      Etat.unsubmitted,
-      Status.Open,
-    );
-
-    DateProvider.setTodayDate(today);
+    cra = createCra(collab, today);
 
     cra.holidays = [
       new Holiday(
@@ -127,20 +117,20 @@ describe('Cra DTO Mapper', () => {
   });
 
   it('Should map available dates', () => {
-    const nextDate = new Date('2023/09/02');
-    const nextDate2 = new Date('2023/09/03');
-    const nextDate3 = new Date('2023/09/04');
+    const nextDate = new Date('2023-09-04');
+    const nextDate2 = new Date('2023-09-05');
+    const nextDate3 = new Date('2023-09-06');
 
     const absence = new Absence(100, nextDate, Raison.Maladie);
     const activity = new Activity(new ProjectCode('proj1'), 75, nextDate2);
 
-    cra.holidays = [new Holiday(nextDate3, 'New Years')];
+    cra['_holidays'] = [new Holiday(nextDate3, 'New Years')];
 
     cra.addAbsence(absence);
     cra.addActivity(activity);
 
     const craDto = mapCraToCraDto(cra, projects);
 
-    expect(craDto.availableDates.length).toEqual(20);
+    expect(craDto.availableDates.length).toEqual(18);
   });
 });

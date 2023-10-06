@@ -1,4 +1,9 @@
-import { createProject, createUser, prepareAbsence } from './test.utils';
+import {
+  createProject,
+  createUser,
+  prepareAbsence,
+  prepareActivity,
+} from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@app/app.module';
@@ -9,8 +14,8 @@ import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { Raison } from '@app/domain/model/Raison';
 import { CraApplication } from '@app/domain/application/craApplication';
 import { ProjectCode } from '@app/domain/model/project.code';
-import { CraService } from '@app/domain/service/cra.service';
 import { DateProvider } from '@app/domain/model/date-provider';
+import { CraRepository } from '@app/repositories/cra.repository';
 
 describe('CRA Controller', () => {
   let app: INestApplication;
@@ -45,7 +50,7 @@ describe('CRA Controller', () => {
 
   it('can be found by month and year', async () => {
     const date = new Date();
-    await prepareAbsence(app, clientId);
+    await prepareAbsence(app, date, clientId);
     const cra = await craController.getMonthCra(
       date.getMonth() + 1,
       date.getFullYear(),
@@ -55,8 +60,8 @@ describe('CRA Controller', () => {
 
   it('can be found by year for a user', async () => {
     const date = new Date();
-    await prepareAbsence(app, clientId);
-    await prepareAbsence(app, new CollabEmail('seconduser@proxym.fr'));
+    await prepareAbsence(app, date, clientId);
+    await prepareAbsence(app, date, new CollabEmail('seconduser@proxym.fr'));
 
     const cra = await craController.userYearCra(
       clientId.value,
@@ -65,6 +70,7 @@ describe('CRA Controller', () => {
     expect(cra).toHaveLength(1);
   });
 
+  const collabEmail = new CollabEmail('aleksandar.kirilov@proxym.fr');
   it('Can post cra activities by week', async () => {
     const date = new Date('2023-09-02');
     const nextDate = new Date('2023-09-03');
@@ -107,33 +113,69 @@ describe('CRA Controller', () => {
       },
     ];
 
-    await createUser(app, new CollabEmail('aleksandar.kirilov@proxym.fr'));
-    await createProject(
-      app,
-      new ProjectCode('proj1'),
-      new CollabEmail('aleksandar.kirilov@proxym.fr'),
-    );
-    await createProject(
-      app,
-      new ProjectCode('proj2'),
-      new CollabEmail('aleksandar.kirilov@proxym.fr'),
-    );
+    await createUser(app, collabEmail);
+    await createProject(app, new ProjectCode('proj1'), collabEmail);
+    await createProject(app, new ProjectCode('proj2'), collabEmail);
 
     await craController.postWeek(
       'aleksandar.kirilov@proxym.fr',
-      42,
+      2023,
+      35,
       activities,
     );
 
     const application = app.get(CraApplication);
 
-    const cra = await application.getCraByCollabMonthYear(
-      new CollabEmail('aleksandar.kirilov@proxym.fr'),
-      9,
-      2023,
-    );
+    const cra = await application.getCraByCollabMonthYear(collabEmail, 9, 2023);
 
     expect(cra.activities).toHaveLength(2);
     expect(cra.absences).toHaveLength(2);
+  });
+
+  it('Will replace an existing week', async () => {
+    DateProvider.setTodayDate(new Date('2023-09-04'));
+
+    await createUser(app, collabEmail);
+    await createProject(app, new ProjectCode('proj1'), collabEmail);
+
+    const date = new Date('2023-09-04'); // week 36
+    const nextDate = new Date('2023-09-05'); // week 36
+    const nextNextDate = new Date('2023-09-06'); // week 36
+
+    const repo: CraRepository = app.get('IRepoCra');
+    await prepareActivity(app, date, collabEmail, false);
+    // await prepareActivity(app, nextDate, collabEmail, false);
+    await prepareAbsence(app, nextNextDate, collabEmail, false);
+
+    const activities: ProjectActivitiesDto[] = [
+      {
+        projectCode: 'proj1',
+        activities: [
+          {
+            date: date,
+            type: ActivityDtoType.absence,
+            percentage: 50,
+            title: Raison.Maladie,
+          },
+        ],
+      },
+    ];
+
+    await craController.postWeek(
+      'aleksandar.kirilov@proxym.fr',
+      2023,
+      35,
+      activities,
+    );
+
+    const cra = (
+      await repo.findByYearUser(
+        new CollabEmail('aleksandat.kirilov@proxym.fr'),
+        2023,
+      )
+    )[0];
+
+    expect(cra.activities.length).toBe(0);
+    expect(cra.absences.length).toBe(1);
   });
 });
