@@ -1,6 +1,5 @@
 import { Project } from '@app/domain/model/Project';
 import { Absence } from '@app/domain/model/Absence';
-import { CRA } from '@app/domain/model/CRA';
 import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
@@ -528,10 +527,4 @@ describe('Un CRA ', () => {
     expect(cra.calculateEmptyDays()).toBe(expectedEmptyDays - 1);
   });
 
-  it('will delete all activities and absences for a week and year', () => {
-    const date = new Date('2023-09-04');
-    const cra = createCra(collab, date);
-
-    cra.absences;
-  });
 });

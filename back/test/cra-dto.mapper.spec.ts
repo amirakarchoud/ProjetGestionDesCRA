@@ -88,8 +88,9 @@ describe('Cra DTO Mapper', () => {
       expect.objectContaining({
         title: 'Maladie',
         percentage: 25,
-        type: 'Maladie',
+        type: 'Absence',
         date: new Date('2023-09-20'),
+        reason: 'Maladie',
       }),
     ]);
   });

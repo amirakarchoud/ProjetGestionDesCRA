@@ -12,10 +12,10 @@ import { CraController } from '@app/controllers/cra.controller';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { Raison } from '@app/domain/model/Raison';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { DateProvider } from '@app/domain/model/date-provider';
 import { CraRepository } from '@app/repositories/cra.repository';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 describe('CRA Controller', () => {
   let app: INestApplication;
@@ -71,7 +71,8 @@ describe('CRA Controller', () => {
   });
 
   const collabEmail = new CollabEmail('aleksandar.kirilov@proxym.fr');
-  it('Can post cra activities by week', async () => {
+
+  it('Can post cra activities in bulk', async () => {
     const date = new Date('2023-09-02');
     const nextDate = new Date('2023-09-03');
     DateProvider.setTodayDate(new Date('2023-09-02'));
@@ -85,6 +86,7 @@ describe('CRA Controller', () => {
             type: ActivityDtoType.absence,
             percentage: 50,
             title: Raison.Maladie,
+            reason: Raison.Maladie,
           },
           {
             date: date,
@@ -102,6 +104,7 @@ describe('CRA Controller', () => {
             type: ActivityDtoType.absence,
             percentage: 50,
             title: Raison.RTT,
+            reason: Raison.Maladie,
           },
           {
             date: nextDate,
@@ -117,10 +120,10 @@ describe('CRA Controller', () => {
     await createProject(app, new ProjectCode('proj1'), collabEmail);
     await createProject(app, new ProjectCode('proj2'), collabEmail);
 
-    await craController.postWeek(
+    await craController.postBulk(
       'aleksandar.kirilov@proxym.fr',
       2023,
-      35,
+      9,
       activities,
     );
 
@@ -132,20 +135,17 @@ describe('CRA Controller', () => {
     expect(cra.absences).toHaveLength(2);
   });
 
-  it('Will replace an existing week', async () => {
+  it('Can bulk add in replace mode', async () => {
     DateProvider.setTodayDate(new Date('2023-09-04'));
 
     await createUser(app, collabEmail);
     await createProject(app, new ProjectCode('proj1'), collabEmail);
 
     const date = new Date('2023-09-04'); // week 36
-    const nextDate = new Date('2023-09-05'); // week 36
-    const nextNextDate = new Date('2023-09-06'); // week 36
 
     const repo: CraRepository = app.get('IRepoCra');
     await prepareActivity(app, date, collabEmail, false);
-    // await prepareActivity(app, nextDate, collabEmail, false);
-    await prepareAbsence(app, nextNextDate, collabEmail, false);
+    await prepareAbsence(app, date, collabEmail, false);
 
     const activities: ProjectActivitiesDto[] = [
       {
@@ -156,21 +156,22 @@ describe('CRA Controller', () => {
             type: ActivityDtoType.absence,
             percentage: 50,
             title: Raison.Maladie,
+            reason: Raison.Maladie,
           },
         ],
       },
     ];
 
-    await craController.postWeek(
+    await craController.postBulk(
       'aleksandar.kirilov@proxym.fr',
       2023,
-      35,
+      9,
       activities,
     );
 
     const cra = (
       await repo.findByYearUser(
-        new CollabEmail('aleksandat.kirilov@proxym.fr'),
+        new CollabEmail('aleksandar.kirilov@proxym.fr'),
         2023,
       )
     )[0];

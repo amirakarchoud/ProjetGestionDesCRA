@@ -35,13 +35,14 @@ function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
   });
 }
 
-function mapAbsencesDto(absences: Absence[]) {
+function mapAbsencesDto(absences: Absence[]): ActivityDto[] {
   return absences.map((abs) => {
     return {
       title: abs.raison,
       percentage: abs.percentage,
+      type: ActivityDtoType.absence,
       date: abs.date,
-      type: abs.raison,
+      reason: abs.raison,
     };
   });
 }

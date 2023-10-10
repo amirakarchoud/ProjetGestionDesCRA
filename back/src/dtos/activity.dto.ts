@@ -12,9 +12,10 @@ export enum ActivityDtoType {
 export interface ActivityDto {
   title?: string; // raison ou project ou available
   percentage: Percentage;
-  type: ActivityDtoType | Raison;
+  type: ActivityDtoType;
   date: Date;
   project?: ProjectSimpleDto;
+  reason?: Raison;
 }
 
 export interface ProjectActivitiesDto {

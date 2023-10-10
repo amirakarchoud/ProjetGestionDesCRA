@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Project } from '@app/domain/model/Project';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
@@ -11,6 +10,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 export async function prepareActivity(
   app: INestApplication,

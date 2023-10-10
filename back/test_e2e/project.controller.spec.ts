@@ -2,7 +2,6 @@ import { createProject, createUser } from './test.utils';
 import { ProjectController } from '@app/controllers/project.controller';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectRepository } from '@app/repositories/project.repository';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { Project } from '@app/domain/model/Project';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { INestApplication } from '@nestjs/common';
@@ -11,6 +10,7 @@ import { AppModule } from '@app/app.module';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ProjectDto } from '@app/dtos/project.dto';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 describe('Project controller', () => {
   let app: INestApplication;

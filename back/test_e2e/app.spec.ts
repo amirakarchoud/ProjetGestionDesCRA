@@ -1,6 +1,5 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 import { AppModule } from '@app/app.module';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
@@ -12,6 +11,7 @@ import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 describe('APP', () => {
   const clientId = new CollabEmail('test1@proxym.fr');

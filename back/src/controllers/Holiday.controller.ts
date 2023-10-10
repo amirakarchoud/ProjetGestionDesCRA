@@ -1,7 +1,7 @@
 import { Controller, Get, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CraApplication } from '../domain/application/craApplication';
 import { Holiday } from '../domain/model/Holiday';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 @ApiTags('Jours feries')
 @Controller('holiday')
