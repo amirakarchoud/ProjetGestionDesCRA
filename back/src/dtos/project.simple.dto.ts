@@ -5,9 +5,9 @@ export class ProjectSimpleDto {
   @ApiProperty()
   code: string;
   @ApiProperty()
-  name: string;
+  name?: string;
   @ApiProperty()
-  client: string;
+  client?: string;
   @ApiProperty()
-  status: ProjetStatus;
+  status?: ProjetStatus;
 }

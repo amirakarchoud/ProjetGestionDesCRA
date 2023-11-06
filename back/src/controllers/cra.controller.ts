@@ -1,13 +1,19 @@
-import { CraApplication } from '../domain/application/craApplication';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseArrayPipe,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraDto } from '@app/dtos/cra.dto';
 import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
-import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
-import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
-import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
-import { Raison } from '@app/domain/model/Raison';
+import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
@@ -15,39 +21,25 @@ import { Raison } from '@app/domain/model/Raison';
 export class CraController {
   constructor(private readonly craApp: CraApplication) {}
 
-  @Post('/cra/user/:userid')
+  @Post('/user/:user/:year/:month')
   @ApiOperation({
     summary: 'Week activities',
     description:
       'Post multiple CRA days with for multiple projects. Usually for an entire week',
   })
-  async postWeek(
-    @Param('userId') collabEmail: string,
-    @Body() activities: ProjectActivitiesDto[],
+  async postBulk(
+    @Param('user') collabEmail: string,
+    @Param('year') year: number,
+    @Param('month') month: number,
+    @Body(new ParseArrayPipe({ items: ProjectActivitiesDto }))
+    activities: ProjectActivitiesDto[],
   ) {
-    for (const projectActivity of activities) {
-      const projectCode = projectActivity.projectCode;
-
-      for (const activityDto of projectActivity.activities) {
-        if (activityDto.type === ActivityDtoType.project) {
-          const createActivityDto = new CreateActivityDto();
-          createActivityDto.collabId = collabEmail;
-          createActivityDto.date = activityDto.date;
-          createActivityDto.percentage = activityDto.percentage;
-          createActivityDto.projectId = projectCode;
-
-          await this.craApp.addActivity(createActivityDto);
-        } else if (activityDto.type === ActivityDtoType.absence) {
-          const absence: CreateAbsenceDto = new CreateAbsenceDto();
-          absence.date = activityDto.date;
-          absence.raison = Raison[activityDto.title];
-          absence.percentage = activityDto.percentage;
-          absence.collabId = collabEmail;
-
-          await this.craApp.addAbsence(absence);
-        }
-      }
-    }
+    await this.craApp.bulkAdd(
+      new CollabEmail(collabEmail),
+      month,
+      year,
+      activities,
+    );
   }
 
   @Get('get/:user/:month/:year')

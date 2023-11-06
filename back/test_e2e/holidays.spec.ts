@@ -4,7 +4,6 @@ import { AppModule } from '@app/app.module';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
 import { MockHolidayFetchService } from './mock-holiday-fetch.service';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { HolidaysSyncService } from '@app/services/holidays-sync.service';
 import { IRepoHoliday } from '@app/domain/IRepository/IRepoHoliday';
 

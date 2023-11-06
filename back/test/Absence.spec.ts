@@ -6,6 +6,7 @@ import { Role } from '@app/domain/model/Role';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { createCra } from './utils';
 
 describe('Une absence ', () => {
   const collab = new Collab(
@@ -16,15 +17,6 @@ describe('Une absence ', () => {
   );
 
   it('ne peut pas avoir des attributs null', () => {
-    //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collab.email,
-      Etat.unsubmitted,
-      Status.Open,
-    );
     //When
     expect(() => new Absence(null, new Date(), Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
@@ -41,13 +33,7 @@ describe('Une absence ', () => {
   it('peut etre cree par un collab', () => {
     //given
     const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collab.email,
-      Etat.unsubmitted,
-      Status.Open,
-    );
+    const cra = createCra(collab, date);
     //When
     const absence = new Absence(100, date, Raison.Maladie);
     cra.addAbsence(absence);
@@ -59,18 +45,8 @@ describe('Une absence ', () => {
   });
 
   it('peut avoir un raison', () => {
-    //given
-    const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collab.email,
-      Etat.unsubmitted,
-      Status.Open,
-    );
     //When
     const absence = new Absence(100, new Date(), Raison.Maladie);
-
     //Then
     expect(absence.raison).toBe(Raison.Maladie);
   });
@@ -78,16 +54,8 @@ describe('Une absence ', () => {
   it('est associee a une date', () => {
     //given
     const date = new Date();
-    const cra = new CRA(
-      date.getMonth() + 1,
-      date.getFullYear(),
-      collab.email,
-      Etat.unsubmitted,
-      Status.Open,
-    );
     //When
     const absence = new Absence(100, date, Raison.Maladie);
-
     //Then
     expect(absence.date).toBe(date);
   });

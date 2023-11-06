@@ -10,10 +10,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ProjectDto } from '@app/dtos/project.dto';
-import { CraApplication } from '../domain/application/craApplication';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 @ApiTags('Gestion des projets')
 @Controller('project')

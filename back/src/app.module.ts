@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CraApplication } from './domain/application/craApplication';
-import { CraService } from './domain/service/cra.service';
 import { CraController } from './controllers/cra.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ProjectController } from './controllers/project.controller';
@@ -21,6 +19,7 @@ import { CollabController } from '@app/controllers/collab.controller';
 import { HolidaysSyncService } from '@app/services/holidays-sync.service';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
 import { ExportController } from '@app/controllers/export.controller';
+import { CraApplication } from '@app/domain/application/cra.application';
 
 let dotEnvPath = '.env';
 
@@ -51,7 +50,6 @@ console.log('env is ', dotEnvPath);
   ],
   providers: [
     CraApplication,
-    CraService,
     AuthService,
     ExportService,
     HolidaysSyncService,

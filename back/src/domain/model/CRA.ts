@@ -13,6 +13,10 @@ import { Percentage } from '@app/domain/percentage.type';
 import { dateMonthsEqual } from '@app/domain/model/date.utils';
 import { DateProvider } from '@app/domain/model/date-provider';
 
+export type BulkAddOptions = {
+  replace: boolean;
+};
+
 export class CRA {
   private _holidays: Holiday[] = [];
   private _absences: Absence[] = [];
@@ -28,6 +32,8 @@ export class CRA {
     month: number,
     year: number,
     collab: CollabEmail,
+    activities: Activity[],
+    absences: Absence[],
     etat: Etat,
     status: Status,
   ) {
@@ -90,19 +96,11 @@ export class CRA {
   }
 
   public get activities(): Activity[] {
-    return this._activites;
-  }
-
-  public set activities(act: Activity[]) {
-    this._activites = act;
+    return [...this._activites];
   }
 
   public get absences(): Absence[] {
-    return this._absences;
-  }
-
-  public set absences(abs: Absence[]) {
-    this._absences = abs;
+    return [...this._absences];
   }
 
   public set holidays(holidays: Holiday[]) {
@@ -125,6 +123,7 @@ export class CRA {
 
   addActivity(activity: Activity) {
     const dateAct = new Date(activity.date);
+
     //check if holiday
     this.holidays.forEach((element) => {
       if (this.formatDate(element.date) == this.formatDate(activity.date)) {
@@ -173,6 +172,7 @@ export class CRA {
 
   addAbsence(absence: Absence) {
     const dateAbs = new Date(absence.date);
+
     //check if holiday
     this.holidays.forEach((element) => {
       if (this.formatDate(element.date) == this.formatDate(dateAbs)) {
@@ -278,7 +278,62 @@ export class CRA {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(new Date(), Action.Delete, abs));
         }
-        this.absences.splice(index, 1);
+        this._absences.splice(index, 1);
+      }
+    });
+  }
+
+  public bulkAdd(
+    activities: Array<Activity | Absence>,
+    options?: BulkAddOptions,
+  ) {
+    //group by day
+    const activitiesByDate = new Map<string, Array<Activity | Absence>>();
+    for (const currentActivity of activities) {
+      const existingEntry = activitiesByDate.get(
+        this.formatDate(currentActivity.date),
+      );
+
+      if (existingEntry) {
+        existingEntry.push(currentActivity);
+      } else {
+        activitiesByDate.set(this.formatDate(currentActivity.date), [
+          currentActivity,
+        ]);
+      }
+    }
+
+    for (const key of activitiesByDate.keys()) {
+      if (options?.replace) {
+        this.cleanDate(new Date(key));
+      }
+
+      activitiesByDate.get(key).forEach((act) => {
+        if (act instanceof Activity) {
+          this.addActivity(act);
+        } else if (act instanceof Absence) {
+          this.addAbsence(act);
+        }
+      });
+    }
+  }
+
+  /**
+   * This method will clean a given date of absences and activities.
+   * It is used in "replace mode"
+   * @param date the date for which to delete absences and activities
+   * @private it should only be called if replace mode is "true"
+   */
+  public cleanDate(date: Date) {
+    this.absences.forEach((abs: Absence) => {
+      if (this.formatDate(abs.date) === this.formatDate(date)) {
+        this.deleteAbsence(abs.date, abs.raison);
+      }
+    });
+
+    this.activities.forEach((act: Activity) => {
+      if (this.formatDate(act.date) === this.formatDate(date)) {
+        this.deleteActivity(act.date, act.project);
       }
     });
   }
@@ -292,7 +347,7 @@ export class CRA {
         if (this._status == Status.Closed) {
           this._history.push(new Regul(new Date(), Action.Delete, act));
         }
-        this.activities.splice(index, 1);
+        this._activites.splice(index, 1);
       }
     });
   }
@@ -390,6 +445,8 @@ export class CRA {
       json._month,
       json._year,
       new CollabEmail(json._collab),
+      [],
+      [],
       json._etat,
       json._status,
     );

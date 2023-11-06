@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-import { CraApplication } from '@app/domain/application/craApplication';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Project } from '@app/domain/model/Project';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
@@ -11,6 +10,8 @@ import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { CraApplication } from '@app/domain/application/cra.application';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 export async function prepareActivity(
   app: INestApplication,
@@ -67,13 +68,14 @@ export async function createUser(app: INestApplication, userId: CollabEmail) {
 
 export async function prepareAbsence(
   app: INestApplication,
+  date: Date,
   clientId: CollabEmail,
   insertUser = true,
 ) {
   if (insertUser) {
     await createUser(app, clientId);
   }
-  const date = new Date();
+
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
   absence.date = date;
