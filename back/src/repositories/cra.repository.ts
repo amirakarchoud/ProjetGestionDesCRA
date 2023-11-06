@@ -25,8 +25,8 @@ export class CraRepository implements IRepoCra {
   public async findByMonthYear(month: number, year: number): Promise<CRA[]> {
     const collection = this.wrapper.getCollection(CRAS_COLLECTION);
     const docs = await collection.find({
-      _month: month,
-      _year: year,
+      _month: { $eq: month },
+      _year: { $eq: year },
     });
 
     const cras = [];

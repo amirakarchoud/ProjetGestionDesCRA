@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseArrayPipe,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraDto } from '@app/dtos/cra.dto';
@@ -12,23 +21,18 @@ import { CraApplication } from '@app/domain/application/cra.application';
 export class CraController {
   constructor(private readonly craApp: CraApplication) {}
 
-  private getDateOfWeek(w, y) {
-    const d = 1 + (w - 1) * 7; // 1st of January + 7 days for each week
-
-    return new Date(y, 0, d);
-  }
-
-  @Post('/cra/user/:userid/:week/:year')
+  @Post('/user/:user/:year/:month')
   @ApiOperation({
     summary: 'Week activities',
     description:
       'Post multiple CRA days with for multiple projects. Usually for an entire week',
   })
   async postBulk(
-    @Param('userId') collabEmail: string,
+    @Param('user') collabEmail: string,
     @Param('year') year: number,
     @Param('month') month: number,
-    @Body() activities: ProjectActivitiesDto[],
+    @Body(new ParseArrayPipe({ items: ProjectActivitiesDto }))
+    activities: ProjectActivitiesDto[],
   ) {
     await this.craApp.bulkAdd(
       new CollabEmail(collabEmail),

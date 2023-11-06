@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';

@@ -17,8 +17,7 @@ export class ProjectRepository implements IRepoProject {
   constructor(
     @Inject(MongoClientWrapper)
     private wrapper: MongoClientWrapper,
-  ) {
-  }
+  ) {}
 
   async delete(id: ProjectCode): Promise<void> {
     const collection = this.wrapper.getCollection(PROJECT_COLLECTION);
@@ -69,8 +68,7 @@ export class ProjectRepository implements IRepoProject {
   }
 
   async save(project: Project): Promise<void> {
-    const projectsCollection =
-      this.wrapper.db.collection<IdType>(PROJECT_COLLECTION);
+    const collection = this.wrapper.db.collection<IdType>(PROJECT_COLLECTION);
 
     const collabsCollection =
       this.wrapper.db.collection<IdType>(USER_COLLECTION);
@@ -94,10 +92,26 @@ export class ProjectRepository implements IRepoProject {
       throw new Error('Trying to insert a user that is not present');
     }
 
-    await projectsCollection.insertOne({
+    const count = await collection.countDocuments({
       _id: project.code.value,
-      ...project,
     });
+
+    if (count === 0) {
+      await collection.insertOne({
+        _id: project.code.value,
+        ...project,
+      });
+    } else {
+      await collection.replaceOne(
+        {
+          _id: project.code.value,
+        },
+        {
+          _id: project.code.value,
+          ...project,
+        },
+      );
+    }
   }
 
   async update(updatedProject: Project): Promise<void> {

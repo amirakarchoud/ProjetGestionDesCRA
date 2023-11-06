@@ -11,6 +11,7 @@ import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraApplication } from '@app/domain/application/cra.application';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 export async function prepareActivity(
   app: INestApplication,
@@ -74,6 +75,7 @@ export async function prepareAbsence(
   if (insertUser) {
     await createUser(app, clientId);
   }
+
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
   absence.date = date;

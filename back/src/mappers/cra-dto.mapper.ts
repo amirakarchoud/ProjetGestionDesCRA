@@ -1,9 +1,9 @@
-import { CraDto } from '../dtos/cra.dto';
-import { CRA } from '../domain/model/CRA';
-import { Activity } from '../domain/model/Activity';
-import { ActivityDto, ActivityDtoType } from '../dtos/activity.dto';
-import { AvailableDateDto } from '../dtos/available.date.dto';
-import { Absence } from '../domain/model/Absence';
+import { CraDto } from '@app/dtos/cra.dto';
+import { CRA } from '@app/domain/model/CRA';
+import { Activity } from '@app/domain/model/Activity';
+import { ActivityDto, ActivityDtoType } from '@app/dtos/activity.dto';
+import { AvailableDateDto } from '@app/dtos/available.date.dto';
+import { Absence } from '@app/domain/model/Absence';
 import { Project } from '@app/domain/model/Project';
 import { ProjectSimpleDto } from '@app/dtos/project.simple.dto';
 import { Holiday } from '@app/domain/model/Holiday';
