@@ -20,6 +20,7 @@ import { HolidaysSyncService } from '@app/services/holidays-sync.service';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
 import { ExportController } from '@app/controllers/export.controller';
 import { CraApplication } from '@app/domain/application/cra.application';
+import { ActivityReportController } from '@app/controllers/v2/activity-report.controller';
 
 let dotEnvPath = '.env';
 
@@ -47,6 +48,7 @@ console.log('env is ', dotEnvPath);
     HolidayController,
     AuthController,
     ExportController,
+    ActivityReportController,
   ],
   providers: [
     CraApplication,
