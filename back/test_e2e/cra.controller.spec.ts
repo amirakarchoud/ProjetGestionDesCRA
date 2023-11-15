@@ -1,9 +1,4 @@
-import {
-  createProject,
-  createUser,
-  prepareAbsence,
-  prepareActivity,
-} from './test.utils';
+import { createProject, createUser, prepareAbsence, prepareActivity } from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@app/app.module';
@@ -157,45 +152,45 @@ describe('CRA Controller', () => {
     expect(cra.activities.length).toBe(0);
     expect(cra.absences.length).toBe(1);
   });
-
-  const prepareActivities = (date: Date, nextDate: Date): any[] => {
-    return [
-      {
-        projectCode: 'proj1',
-        activities: [
-          {
-            date: date,
-            type: ActivityDtoType.absence,
-            percentage: 50,
-            title: Raison.Maladie,
-            reason: Raison.Maladie,
-          },
-          {
-            date: date,
-            type: ActivityDtoType.project,
-            title: 'Fnac',
-            percentage: 50,
-          },
-        ],
-      },
-      {
-        projectCode: 'proj2',
-        activities: [
-          {
-            date: nextDate,
-            type: ActivityDtoType.absence,
-            percentage: 50,
-            title: Raison.RTT,
-            reason: Raison.Maladie,
-          },
-          {
-            date: nextDate,
-            type: ActivityDtoType.project,
-            title: 'Darty',
-            percentage: 50,
-          },
-        ],
-      },
-    ];
-  };
 });
+
+export const prepareActivities = (date: Date, nextDate: Date): any[] => {
+  return [
+    {
+      projectCode: 'proj1',
+      activities: [
+        {
+          date: date,
+          type: ActivityDtoType.absence,
+          percentage: 50,
+          title: Raison.Maladie,
+          reason: Raison.Maladie,
+        },
+        {
+          date: date,
+          type: ActivityDtoType.project,
+          title: 'Fnac',
+          percentage: 50,
+        },
+      ],
+    },
+    {
+      projectCode: 'proj2',
+      activities: [
+        {
+          date: nextDate,
+          type: ActivityDtoType.absence,
+          percentage: 50,
+          title: Raison.RTT,
+          reason: Raison.Maladie,
+        },
+        {
+          date: nextDate,
+          type: ActivityDtoType.project,
+          title: 'Darty',
+          percentage: 50,
+        },
+      ],
+    },
+  ];
+};
