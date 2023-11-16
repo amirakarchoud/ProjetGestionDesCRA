@@ -16,5 +16,14 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'no-restricted-globals': ['error', 'event', 'Date'],
   },
+  overrides: [
+    {
+      'files': ['src/dtos/*.ts'],
+      'rules': {
+        'no-restricted-globals': ['off', 'event', 'Date'],
+      },
+    },
+  ],
 };
