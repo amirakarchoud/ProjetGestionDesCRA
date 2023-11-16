@@ -1,4 +1,4 @@
-import { IsDate, ValidateNested } from 'class-validator';
+import { IsISO8601, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Percentage } from '../domain/percentage.type';
 import { ProjectSimpleDto } from '@app/dtos/project.simple.dto';
@@ -15,9 +15,8 @@ export class ActivityDto {
   title?: string; // raison ou project ou available
   percentage: Percentage;
   type: ActivityDtoType;
-  @IsDate()
-  @Type(() => Date)
-  date: Date;
+  @IsISO8601()
+  date: string;
   project?: ProjectSimpleDto;
   reason?: Raison;
 }

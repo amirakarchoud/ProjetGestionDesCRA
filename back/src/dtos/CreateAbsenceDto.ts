@@ -6,7 +6,7 @@ import { IsEmail, IsInt, IsISO8601 } from 'class-validator';
 export class CreateAbsenceDto {
   @ApiProperty()
   @IsISO8601()
-  date: Date;
+  date: string;
   @ApiProperty()
   @IsInt()
   percentage: Percentage;

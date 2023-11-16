@@ -4,6 +4,7 @@ import { Role } from '@app/domain/model/Role';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { LocalDate } from '@js-joda/core';
 
 describe('Un projet ', () => {
   //Given
@@ -16,7 +17,7 @@ describe('Un projet ', () => {
 
   it('ne peut pas avoir des attributs null', () => {
     expect(
-      () => new Project(null, [], '', '', new Date(), ProjetStatus.Active),
+      () => new Project(null, [], '', '', LocalDate.now(), ProjetStatus.Active),
     ).toThrowError('cannot have a null attribut');
 
     expect(
@@ -26,7 +27,7 @@ describe('Un projet ', () => {
           null,
           '',
           '',
-          new Date(),
+          LocalDate.now(),
           ProjetStatus.Active,
         ),
     ).toThrowError('cannot have a null attribut');
@@ -38,14 +39,14 @@ describe('Un projet ', () => {
       [],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
     expect(projet).toBeDefined();
   });
 
   it('doit etre coorrectement creé ', () => {
-    const date = new Date();
+    const date = LocalDate.now();
     const projet = new Project(
       new ProjectCode('123'),
       [],
@@ -68,7 +69,7 @@ describe('Un projet ', () => {
       [],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
     //when
@@ -85,7 +86,7 @@ describe('Un projet ', () => {
       [collab.email],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
 
@@ -100,7 +101,7 @@ describe('Un projet ', () => {
       [],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
     //when

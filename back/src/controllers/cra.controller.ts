@@ -1,19 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseArrayPipe,
-  Post,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseArrayPipe, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraDto } from '@app/dtos/cra.dto';
 import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
 import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { CraApplication } from '@app/domain/application/cra.application';
+import { Month } from '@js-joda/core';
 
 //@UseGuards(AuthGuard)
 @ApiTags('Gestion des cra')
@@ -56,7 +48,7 @@ export class CraController {
     const projects = await this.craApp.getAllProjects();
     const cra = await this.craApp.getCraByCollabMonthYear(
       new CollabEmail(idUser),
-      month,
+      Month.of(month),
       year,
     );
 
@@ -109,7 +101,7 @@ export class CraController {
     @Param('month') month: number,
     @Param('year') year: number,
   ): Promise<CraDto[]> {
-    const cras = await this.craApp.getMonthCra(month, year);
+    const cras = await this.craApp.getMonthCra(Month.of(month), year);
     const projects = await this.craApp.getAllProjects();
     return cras.map((cra) => mapCraToCraDto(cra, projects));
   }
@@ -124,6 +116,6 @@ export class CraController {
     @Param('month') month: number,
     @Param('year') year: number,
   ) {
-    return await this.craApp.closeAllMonthCra(month, year);
+    return await this.craApp.closeAllMonthCra(Month.of(month), year);
   }
 }

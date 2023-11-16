@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Project } from '@app/domain/model/Project';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
@@ -11,11 +11,56 @@ import { Role } from '@app/domain/model/Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraApplication } from '@app/domain/application/cra.application';
-import { DateProvider } from '@app/domain/model/date-provider';
+import { LocalDate } from '@js-joda/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { AppModule } from '@app/app.module';
+
+export const prepareApp = (testName: string) => {
+  let app: INestApplication;
+  let moduleRef: TestingModule = null;
+  process.env.MONGO_DB = `cra_test_${testName}`;
+
+  afterAll(async () => {
+    if (app) {
+      try {
+        await moduleRef.close();
+        await app.close();
+      } catch (e) {
+        console.error('Problem closing app', e);
+      }
+    }
+  });
+
+  afterEach(async () => {
+    const wrapper: MongoClientWrapper = app.get(MongoClientWrapper);
+    await wrapper.db.dropDatabase();
+  });
+
+  beforeEach(async () => {
+    moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleRef.createNestApplication();
+
+    const validationPipe = new ValidationPipe({
+      transform: true,
+      forbidUnknownValues: true,
+      transformOptions: { enableImplicitConversion: true },
+    });
+
+    app.useGlobalPipes(validationPipe);
+
+    await app.init();
+  });
+
+  return () => app;
+};
 
 export async function prepareActivity(
   app: INestApplication,
-  date: Date,
+  date: LocalDate,
   clientId: CollabEmail,
   insertUser = true,
 ) {
@@ -25,7 +70,7 @@ export async function prepareActivity(
   const application = app.get(CraApplication);
   const activity = new CreateActivityDto();
   const project = await createProject(app, new ProjectCode('code'), clientId);
-  activity.date = date;
+  activity.date = date.toString();
   activity.projectId = project.code.value;
   activity.collabId = clientId.value;
   activity.percentage = 100;
@@ -49,11 +94,18 @@ export async function createProject(
       [createdUser.email],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
   } else {
-    project = new Project(code, [], '', '', new Date(), ProjetStatus.Active);
+    project = new Project(
+      code,
+      [],
+      '',
+      '',
+      LocalDate.now(),
+      ProjetStatus.Active,
+    );
   }
   await repo.save(project);
   return project;
@@ -68,7 +120,7 @@ export async function createUser(app: INestApplication, userId: CollabEmail) {
 
 export async function prepareAbsence(
   app: INestApplication,
-  date: Date,
+  date: LocalDate,
   clientId: CollabEmail,
   insertUser = true,
 ) {
@@ -78,7 +130,7 @@ export async function prepareAbsence(
 
   const application = app.get(CraApplication);
   const absence = new CreateAbsenceDto();
-  absence.date = date;
+  absence.date = date.toString();
   absence.percentage = 0;
   absence.raison = Raison.Maladie;
 

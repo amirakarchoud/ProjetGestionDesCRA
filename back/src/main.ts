@@ -20,11 +20,12 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.use(cors());
 
-  new ValidationPipe({
+  const validationPipe = new ValidationPipe({
     transform: true,
     forbidUnknownValues: true,
     transformOptions: { enableImplicitConversion: true },
   });
+  app.useGlobalPipes(validationPipe);
 
   //helps using class-transformer
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));

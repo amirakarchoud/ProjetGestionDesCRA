@@ -1,9 +1,10 @@
 import { Holiday } from '@app/domain/model/Holiday';
+import { LocalDate, Month } from '@js-joda/core';
 
 export interface IRepoHoliday {
   findAll(): Promise<Holiday[]>;
   save(holiday: Holiday): Promise<void>;
-  findByDate(date: Date): Promise<Holiday>;
-  findForCra(month: number, year: number): Promise<Holiday[]>;
+  findByDate(date: LocalDate): Promise<Holiday>;
   deleteAll(): Promise<void>;
+  find(month: Month, number: number): Promise<Holiday[]>;
 }

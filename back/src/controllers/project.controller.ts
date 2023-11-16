@@ -14,6 +14,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraApplication } from '@app/domain/application/cra.application';
+import { LocalDate } from '@js-joda/core';
 
 @ApiTags('Gestion des projets')
 @Controller('project')
@@ -107,7 +108,9 @@ export class ProjectController {
       ),
       createProjectDto.name,
       createProjectDto.client,
-      createProjectDto.date ? new Date(createProjectDto.date) : new Date(),
+      createProjectDto.date
+        ? LocalDate.parse(createProjectDto.date)
+        : LocalDate.now(),
       createProjectDto.status,
     );
   }
@@ -117,7 +120,7 @@ function mapToDto(proj: Project) {
   const projectDto = new ProjectDto();
   projectDto.code = proj.code.value;
   projectDto.client = proj.client;
-  projectDto.date = proj.date;
+  projectDto.date = proj.date.toString();
   projectDto.collabs = proj.collabs.map((collabMail) => collabMail.value);
   projectDto.name = proj.name;
   projectDto.status = proj.status;

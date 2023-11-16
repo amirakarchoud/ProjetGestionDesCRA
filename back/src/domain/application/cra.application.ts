@@ -1,7 +1,6 @@
 import { Collab } from '@app/domain/model/Collab';
 import { IRepoCollab } from '../IRepository/IRepoCollab';
 import { Inject, Injectable } from '@nestjs/common';
-import { Role } from '../model/Role';
 import { IRepoProject } from '../IRepository/IRepoProject';
 import { Project } from '../model/Project';
 import { IRepoCra } from '../IRepository/IRepoCra';
@@ -18,6 +17,7 @@ import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { Activity } from '@app/domain/model/Activity';
 import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { LocalDate, Month } from '@js-joda/core';
 
 @Injectable()
 export class CraApplication {
@@ -30,19 +30,6 @@ export class CraApplication {
 
   async getAllHolidays(): Promise<Holiday[]> {
     return await this.holidayRepository.findAll();
-  }
-
-  async addUser(jwtToken: string) {
-    console.log('craqpp add user');
-    const collab = new Collab(
-      new CollabEmail('test1@proxym.fr'),
-      'test',
-      'last name test',
-      Role.admin,
-    );
-    collab.password = '123';
-    console.log('collab' + collab.email);
-    await this.collabRepository.save(collab);
   }
 
   async addProject(project: Project) {
@@ -70,14 +57,14 @@ export class CraApplication {
   }
 
   async addAbsence(createAbsenceDto: CreateAbsenceDto) {
-    const dateAbs = new Date(createAbsenceDto.date);
+    const dateAbs = LocalDate.parse(createAbsenceDto.date);
 
     const collabEmail = new CollabEmail(createAbsenceDto.collabId);
 
     // Check if the specified CRA exists
     let cra = await this.craRepository.findByMonthYearCollab(
-      dateAbs.getMonth() + 1,
-      dateAbs.getFullYear(),
+      dateAbs.month(),
+      dateAbs.year(),
       new CollabEmail(createAbsenceDto.collabId),
     );
 
@@ -88,7 +75,7 @@ export class CraApplication {
     //create absence
     const absence = new Absence(
       createAbsenceDto.percentage,
-      createAbsenceDto.date,
+      dateAbs,
       createAbsenceDto.raison,
     );
     // add absence to the cra
@@ -99,7 +86,7 @@ export class CraApplication {
     return absence;
   }
 
-  async deleteAbsence(idCra: string, date: Date, raison: Raison) {
+  async deleteAbsence(idCra: string, date: LocalDate, raison: Raison) {
     const cra = await this.craRepository.findById(idCra);
     cra.etat = Etat.unsubmitted;
     cra.deleteAbsence(date, raison);
@@ -107,7 +94,7 @@ export class CraApplication {
   }
 
   async addActivity(createActivityDto: CreateActivityDto) {
-    const dateAct = new Date(createActivityDto.date);
+    const dateAct = LocalDate.parse(createActivityDto.date);
 
     const collabEmail = new CollabEmail(createActivityDto.collabId);
 
@@ -116,8 +103,8 @@ export class CraApplication {
     );
     // Check if the specified CRA exists
     let cra = await this.craRepository.findByMonthYearCollab(
-      dateAct.getMonth() + 1,
-      dateAct.getFullYear(),
+      dateAct.month(),
+      dateAct.year(),
       new CollabEmail(createActivityDto.collabId),
     );
 
@@ -139,7 +126,7 @@ export class CraApplication {
     return activity;
   }
 
-  async deleteActivity(idCra: string, date: Date, project: ProjectCode) {
+  async deleteActivity(idCra: string, date: LocalDate, project: ProjectCode) {
     const cra = await this.craRepository.findById(idCra);
     cra.etat = Etat.unsubmitted;
     cra.deleteActivity(date, project);
@@ -148,7 +135,7 @@ export class CraApplication {
 
   async getCraByCollabMonthYear(
     idUser: CollabEmail,
-    month: number,
+    month: Month,
     year: number,
   ) {
     return await this.craRepository.findByMonthYearCollab(month, year, idUser);
@@ -164,31 +151,29 @@ export class CraApplication {
 
     for (const projectActivity of activities) {
       for (const activityDto of projectActivity.activities) {
+        const date = LocalDate.parse(activityDto.date);
+
         if (activityDto.type === ActivityDtoType.project) {
           toAdd.push(
             new Activity(
               new ProjectCode(projectActivity.projectCode),
               activityDto.percentage,
-              activityDto.date,
+              date,
             ),
           );
         } else if (activityDto.type === ActivityDtoType.absence) {
           toAdd.push(
-            new Absence(
-              activityDto.percentage,
-              activityDto.date,
-              activityDto.reason,
-            ),
+            new Absence(activityDto.percentage, date, activityDto.reason),
           );
         }
       }
     }
 
-    const craDate = new Date(year, month - 1, 1);
+    const craDate = LocalDate.of(year, month, 1);
     let cra = await this.getCraByCollabMonthYear(
       idUser,
-      craDate.getMonth() + 1,
-      craDate.getFullYear(),
+      craDate.month(),
+      craDate.year(),
     );
 
     if (!cra) {
@@ -226,11 +211,11 @@ export class CraApplication {
     return await this.projectRepository.findLikeById(id);
   }
 
-  async getMonthCra(month: number, year: number) {
+  async getMonthCra(month: Month, year: number) {
     return await this.craRepository.findByMonthYear(month, year);
   }
 
-  async closeAllMonthCra(month: number, year: number) {
+  async closeAllMonthCra(month: Month, year: number) {
     const cras = await this.craRepository.findByMonthYear(month, year);
     const crasUnsubmitted = cras.filter((cra) => cra.etat == Etat.unsubmitted);
     if (crasUnsubmitted.length > 0) {
@@ -252,7 +237,7 @@ export class CraApplication {
     await this.projectRepository.save(project);
   }
 
-  private async createNewCra(dateAct: Date, user: CollabEmail) {
+  private async createNewCra(dateAct: LocalDate, user: CollabEmail) {
     const collabPromise = await this.collabRepository.findById(user);
 
     if (collabPromise === undefined) {
@@ -262,22 +247,22 @@ export class CraApplication {
     }
 
     const cra = new CRA(
-      dateAct.getMonth() + 1,
-      dateAct.getFullYear(),
+      dateAct.month(),
+      dateAct.year(),
       user,
       [],
       [],
       Etat.unsubmitted,
       Status.Open,
     );
-    cra.holidays = await this.holidayRepository.findForCra(
-      dateAct.getMonth() + 1,
-      dateAct.getFullYear(),
+    cra.holidays = await this.holidayRepository.find(
+      dateAct.month(),
+      dateAct.year(),
     );
     await this.craRepository.save(cra);
     return await this.craRepository.findByMonthYearCollab(
-      dateAct.getMonth() + 1,
-      dateAct.getFullYear(),
+      dateAct.month(),
+      dateAct.year(),
       user,
     );
   }

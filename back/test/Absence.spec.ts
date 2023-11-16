@@ -7,6 +7,7 @@ import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { createCra } from './utils';
+import { LocalDate } from '@js-joda/core';
 
 describe('Une absence ', () => {
   const collab = new Collab(
@@ -18,7 +19,7 @@ describe('Une absence ', () => {
 
   it('ne peut pas avoir des attributs null', () => {
     //When
-    expect(() => new Absence(null, new Date(), Raison.Maladie)).toThrowError(
+    expect(() => new Absence(null, LocalDate.now(), Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
     );
 
@@ -26,13 +27,13 @@ describe('Une absence ', () => {
       'cannot have a null attribut',
     );
 
-    expect(() => new Absence(100, new Date(), null)).toThrowError(
+    expect(() => new Absence(100, LocalDate.now(), null)).toThrowError(
       'cannot have a null attribut',
     );
   });
   it('peut etre cree par un collab', () => {
     //given
-    const date = new Date();
+    const date = LocalDate.now();
     const cra = createCra(collab, date);
     //When
     const absence = new Absence(100, date, Raison.Maladie);
@@ -46,14 +47,14 @@ describe('Une absence ', () => {
 
   it('peut avoir un raison', () => {
     //When
-    const absence = new Absence(100, new Date(), Raison.Maladie);
+    const absence = new Absence(100, LocalDate.now(), Raison.Maladie);
     //Then
     expect(absence.raison).toBe(Raison.Maladie);
   });
 
   it('est associee a une date', () => {
     //given
-    const date = new Date();
+    const date = LocalDate.now();
     //When
     const absence = new Absence(100, date, Raison.Maladie);
     //Then

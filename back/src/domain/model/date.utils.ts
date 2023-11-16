@@ -1,6 +1,5 @@
-export const dateMonthsEqual = (date1: Date, date2: Date) => {
-  return (
-    date1.getMonth() === date2.getMonth() &&
-    date1.getFullYear() === date2.getFullYear()
-  );
+import { LocalDate } from '@js-joda/core';
+
+export const dateMonthsEqual = (date1: LocalDate, date2: LocalDate) => {
+  return date1.month() === date2.month() && date1.year() === date2.year();
 };

@@ -2,6 +2,7 @@ import { ExportService } from '@app/domain/service/export.service';
 import { MockRepoCra } from './cra.repo.mock';
 import * as ExcelJS from 'exceljs';
 import { CollabRepoMock } from './collab.repo.mock';
+import { Month } from '@js-joda/core';
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -15,7 +16,7 @@ describe('ExportService', () => {
   });
 
   it(' generate Excel file with correct data', async () => {
-    const month = 7;
+    const month = Month.of(7);
     const year = 2023;
     const excelBuffer = await exportService.generateExcel(month, year);
 
@@ -36,7 +37,7 @@ describe('ExportService', () => {
   });
 
   it('generates Excel file (format 2) with correct data', async () => {
-    const month = 7;
+    const month = Month.of(7);
     const year = 2023;
     const excelBuffer = await exportService.generateExcel2(month, year);
 

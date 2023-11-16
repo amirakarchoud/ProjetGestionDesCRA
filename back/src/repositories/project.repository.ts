@@ -8,7 +8,7 @@ import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { USER_COLLECTION } from '@app/repositories/collab.repository';
 
-const PROJECT_COLLECTION = 'projects';
+export const PROJECT_COLLECTION = 'projects';
 
 export type IdType = { _id: string };
 

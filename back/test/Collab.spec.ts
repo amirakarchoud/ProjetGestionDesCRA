@@ -4,6 +4,7 @@ import { Role } from '@app/domain/model/Role';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
+import { LocalDate } from '@js-joda/core';
 
 describe('Collaborateur ', () => {
   //Given
@@ -12,7 +13,7 @@ describe('Collaborateur ', () => {
     [],
     '',
     '',
-    new Date(),
+    LocalDate.now(),
     ProjetStatus.Active,
   );
 

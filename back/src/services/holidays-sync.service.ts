@@ -4,6 +4,7 @@ import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { IRepoHoliday } from '@app/domain/IRepository/IRepoHoliday';
 import { Holiday } from '@app/domain/model/Holiday';
 import { HttpHolidayFetchService } from '@app/services/http-holiday-fetch.service';
+import { LocalDate } from '@js-joda/core';
 
 @Injectable()
 export class HolidaysSyncService implements OnApplicationBootstrap {
@@ -29,7 +30,7 @@ export class HolidaysSyncService implements OnApplicationBootstrap {
     try {
       const holidaysData = await this.holidayHttpService.fetchHolidaysData(url);
       for (const [dateStr, name] of Object.entries(holidaysData)) {
-        const date = new Date(dateStr);
+        const date = LocalDate.parse(dateStr);
 
         const holiday = new Holiday(date, name as string);
         await this.holidayRepository.save(holiday);
