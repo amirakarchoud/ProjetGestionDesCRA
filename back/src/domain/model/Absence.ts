@@ -1,9 +1,10 @@
 import { Raison } from './Raison';
 import { Percentage } from '@app/domain/percentage.type';
+import { LocalDate, nativeJs } from '@js-joda/core';
 
 export class Absence {
   private _percentage: Percentage;
-  private _date: Date;
+  private _date: LocalDate;
   private _raison: Raison;
 
   toJSON(): object {
@@ -14,7 +15,7 @@ export class Absence {
     };
   }
 
-  constructor(percentage: Percentage, date: Date, raison: Raison) {
+  constructor(percentage: Percentage, date: LocalDate, raison: Raison) {
     if (raison == null) {
       throw new Error('cannot have a null attribut');
     }
@@ -34,7 +35,7 @@ export class Absence {
     return this._percentage;
   }
 
-  public get date(): Date {
+  public get date(): LocalDate {
     return this._date;
   }
 
@@ -49,8 +50,16 @@ export class Absence {
 
     return new Absence(
       json._percentage as Percentage,
-      new Date(json._date),
+      LocalDate.parse(json._date),
       json._raison,
     );
+  }
+
+  mapToJson(): any {
+    return {
+      _percentage: this._percentage,
+      _date: this._date.toString(),
+      _raison: this._raison,
+    };
   }
 }

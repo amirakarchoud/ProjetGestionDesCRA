@@ -6,8 +6,7 @@ import { CraApplication } from '@app/domain/application/cra.application';
 
 @Controller('/v2/private/activity-report')
 export class ActivityReportController {
-  constructor(private craApp: CraApplication) {
-  }
+  constructor(private craApp: CraApplication) {}
 
   @Post('')
   @ApiOperation({

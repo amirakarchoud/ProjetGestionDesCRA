@@ -13,6 +13,7 @@ import { mapCraToCraDto } from '@app/mappers/cra-dto.mapper';
 import { createCra } from './utils';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
+import { LocalDate } from '@js-joda/core';
 
 describe('Cra DTO Mapper', () => {
   let date;
@@ -22,7 +23,7 @@ describe('Cra DTO Mapper', () => {
       [new CollabEmail('aleks@proxym.fr')],
       'name 1',
       'fnac',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     ),
   ];
@@ -36,7 +37,7 @@ describe('Cra DTO Mapper', () => {
   let cra;
 
   beforeEach(() => {
-    date = new Date('2023/09/02');
+    date = LocalDate.parse('2023-09-02');
     cra = createCra(collab, date);
   });
 
@@ -67,7 +68,7 @@ describe('Cra DTO Mapper', () => {
       expect.objectContaining({
         title: 'proj1',
         percentage: 75,
-        date: date,
+        date: date.toString(),
         type: 'Project',
         project: expect.objectContaining({
           code: 'proj1',
@@ -80,7 +81,11 @@ describe('Cra DTO Mapper', () => {
   });
 
   it('Should map absences', () => {
-    const absence = new Absence(25, new Date('2023-09-20'), Raison.Maladie);
+    const absence = new Absence(
+      25,
+      LocalDate.parse('2023-09-20'),
+      Raison.Maladie,
+    );
     cra.addAbsence(absence);
 
     const craDto = mapCraToCraDto(cra, projects);
@@ -90,22 +95,17 @@ describe('Cra DTO Mapper', () => {
         title: 'Maladie',
         percentage: 25,
         type: 'Absence',
-        date: new Date('2023-09-20'),
+        date: LocalDate.parse('2023-09-20').toString(),
         reason: 'Maladie',
       }),
     ]);
   });
 
   it('Should map holidays', () => {
-    const today = new Date('2023-01-01');
+    const today = LocalDate.parse('2023-01-01');
     cra = createCra(collab, today);
 
-    cra.holidays = [
-      new Holiday(
-        new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000),
-        'New Years',
-      ),
-    ];
+    cra.holidays = [new Holiday(LocalDate.parse('2023-01-01'), 'New Years')];
     const craDto = mapCraToCraDto(cra, projects);
 
     expect(craDto.holidays).toEqual([
@@ -113,15 +113,15 @@ describe('Cra DTO Mapper', () => {
         title: 'New Years',
         percentage: 100,
         type: 'Holiday',
-        date: new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000),
+        date: today.toString(),
       }),
     ]);
   });
 
   it('Should map available dates', () => {
-    const nextDate = new Date('2023-09-04');
-    const nextDate2 = new Date('2023-09-05');
-    const nextDate3 = new Date('2023-09-06');
+    const nextDate = LocalDate.parse('2023-09-04');
+    const nextDate2 = LocalDate.parse('2023-09-05');
+    const nextDate3 = LocalDate.parse('2023-09-06');
 
     const absence = new Absence(100, nextDate, Raison.Maladie);
     const activity = new Activity(new ProjectCode('proj1'), 75, nextDate2);

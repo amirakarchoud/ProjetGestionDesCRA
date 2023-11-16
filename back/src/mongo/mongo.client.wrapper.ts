@@ -36,6 +36,11 @@ export class MongoClientWrapper implements OnApplicationShutdown, OnModuleInit {
   async onModuleInit(): Promise<void> {
     this._client = new MongoClient(this.config.uri, this.config.options);
     await this._client.connect();
-    this._db = this.client.db(this.config.database || 'cra');
+
+    const dbName = process.env.MONGO_DB || this.config.database || 'cra';
+
+    console.log('Connecting to database', dbName);
+
+    this._db = this.client.db(dbName);
   }
 }

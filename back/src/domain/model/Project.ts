@@ -2,6 +2,7 @@ import { ProjetStatus } from './projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Transform } from 'class-transformer';
+import { LocalDate } from '@js-joda/core';
 
 export class Project {
   // @Transform((params) => params.value.map((item) => item.value))
@@ -10,14 +11,14 @@ export class Project {
   private readonly _code: ProjectCode;
   private readonly _name: string;
   private readonly _client: string;
-  private readonly _date: Date;
+  private readonly _date: LocalDate;
 
   constructor(
     code: ProjectCode,
     collabs: CollabEmail[],
     name: string,
     client: string,
-    date: Date,
+    date: LocalDate,
     status: ProjetStatus,
   ) {
     if (!(code && collabs)) {
@@ -27,7 +28,7 @@ export class Project {
     this._collabs = collabs;
     this._name = name;
     this._client = client;
-    this._date = date || new Date();
+    this._date = date || LocalDate.now();
     this._status = status;
   }
 
@@ -54,7 +55,7 @@ export class Project {
     return this._client;
   }
 
-  public get date(): Date {
+  public get date(): LocalDate {
     return this._date;
   }
 

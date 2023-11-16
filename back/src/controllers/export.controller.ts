@@ -2,6 +2,7 @@ import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ExportService } from '../domain/service/export.service';
+import { Month } from '@js-joda/core';
 
 @Controller('export')
 export class ExportController {
@@ -19,7 +20,10 @@ export class ExportController {
     @Param('year') year: number,
   ) {
     try {
-      const buffer = await this.exportService.generateExcel(month, year);
+      const buffer = await this.exportService.generateExcel(
+        Month.of(month),
+        year,
+      );
       const filename = 'Recap_Du_Mois.xlsx';
 
       res.setHeader(
@@ -48,7 +52,10 @@ export class ExportController {
     @Param('year') year: number,
   ) {
     try {
-      const buffer = await this.exportService.generateExcel2(month, year);
+      const buffer = await this.exportService.generateExcel2(
+        Month.of(month),
+        year,
+      );
       const filename = 'Recap_Du_Mois.xlsx';
 
       res.setHeader(

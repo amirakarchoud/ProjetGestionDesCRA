@@ -1,50 +1,24 @@
-import { createProject, createUser } from './test.utils';
+import { createProject, createUser, prepareApp } from './test.utils';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectRepository } from '@app/repositories/project.repository';
 import { Project } from '@app/domain/model/Project';
 import { ProjectCode } from '@app/domain/model/project.code';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '@app/app.module';
-import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { HttpStatus } from '@nestjs/common';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ProjectDto } from '@app/dtos/project.dto';
 import * as request from 'supertest';
+import { LocalDate } from '@js-joda/core';
 
 describe('Project controller', () => {
-  let app: INestApplication;
-  let moduleRef: TestingModule = null;
+  const app = prepareApp('project');
   const clientId = new CollabEmail('test1@proxym.fr');
 
-  afterAll(async () => {
-    if (app) {
-      try {
-        await moduleRef.close();
-        await app.close();
-      } catch (e) {
-        console.error('Problem closing app', e);
-      }
-    }
-  });
-
-  beforeEach(async () => {
-    moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const wrapper: MongoClientWrapper = app.get(MongoClientWrapper);
-    await wrapper.db.dropDatabase();
-  });
-
   it(`create project`, async () => {
-    await createUser(app, clientId);
-    await createProject(app, new ProjectCode('code'), clientId);
+    await createUser(app(), clientId);
+    await createProject(app(), new ProjectCode('code'), clientId);
 
     const createdProject = (
-      await request(app.getHttpServer())
+      await request(app().getHttpServer())
         .get(`/project/code`)
         .set('Content-Type', 'application/json')
         .accept('application/json')
@@ -55,18 +29,18 @@ describe('Project controller', () => {
   });
 
   it(`Can deactivate a project`, async () => {
-    const repo: ProjectRepository = app.get('IRepoProject');
+    const repo: ProjectRepository = app().get('IRepoProject');
     const project = new Project(
       new ProjectCode('projetTest'),
       [],
       '',
       '',
-      new Date(),
+      LocalDate.now(),
       ProjetStatus.Active,
     );
     await repo.save(project);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(app().getHttpServer())
       .post(`/project/desactivate/projetTest`)
       .set('Content-Type', 'application/json')
       .accept('application/json')
@@ -81,9 +55,9 @@ describe('Project controller', () => {
   it('Does not allow to add a non existing user to a an existing project', async () => {
     const projectDto = badProject();
 
-    await createUser(app, clientId);
+    await createUser(app(), clientId);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(app().getHttpServer())
       .put(`/project/update`)
       .set('Content-Type', 'application/json')
       .accept('application/json')
@@ -105,9 +79,9 @@ describe('Project controller', () => {
   it('Does not allow to create a project with a non existing user', async () => {
     const projectDto = badProject();
 
-    await createUser(app, clientId);
+    await createUser(app(), clientId);
 
-    const response = await request(app.getHttpServer())
+    const response = await request(app().getHttpServer())
       .post(`/project/add`)
       .set('Content-Type', 'application/json')
       .accept('application/json')

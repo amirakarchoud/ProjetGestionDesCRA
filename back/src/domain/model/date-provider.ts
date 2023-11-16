@@ -1,14 +1,16 @@
+import { LocalDate } from '@js-joda/core';
+
 export class DateProvider {
-  private static _today: Date;
+  private static _today: LocalDate;
 
   static today() {
     if (this._today) {
       return this._today;
     }
-    return new Date();
+    return LocalDate.now();
   }
 
-  static setTodayDate(date: Date) {
+  static setTodayDate(date: LocalDate) {
     this._today = date;
   }
 }

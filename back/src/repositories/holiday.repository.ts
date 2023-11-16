@@ -2,6 +2,8 @@ import { IRepoHoliday } from '@app/domain/IRepository/IRepoHoliday';
 import { Inject, Injectable } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
+import { LocalDate, Month } from '@js-joda/core';
+import { IRepoCra } from '@app/domain/IRepository/IRepoCra';
 
 const HOLIDAYS_COLLECTION = 'holidays';
 
@@ -10,6 +12,8 @@ export class HolidayRepository implements IRepoHoliday {
   constructor(
     @Inject(MongoClientWrapper)
     private client: MongoClientWrapper,
+    @Inject('IRepoCra')
+    private craRepo: IRepoCra,
   ) {}
 
   async findAll(): Promise<Holiday[]> {
@@ -26,18 +30,14 @@ export class HolidayRepository implements IRepoHoliday {
     return holidays;
   }
 
-  async findByDate(date: Date): Promise<Holiday> {
+  async findByDate(date: LocalDate): Promise<Holiday> {
     const collection = this.client.getCollection(HOLIDAYS_COLLECTION);
 
     const document = await collection.findOne({
-      _id: date.toLocaleDateString('fr-FR'),
+      _id: date.toString(),
     });
 
     return Holiday.fromJson(document);
-  }
-
-  findForCra(month: number, year: number): Promise<Holiday[]> {
-    return Promise.resolve([]);
   }
 
   async deleteAll(): Promise<void> {
@@ -51,7 +51,28 @@ export class HolidayRepository implements IRepoHoliday {
 
     await collection.insertOne({
       _id: holiday.id,
-      ...holiday,
+      ...holiday.mapToJson(),
     });
+  }
+
+  public async find(month: Month, year: number): Promise<Holiday[]> {
+    const collection = this.client.getCollection(HOLIDAYS_COLLECTION);
+
+    const beginningOfMonth = LocalDate.of(year, month, 1);
+    const endOfMonth = beginningOfMonth.plusMonths(1);
+
+    const findCursor = collection.find();
+
+    const result: Holiday[] = [];
+    for await (const holiday of findCursor) {
+      result.push(Holiday.fromJson(holiday));
+    }
+
+    return result.filter(
+      (holiday) =>
+        (holiday.date.isEqual(beginningOfMonth) ||
+          holiday.date.isAfter(beginningOfMonth)) &&
+        holiday.date.isBefore(endOfMonth),
+    );
   }
 }

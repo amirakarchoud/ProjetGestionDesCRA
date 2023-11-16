@@ -1,20 +1,21 @@
 import { Percentage } from '@app/domain/percentage.type';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { LocalDate, nativeJs } from '@js-joda/core';
 
 export class Activity {
   private _project: ProjectCode;
   private _percentage: Percentage;
-  private _date: Date;
+  private _date: LocalDate;
 
   toJSON(): object {
     return {
       percentage: this._percentage,
-      date: this._date.toISOString(),
+      date: this._date.toJSON(),
       project: this._project.value,
     };
   }
 
-  constructor(projet: ProjectCode, percentage: Percentage, date: Date) {
+  constructor(projet: ProjectCode, percentage: Percentage, date: LocalDate) {
     if (date == null) {
       throw new Error('cannot have a null attribut');
     }
@@ -33,7 +34,7 @@ export class Activity {
     return this._project;
   }
 
-  public get date(): Date {
+  public get date(): LocalDate {
     return this._date;
   }
 
@@ -49,7 +50,15 @@ export class Activity {
     return new Activity(
       new ProjectCode(json._project._code),
       json._percentage as Percentage,
-      new Date(json._date),
+      LocalDate.parse(json._date),
     );
+  }
+
+  mapToJson(): any {
+    return {
+      _percentage: this._percentage,
+      _date: this._date.toString(),
+      _project: this._project,
+    };
   }
 }

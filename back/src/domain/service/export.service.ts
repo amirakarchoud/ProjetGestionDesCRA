@@ -3,6 +3,7 @@ import * as ExcelJS from 'exceljs';
 import { IRepoCra } from '../IRepository/IRepoCra';
 import { Raison } from '../model/Raison';
 import { IRepoCollab } from '@app/domain/IRepository/IRepoCollab';
+import { Month } from '@js-joda/core';
 
 @Injectable()
 export class ExportService {
@@ -10,7 +11,7 @@ export class ExportService {
     @Inject('IRepoCra') private readonly repoCra: IRepoCra,
     @Inject('IRepoCollab') private readonly repoCollab: IRepoCollab,
   ) {}
-  async generateExcel(month: number, year: number): Promise<ExcelJS.Buffer> {
+  async generateExcel(month: Month, year: number): Promise<ExcelJS.Buffer> {
     //fetch data to fill
     const craData = await this.repoCra.findByMonthYear(month, year);
 
@@ -93,7 +94,7 @@ export class ExportService {
 
       worksheet.addRow([
         `${collab.name} ${collab.lastname}`,
-        `${month}/${year}`,
+        `${month.value()}/${year}`,
         absenceCounts.Conges / 2,
         absenceCounts.RTT / 2,
         absenceCounts.Exceptionnelle / 2,
@@ -110,7 +111,7 @@ export class ExportService {
     return await workbook.xlsx.writeBuffer();
   }
 
-  async generateExcel2(month: number, year: number): Promise<ExcelJS.Buffer> {
+  async generateExcel2(month: Month, year: number): Promise<ExcelJS.Buffer> {
     //fetch data to fill
     const craData = await this.repoCra.findByMonthYear(month, year);
 

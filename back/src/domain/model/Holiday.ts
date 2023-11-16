@@ -1,8 +1,10 @@
+import { LocalDate } from '@js-joda/core';
+
 export class Holiday {
-  private readonly _date: Date;
+  private readonly _date: LocalDate;
   private readonly _name: string;
 
-  constructor(date: Date, name: string) {
+  constructor(date: LocalDate, name: string) {
     if (!(date && name)) {
       throw new Error('cannot have a null attribute');
     }
@@ -13,10 +15,10 @@ export class Holiday {
   private readonly LOCALE_FR = 'fr-FR';
 
   public get id() {
-    return this._date.toLocaleDateString(this.LOCALE_FR);
+    return this._date.toString();
   }
 
-  public get date(): Date {
+  public get date(): LocalDate {
     return this._date;
   }
 
@@ -25,6 +27,13 @@ export class Holiday {
   }
 
   static fromJson(json: any): Holiday {
-    return new Holiday(json._date, json._name);
+    return new Holiday(LocalDate.parse(json._date), json._name);
+  }
+
+  mapToJson(): any {
+    return {
+      _date: this._date.toString(),
+      _name: this._name,
+    };
   }
 }
