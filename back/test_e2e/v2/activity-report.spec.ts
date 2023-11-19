@@ -31,7 +31,7 @@ describe('Activity Report Controller', () => {
     const dto = new ActivityReportDto();
     dto.month = Month.NOVEMBER.value();
     dto.year = 2023;
-    dto.collabEmail = collabEmail.value;
+    dto.employeeEmail = collabEmail.value;
     dto.activities = activities;
 
     const response = await request(getApp().getHttpServer())

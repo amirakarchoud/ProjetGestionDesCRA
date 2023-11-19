@@ -1,11 +1,8 @@
 import { Role } from './Role';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
-import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class Collab {
-  // @Exclude()
-  @Transform((params) => params.value.value)
   private readonly _email: CollabEmail;
   private readonly _name: string;
   private readonly _lastname: string;
@@ -52,6 +49,7 @@ export class Collab {
   public get email(): CollabEmail {
     return this._email;
   }
+
   public get name(): string {
     return this._name;
   }

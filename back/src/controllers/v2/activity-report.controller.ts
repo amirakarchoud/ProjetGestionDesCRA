@@ -1,10 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ActivityReportDto } from '@app/controllers/v2/dto/activity-report.dto';
 import { CraApplication } from '@app/domain/application/cra.application';
 
-@Controller('/v2/private/activity-report')
+export const ACTIVITY_REPORT_URI = '/v2/private/activity-report';
+
+@ApiTags('v2', 'Activity')
+@Controller(ACTIVITY_REPORT_URI)
 export class ActivityReportController {
   constructor(private craApp: CraApplication) {}
 
@@ -16,7 +19,7 @@ export class ActivityReportController {
   })
   async postBulk(@Body() activityReport: ActivityReportDto) {
     await this.craApp.bulkAdd(
-      new CollabEmail(activityReport.collabEmail),
+      new CollabEmail(activityReport.employeeEmail),
       activityReport.month,
       activityReport.year,
       activityReport.activities,

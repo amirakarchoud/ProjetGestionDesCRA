@@ -146,6 +146,7 @@ export class CraApplication {
     month,
     year,
     activities: Array<ProjectActivitiesDto>,
+    replace = false,
   ) {
     const toAdd = new Array<Activity | Absence>();
 
@@ -180,7 +181,7 @@ export class CraApplication {
       cra = await this.createNewCra(craDate, idUser);
     }
 
-    cra.bulkAdd(toAdd, { replace: true });
+    cra.bulkAdd(toAdd, { replace: replace });
     await this.craRepository.save(cra);
   }
 
