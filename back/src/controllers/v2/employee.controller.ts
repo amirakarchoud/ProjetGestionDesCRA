@@ -1,19 +1,18 @@
 import { Collab } from '@app/domain/model/Collab';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Query,
-  Res,
-} from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraApplication } from '@app/domain/application/cra.application';
 import { CreateEmployeeDto } from '@app/controllers/v2/dto/create-employee.dto';
-import { Response } from 'express';
 import { ProjectCode } from '@app/domain/model/project.code';
+import { EmployeeDto } from '@app/controllers/v2/dto/employee.dto';
+import { mapEmployee } from '@app/controllers/v2/mappers/employee.mapper';
 
 export const EMPLOYEE_URI = '/v2/private/employees';
 
@@ -32,22 +31,32 @@ export class EmployeeController {
     description:
       'Optionally provide a comma separated list of emails to filter.',
     required: false,
+    example: 'john.doe@proxym.fr,mohamed.doe@proxym.fr',
+  })
+  @ApiResponse({
+    type: [EmployeeDto],
   })
   async listEmployees(
     @Query('emailFilter') emailFilter: string,
-  ): Promise<Collab[]> {
+  ): Promise<EmployeeDto[]> {
+    let collabs = [];
     if (emailFilter) {
-      return await this.craApplication.getAllCollabsByIds(
+      collabs = await this.craApplication.getAllCollabsByIds(
         emailFilter.split(',').map((id) => new CollabEmail(id)),
       );
+    } else {
+      collabs = await this.craApplication.getAllCollabs();
     }
-    return await this.craApplication.getAllCollabs();
+    return collabs.map((collab) => mapEmployee(collab));
   }
 
   @Post('')
   @ApiOperation({
     summary: 'Add an employee.',
     description: 'Add a new employee to the application',
+  })
+  @ApiBody({
+    type: CreateEmployeeDto,
   })
   async addCollab(@Body() employeeDto: CreateEmployeeDto): Promise<void> {
     const collab = new Collab(

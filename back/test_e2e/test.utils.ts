@@ -115,7 +115,7 @@ export async function createUser(app: INestApplication, userId: CollabEmail) {
   const repo: CollabRepository = app.get('IRepoCollab');
   await repo.save(new Collab(userId, 'some name', 'last name', Role.user));
 
-  return repo;
+  return repo.findById(userId);
 }
 
 export async function prepareAbsence(

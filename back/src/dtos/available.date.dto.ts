@@ -1,6 +1,6 @@
 import { Percentage } from '../domain/percentage.type';
 
-export interface AvailableDateDto {
+export class AvailableDateDto {
   date: string;
   availableTime: Percentage;
 }

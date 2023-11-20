@@ -7,7 +7,7 @@ import { Absence } from '@app/domain/model/Absence';
 import { Project } from '@app/domain/model/Project';
 import { ProjectSimpleDto } from '@app/dtos/project.simple.dto';
 import { Holiday } from '@app/domain/model/Holiday';
-import { convert, LocalDate } from '@js-joda/core';
+import { LocalDate } from '@js-joda/core';
 
 export const mapCraToCraDto = (cra: CRA, projects: Project[]): CraDto => {
   return {
@@ -25,7 +25,7 @@ export const mapCraToCraDto = (cra: CRA, projects: Project[]): CraDto => {
   };
 };
 
-function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
+export function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
   return holidays.map((holiday) => {
     return {
       title: holiday.name,
@@ -36,7 +36,7 @@ function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
   });
 }
 
-function mapAbsencesDto(absences: Absence[]): ActivityDto[] {
+export function mapAbsencesDto(absences: Absence[]): ActivityDto[] {
   return absences.map((abs) => {
     return {
       title: abs.raison,

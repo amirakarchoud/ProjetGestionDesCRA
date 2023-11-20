@@ -33,7 +33,7 @@ export class CreateEmployeeDto {
   role: Role;
 
   @ApiProperty({
-    description: 'List of project Ids that this user can report for.'
+    description: 'List of project Ids that this user can report for.',
   })
   @IsString({
     each: true,

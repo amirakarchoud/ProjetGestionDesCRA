@@ -9,6 +9,9 @@ import { CollabEmail } from '../../src/domain/model/collab.email';
 import { ActivityReportDto } from '../../src/controllers/v2/dto/activity-report.dto';
 import { prepareActivities } from '../cra.controller.spec';
 import { LocalDate, Month } from '@js-joda/core';
+import { createCra } from '../../test/utils';
+import { ACTIVITY_REPORT_URI } from '../../src/controllers/v2/activity-report.controller';
+import { IRepoCra } from '../../src/domain/IRepository/IRepoCra';
 
 describe('Activity Report Controller', () => {
   const getApp = prepareApp('activity_report');
@@ -53,4 +56,55 @@ describe('Activity Report Controller', () => {
     expect(cra.absences).toHaveLength(2);
     expect(cra.holidays).toHaveLength(2);
   });
+
+  it('Can retrieve activity reports for a user', async () => {
+    // given
+    await userWithReport();
+
+    // when
+    const response = await request(getApp().getHttpServer())
+      .get(`${ACTIVITY_REPORT_URI}/test@proxym.fr/2023/9`)
+      .set('Content-Type', 'application/json');
+
+    // then
+    expect(response.body).toEqual(
+      expect.objectContaining({
+        id: '9-2023-test@proxym.fr',
+        employee: 'test@proxym.fr',
+      }),
+    );
+  });
+
+  it('Can retrieve list of cras for a user for the whole year', async () => {
+    // given
+    await userWithTwoReports();
+
+    // when
+    const response = await request(getApp().getHttpServer())
+      .get(`${ACTIVITY_REPORT_URI}/test@proxym.fr/2023`)
+      .set('Content-Type', 'application/json');
+
+    // then
+    expect(response.body).toHaveLength(2);
+  });
+
+  async function userWithTwoReports() {
+    const user = await createUser(getApp(), new CollabEmail('test@proxym.fr'));
+    await createProject(getApp(), new ProjectCode('project1'));
+    const cra1 = await createCra(user, LocalDate.of(2023, 9, 1));
+    const cra2 = await createCra(user, LocalDate.of(2023, 10, 1));
+
+    const repo: IRepoCra = getApp().get('IRepoCra');
+    await repo.save(cra1);
+    await repo.save(cra2);
+  }
+
+  async function userWithReport() {
+    const user = await createUser(getApp(), new CollabEmail('test@proxym.fr'));
+    await createProject(getApp(), new ProjectCode('project1'));
+    const cra = await createCra(user, LocalDate.of(2023, 9, 1));
+
+    const repo: IRepoCra = getApp().get('IRepoCra');
+    await repo.save(cra);
+  }
 });
