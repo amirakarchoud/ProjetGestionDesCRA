@@ -93,20 +93,36 @@ describe('Un CRA ', () => {
 
   it('ne peut pas ajouter une absence apres le 5 du mois suivant', () => {
     //Given
-    const date = LocalDate.parse('2023-01-01');
-    const cra = createCra(collab, date);
+    const dateCra = LocalDate.parse('2023-01-01');
+    const cra = createCra(collab, dateCra);
 
     //When
-    const absence = new Absence(
-      50,
-      LocalDate.parse('2023-02-06'),
-      Raison.Maladie,
-    );
+    const today = LocalDate.parse('2023-02-06');
+    DateProvider.setTodayDate(today);
+
+    const absence = new Absence(50, dateCra.plusDays(10), Raison.Maladie);
 
     //Then
     expect(() => {
       cra.addAbsence(absence);
     }).toThrow(ForbiddenException);
+  });
+
+  it('peut ajouter une absence avant le 5 du mois suivant', () => {
+    //Given
+    const dateCra = LocalDate.parse('2023-01-01');
+    const cra = createCra(collab, dateCra);
+
+    //When
+    const today = LocalDate.parse('2023-02-04');
+    DateProvider.setTodayDate(today);
+
+    const absence = new Absence(50, dateCra.plusDays(10), Raison.Maladie);
+
+    //Then
+    expect(() => {
+      cra.addAbsence(absence);
+    }).not.toThrow(ForbiddenException);
   });
 
   it(' peut ajouter une absence dans le futur', () => {
