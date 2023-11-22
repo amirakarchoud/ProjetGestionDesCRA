@@ -1,0 +1,26 @@
+.list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    column-gap: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.link {
+    color: #000;
+    text-decoration: none;
+    &:hover {
+        color: #562ad5;
+    }
+}
+
+.activeLink {
+    color: #562ad5;
+    text-decoration: underline;
+    text-decoration-thickness: 0.15rem;
+    text-underline-offset: 0.2rem;
+}

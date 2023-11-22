@@ -1,59 +1,30 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate} from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import Projects from './Projects/project';
-import CalendarComponent from './Calendar/Calendar';
-import ProjectDetails from './Projects/projectDetails';
-import AddProject from './Projects/addProject';
-import UpdateProject from './Projects/updateProject';
-import RecapAdmin from './Admin/RecapAdmin';
-import ProtectedRoute from './Auth/ProtectedRoute';
-import { AuthProvider } from './Auth/AuthProvider';
-import LoginApp from './Auth/Login';
-
-
-function Home() {
-  return <h1>Welcome to the App!</h1>;
-}
+// MUI
+import { ThemeProvider } from '@mui/material';
+import {pxfTheme} from "./mui-proxym-theme";
+// UI
+import Header from './Components/Header';
+import { routes } from './Utils/Routes';
+// Lazy-loaded Views
+const ActivityReport = lazy(() => import('./Views/ActivityReport/ActivityReport'));
+const NotFound = lazy(() => import('./Views/NotFound/NotFound'));
+const Projects = lazy(() => import('./Views/Projects/project'));
 
 function App() {
-  const user = 'user1';
   return (
-    <AuthProvider>
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/projects">Projects</Link>
-            </li>
-            <li>
-              <Link to={`/calendar/${user}`}>Calendar</Link>
-            </li>
-            <li>
-              <Link to="/recap-admin">Admin</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <Routes>
-        <Route exact path="/login" element={<LoginApp/>} />
-          <Route path="/" element={<Home />} />
-          <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
-          <Route path="/calendar/:user" element={<ProtectedRoute><CalendarComponent></CalendarComponent></ProtectedRoute>} />
-          <Route path="*" element={<LoginApp/>} />
-          <Route exact path="/project/:projectCode" element={<ProtectedRoute><ProjectDetails/></ProtectedRoute>} />
-          <Route exact path="/projectUpdate/:projectCode" element={<ProtectedRoute><UpdateProject/></ProtectedRoute>} />
-          <Route path="/add-project" element={<ProtectedRoute><AddProject /></ProtectedRoute>} />
-          <Route path="/recap-admin" element={<ProtectedRoute><RecapAdmin /></ProtectedRoute>} />
-       
-        </Routes>
-      </div>
-    </Router>
-    </AuthProvider>
+    <ThemeProvider theme={pxfTheme}>
+        <Header />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Routes>
+            <Route path={routes.activityReport} element={<ActivityReport />} />
+            <Route path={routes.projects} element={<Projects />} />
+            <Route path={routes.default} element={<Navigate to={routes.activityReport} />} />
+            <Route path={routes.notFound} element={<NotFound />} />
+          </Routes>
+        </Suspense>
+    </ThemeProvider>
   );
 }
 
