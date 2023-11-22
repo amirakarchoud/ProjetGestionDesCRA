@@ -1,0 +1,10 @@
+.main {
+    padding: 16px;
+    justify-content: center;
+    max-width: calc(1024px - 32px);
+    width: 100vw;
+    margin: auto;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+}

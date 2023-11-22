@@ -5,10 +5,10 @@ import './App.css';
 import { ThemeProvider } from '@mui/material';
 import {pxfTheme} from "./mui-proxym-theme";
 // UI
-import Header from './Components/Header';
+import Header from './Components/ui/Header';
 import { routes } from './Utils/Routes';
 // Lazy-loaded Views
-const ActivityReport = lazy(() => import('./Views/ActivityReport/ActivityReport'));
+const ActivityReport = lazy(() => import('./Views/ActivityReport'));
 const NotFound = lazy(() => import('./Views/NotFound/NotFound'));
 const Projects = lazy(() => import('./Views/Projects/project'));
 

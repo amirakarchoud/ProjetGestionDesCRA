@@ -1,0 +1,36 @@
+.table {
+  border: solid 1px #4f5252;
+  border-radius: 4px;
+}
+.block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #4f5252;
+  height: 86px;
+}
+.banner {
+  background-color: #edf0f0;
+}
+.title {
+  width: 250px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 0 0 0 16px;
+}
+.list {
+  display: flex;
+  gap: 2.5rem;
+  margin: 0 16px 0 0;
+}
+.element {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+}
+.select {
+  width: 100px;
+}
+.absenceSelect {
+  width: inherit;
+}
