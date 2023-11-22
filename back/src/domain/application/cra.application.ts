@@ -18,6 +18,7 @@ import { Status } from '@app/domain/model/Status';
 import { Activity } from '@app/domain/model/Activity';
 import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { LocalDate, Month } from '@js-joda/core';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 
 @Injectable()
 export class CraApplication {
@@ -79,7 +80,7 @@ export class CraApplication {
       createAbsenceDto.raison,
     );
     // add absence to the cra
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
     //save cra and done
     await this.craRepository.save(cra);
 
@@ -113,7 +114,7 @@ export class CraApplication {
     }
 
     //create absence
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       project.code,
       createActivityDto.percentage,
       dateAct,
@@ -156,7 +157,7 @@ export class CraApplication {
 
         if (activityDto.type === ActivityDtoType.project) {
           toAdd.push(
-            new Activity(
+            new ProjectActivity(
               new ProjectCode(projectActivity.projectCode),
               activityDto.percentage,
               date,

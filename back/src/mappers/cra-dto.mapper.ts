@@ -1,6 +1,5 @@
 import { CraDto } from '@app/dtos/cra.dto';
 import { CRA } from '@app/domain/model/CRA';
-import { Activity } from '@app/domain/model/Activity';
 import { ActivityDto, ActivityDtoType } from '@app/dtos/activity.dto';
 import { AvailableDateDto } from '@app/dtos/available.date.dto';
 import { Absence } from '@app/domain/model/Absence';
@@ -8,6 +7,7 @@ import { Project } from '@app/domain/model/Project';
 import { ProjectSimpleDto } from '@app/dtos/project.simple.dto';
 import { Holiday } from '@app/domain/model/Holiday';
 import { LocalDate } from '@js-joda/core';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 
 export const mapCraToCraDto = (cra: CRA, projects: Project[]): CraDto => {
   return {
@@ -60,7 +60,7 @@ export const mapAvailableDates = (
 };
 
 export const mapActivitiesDto = (
-  activities: Activity[],
+  activities: ProjectActivity[],
   projects: Project[],
 ): ActivityDto[] => {
   return activities.map((act) => {

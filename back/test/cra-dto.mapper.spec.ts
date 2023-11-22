@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
-import { Activity } from '@app/domain/model/Activity';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { Project } from '@app/domain/model/Project';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
@@ -14,6 +13,7 @@ import { createCra } from './utils';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { LocalDate } from '@js-joda/core';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 
 describe('Cra DTO Mapper', () => {
   let date;
@@ -37,7 +37,7 @@ describe('Cra DTO Mapper', () => {
   let cra;
 
   beforeEach(() => {
-    date = LocalDate.parse('2023-09-02');
+    date = LocalDate.parse('2023-09-04');
     cra = createCra(collab, date);
   });
 
@@ -59,7 +59,7 @@ describe('Cra DTO Mapper', () => {
   });
 
   it('Should map activities', () => {
-    const activity = new Activity(new ProjectCode('proj1'), 75, date);
+    const activity = new ProjectActivity(new ProjectCode('proj1'), 75, date);
     cra.addActivity(activity);
 
     const craDto = mapCraToCraDto(cra, projects);
@@ -86,7 +86,7 @@ describe('Cra DTO Mapper', () => {
       LocalDate.parse('2023-09-20'),
       Raison.Maladie,
     );
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
 
     const craDto = mapCraToCraDto(cra, projects);
 
@@ -124,11 +124,15 @@ describe('Cra DTO Mapper', () => {
     const nextDate3 = LocalDate.parse('2023-09-06');
 
     const absence = new Absence(100, nextDate, Raison.Maladie);
-    const activity = new Activity(new ProjectCode('proj1'), 75, nextDate2);
+    const activity = new ProjectActivity(
+      new ProjectCode('proj1'),
+      75,
+      nextDate2,
+    );
 
     cra['_holidays'] = [new Holiday(nextDate3, 'New Years')];
 
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
     cra.addActivity(activity);
 
     const craDto = mapCraToCraDto(cra, projects);

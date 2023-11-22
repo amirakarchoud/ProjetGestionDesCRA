@@ -1,42 +1,18 @@
 import { Raison } from './Raison';
 import { Percentage } from '@app/domain/percentage.type';
-import { LocalDate, nativeJs } from '@js-joda/core';
+import { LocalDate } from '@js-joda/core';
+import { Activity } from '@app/domain/model/Activity';
+import { AbsenceRule } from '@app/domain/model/AbsenceRule';
 
-export class Absence {
-  private _percentage: Percentage;
-  private _date: LocalDate;
-  private _raison: Raison;
-
-  toJSON(): object {
-    return {
-      matin: this._percentage,
-      date: this._date,
-      raison: this._raison,
-    };
-  }
-
+export class Absence extends Activity {
+  private readonly _raison: Raison;
   constructor(percentage: Percentage, date: LocalDate, raison: Raison) {
+    super(percentage, date);
     if (raison == null) {
-      throw new Error('cannot have a null attribut');
+      throw new Error('cannot have a null attribute');
     }
-    if (date == null) {
-      throw new Error('cannot have a null attribut');
-    }
-    if (percentage == null) {
-      throw new Error('cannot have a null attribut');
-    }
-
-    this._percentage = percentage;
-    this._date = date;
     this._raison = raison;
-  }
-
-  public get percentage(): Percentage {
-    return this._percentage;
-  }
-
-  public get date(): LocalDate {
-    return this._date;
+    this.addActivityRule(new AbsenceRule());
   }
 
   public get raison(): Raison {
@@ -53,6 +29,14 @@ export class Absence {
       LocalDate.parse(json._date),
       json._raison,
     );
+  }
+
+  toJSON(): object {
+    return {
+      percentage: this._percentage,
+      date: this._date.toJSON(),
+      raison: this._raison,
+    };
   }
 
   mapToJson(): any {

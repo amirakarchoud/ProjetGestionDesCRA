@@ -19,8 +19,7 @@ describe('APP', () => {
   const clientId = new CollabEmail('test1@proxym.fr');
 
   it(`create user from token`, async () => {
-    const repo: CollabRepository = await createUser(app(), clientId);
-    const createdUser = await repo.findById(clientId);
+    const createdUser = await createUser(app(), clientId);
     expect(createdUser).toBeDefined();
   });
 

@@ -1,10 +1,7 @@
 import { Absence } from '@app/domain/model/Absence';
-import { CRA } from '@app/domain/model/CRA';
 import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
-import { Etat } from '@app/domain/model/etat.enum';
-import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { createCra } from './utils';
 import { LocalDate } from '@js-joda/core';
@@ -19,9 +16,9 @@ describe('Une absence ', () => {
 
   it('ne peut pas avoir des attributs null', () => {
     //When
-    expect(() => new Absence(null, LocalDate.now(), Raison.Maladie)).toThrowError(
-      'cannot have a null attribut',
-    );
+    expect(
+      () => new Absence(null, LocalDate.now(), Raison.Maladie),
+    ).toThrowError('cannot have a null attribut');
 
     expect(() => new Absence(100, null, Raison.Maladie)).toThrowError(
       'cannot have a null attribut',
@@ -37,7 +34,7 @@ describe('Une absence ', () => {
     const cra = createCra(collab, date);
     //When
     const absence = new Absence(100, date, Raison.Maladie);
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
 
     //Then
     expect(absence).toBeDefined();

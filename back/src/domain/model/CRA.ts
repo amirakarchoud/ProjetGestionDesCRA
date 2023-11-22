@@ -10,24 +10,35 @@ import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Percentage } from '@app/domain/percentage.type';
-import { dateMonthsEqual } from '@app/domain/model/date.utils';
+import { dateMonthsEqual, isWeekend } from '@app/domain/model/date.utils';
 import { DateProvider } from '@app/domain/model/date-provider';
-import { LocalDate, Month } from '@js-joda/core';
+import {
+  Instant,
+  LocalDate,
+  Month,
+  TemporalAdjusters,
+  ZoneId,
+} from '@js-joda/core';
+import { Interval } from '@js-joda/extra';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 
 export type BulkAddOptions = {
   replace: boolean;
 };
 
 export class CRA {
+  public static readonly CLOSURE_DAY = 5;
   private _holidays: Holiday[] = [];
   private _absences: Absence[] = [];
-  private _activites: Activity[] = [];
+  private _activites: ProjectActivity[] = [];
   private _month: Month;
   private _year: number;
   private _collab: CollabEmail;
   private _etat: Etat = Etat.unsubmitted;
   private _status: Status = Status.Open;
   private _history: Regul[] = [];
+  private _craInterval: Interval;
+  private _closureInterval: Interval;
 
   constructor(
     month: Month,
@@ -44,6 +55,21 @@ export class CRA {
     this._holidays = [];
     this._etat = etat;
     this._status = status;
+    const start = LocalDate.of(year, month, 1).atStartOfDay(
+      ZoneId.systemDefault(),
+    );
+    this._craInterval = Interval.of(
+      Instant.from(start),
+      Instant.from(
+        start.plusMonths(1).with(TemporalAdjusters.firstDayOfMonth()),
+      ),
+    );
+    this._closureInterval = Interval.of(
+      Instant.from(start),
+      Instant.from(
+        start.plusMonths(1).withDayOfMonth(CRA.CLOSURE_DAY).plusDays(1),
+      ),
+    );
   }
 
   public get id(): string {
@@ -96,7 +122,7 @@ export class CRA {
     return businessDays;
   }
 
-  public get activities(): Activity[] {
+  public get activities(): ProjectActivity[] {
     return [...this._activites];
   }
 
@@ -123,27 +149,29 @@ export class CRA {
   }
 
   addActivity(activity: Activity) {
-    const dateAct = activity.date;
-
+    const activityDate = activity.date;
     //check if holiday
-    this.holidays.forEach((element) => {
-      if (element.date.equals(activity.date)) {
-        throw Error('it is a holiday :' + element.name);
+    this.holidays.forEach((holiday) => {
+      if (holiday.date.equals(activityDate)) {
+        throw Error('it is a holiday :' + holiday.name);
       }
     });
 
     // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.getAvailableTime(dateAct) < activity.percentage) {
+    if (this.getAvailableTime(activityDate) < activity.percentage) {
       //cra
       throw new Error('FULL day or period');
     }
 
-    const activities = this._activites.filter(
-      (existingActivity) =>
-        existingActivity.date.equals(dateAct) &&
-        existingActivity.project === activity.project,
-    );
-    if (activities.length > 0) {
+    //test if you have the right to add according to the date constraint
+    if (!activity.isValid(activity, this._craInterval, this._closureInterval)) {
+      throw new ForbiddenException();
+    }
+
+    if (
+      activity instanceof ProjectActivity &&
+      this.isExistingProjectActivity(activity)
+    ) {
       throw new Error(
         `There is already an activity for project "${
           activity.project
@@ -151,56 +179,26 @@ export class CRA {
       );
     }
 
-    //test if you have the right to add according to the date constraint
-
-    const beforeFiveDays = DateProvider.today().minusDays(5);
-
-    if (
-      dateAct.month() != DateProvider.today().month() &&
-      beforeFiveDays.month() != dateAct.month()
-    ) {
-      throw new ForbiddenException();
-    }
-
     //check if regul
     if (this._status === Status.Closed) {
       this._history.push(new Regul(LocalDate.now(), Action.Add, activity));
     }
 
-    this._activites.push(activity);
+    if (activity instanceof ProjectActivity) {
+      this._activites.push(activity);
+    } else if (activity instanceof Absence) {
+      this._absences.push(activity);
+    }
   }
 
-  addAbsence(absence: Absence) {
-    //check if holiday
-    this.holidays.forEach((holiday) => {
-      if (holiday.date.equals(absence.date)) {
-        throw Error('it is a holiday :' + holiday.name);
-      }
-    });
-
-    // Test if the day is already fully occupied or part of a fully occupied period
-    if (this.getAvailableTime(absence.date) < absence.percentage) {
-      //cra
-      throw new Error('FULL day or period');
-    }
-
-    const today = DateProvider.today();
-    const absDate = absence.date;
-
-    if (
-      (absDate.month().value() < today.month().value() &&
-        absDate.year() == today.year()) ||
-      absDate.year() < today.year()
-    ) {
-      throw new ForbiddenException();
-    }
-
-    //check if regul
-    if (this._status == Status.Closed) {
-      this._history.push(new Regul(LocalDate.now(), Action.Add, absence));
-    }
-
-    this._absences.push(absence);
+  isExistingProjectActivity(activity: ProjectActivity): boolean {
+    const projectActivities = this._activites
+      .filter(
+        (existingActivity) =>
+          existingActivity.date.equals(activity.date) &&
+          existingActivity.project === activity.project,
+      );
+    return projectActivities.length > 0;
   }
 
   calculateEmptyDays(): number {
@@ -274,12 +272,9 @@ export class CRA {
     });
   }
 
-  public bulkAdd(
-    activities: Array<Activity | Absence>,
-    options?: BulkAddOptions,
-  ) {
+  public bulkAdd(activities: Array<Activity>, options?: BulkAddOptions) {
     //group by day
-    const activitiesByDate = new Map<string, Array<Activity | Absence>>();
+    const activitiesByDate = new Map<string, Array<Activity>>();
     for (const currentActivity of activities) {
       const existingEntry = activitiesByDate.get(
         currentActivity.date.toString(),
@@ -299,13 +294,7 @@ export class CRA {
         this.cleanDate(LocalDate.parse(key));
       }
 
-      activitiesByDate.get(key).forEach((act) => {
-        if (act instanceof Activity) {
-          this.addActivity(act);
-        } else if (act instanceof Absence) {
-          this.addAbsence(act);
-        }
-      });
+      activitiesByDate.get(key).forEach((act) => this.addActivity(act));
     }
   }
 
@@ -322,7 +311,7 @@ export class CRA {
       }
     });
 
-    this.activities.forEach((act: Activity) => {
+    this.activities.forEach((act: ProjectActivity) => {
       if (act.date.equals(date)) {
         this.deleteActivity(act.date, act.project);
       }
@@ -347,11 +336,10 @@ export class CRA {
 
     let currentDate = startDate;
     while (currentDate.isBefore(endDate)) {
-      const isWeekend = this.isWeekend(currentDate);
-      const isHoliday = this.checkDateIsHoliday(currentDate);
-      const isActivityOrAbsenceExists = this.checkDayIsFull(currentDate);
+      const isHoliday = this.isHoliday(currentDate);
+      const isActivityOrAbsenceExists = this.isDayFull(currentDate);
 
-      if (!isWeekend && !isHoliday && !isActivityOrAbsenceExists) {
+      if (!isWeekend(currentDate) && !isHoliday && !isActivityOrAbsenceExists) {
         availableDates.push(currentDate);
       }
 
@@ -361,29 +349,12 @@ export class CRA {
     return availableDates;
   }
 
-  isWeekend(date: LocalDate): boolean {
-    const dayOfWeek = date.dayOfWeek();
-    return dayOfWeek.value() >= 6;
-  }
-
-  checkDateIsHoliday(date: LocalDate): boolean {
+  isHoliday(date: LocalDate): boolean {
     return this.holidays.some((hol) => hol.date.equals(date));
   }
 
-  checkDayIsFull(date: LocalDate): boolean {
+  isDayFull(date: LocalDate): boolean {
     return this.getAvailableTime(date) < 100;
-  }
-
-  isSameDate(date1: Date, date2: Date): boolean {
-    const year1 = date1.getFullYear();
-    const month1 = date1.getMonth();
-    const day1 = date1.getDate();
-
-    const year2 = date2.getFullYear();
-    const month2 = date2.getMonth();
-    const day2 = date2.getDate();
-
-    return year1 === year2 && month1 === month2 && day1 === day2;
   }
 
   SubmitCra(): boolean {
@@ -439,7 +410,9 @@ export class CRA {
 
     cra._holidays = json._holidays.map((hol) => Holiday.fromJson(hol));
     cra._absences = json._absences.map((abs) => Absence.fromJson(abs));
-    cra._activites = json._activites.map((act) => Activity.fromJson(act));
+    cra._activites = json._activites.map((act) =>
+      ProjectActivity.fromJson(act),
+    );
     cra._history = json._history;
 
     return cra;

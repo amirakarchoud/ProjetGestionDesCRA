@@ -1,4 +1,3 @@
-import { Activity } from '@app/domain/model/Activity';
 import { Project } from '@app/domain/model/Project';
 import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
@@ -7,6 +6,7 @@ import { createCra } from './utils';
 import { Collab } from '@app/domain/model/Collab';
 import { Role } from '@app/domain/model/Role';
 import { LocalDate } from '@js-joda/core';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 
 describe('Une activite ', () => {
   let projet: Project;
@@ -25,22 +25,22 @@ describe('Une activite ', () => {
 
   it('ne peut pas avoir des attributs null', () => {
     //Then
-    expect(() => new Activity(null, 100, LocalDate.now())).toThrowError(
+    expect(() => new ProjectActivity(null, 100, LocalDate.now())).toThrowError(
       'cannot have a null attribut',
     );
 
-    expect(() => new Activity(projet.code, null, LocalDate.now())).toThrowError(
-      'cannot have a null attribut',
-    );
+    expect(
+      () => new ProjectActivity(projet.code, null, LocalDate.now()),
+    ).toThrowError('cannot have a null attribut');
 
-    expect(() => new Activity(projet.code, 100, null)).toThrowError(
+    expect(() => new ProjectActivity(projet.code, 100, null)).toThrowError(
       'cannot have a null attribut',
     );
   });
 
   it('peut etre cree par un collab', () => {
     //When
-    const activity = new Activity(projet.code, 100, LocalDate.now());
+    const activity = new ProjectActivity(projet.code, 100, LocalDate.now());
 
     //Then
     expect(activity).toBeDefined();
@@ -49,7 +49,7 @@ describe('Une activite ', () => {
   it('est associee a un projet', () => {
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, LocalDate.now());
+    const activity = new ProjectActivity(projet.code, 100, LocalDate.now());
 
     //Then
     expect(activity.project).toEqual(new ProjectCode('123'));
@@ -61,7 +61,7 @@ describe('Une activite ', () => {
 
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, date);
+    const activity = new ProjectActivity(projet.code, 100, date);
 
     //Then
     expect(activity.date).toBe(date);
@@ -79,7 +79,7 @@ describe('Une activite ', () => {
     const cra = createCra(collab, date);
     //When
     projet.addCollab(collabEmail);
-    const activity = new Activity(projet.code, 100, date);
+    const activity = new ProjectActivity(projet.code, 100, date);
     cra.addActivity(activity);
 
     //Then
@@ -87,7 +87,7 @@ describe('Une activite ', () => {
   });
 
   it('peut être converti en json', () => {
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       new ProjectCode('proj'),
       25,
       LocalDate.parse('2023-09-01'),

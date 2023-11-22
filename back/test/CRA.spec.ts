@@ -3,7 +3,6 @@ import { Absence } from '@app/domain/model/Absence';
 import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
-import { Activity } from '@app/domain/model/Activity';
 import { Etat } from '@app/domain/model/etat.enum';
 import { ForbiddenException } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
@@ -14,7 +13,9 @@ import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { DateProvider } from '@app/domain/model/date-provider';
 import { createCra } from './utils';
-import { LocalDate, Month } from '@js-joda/core';
+import { LocalDate, Month, TemporalAdjusters } from '@js-joda/core';
+import { ProjectActivity } from '@app/domain/model/ProjectActivity';
+import { isWeekend } from '@app/domain/model/date.utils';
 
 const createProject = (code: ProjectCode, collab?: CollabEmail) => {
   return new Project(
@@ -42,7 +43,7 @@ describe('Un CRA ', () => {
     //given
     const today = LocalDate.parse('2023-09-04');
     const cra = createCra(collab, today);
-    cra.addAbsence(new Absence(50, today, Raison.Maladie));
+    cra.addActivity(new Absence(50, today, Raison.Maladie));
 
     expect(cra.absences.length).toBe(1);
     //when
@@ -57,7 +58,7 @@ describe('Un CRA ', () => {
     const cra = createCra(collab, date);
 
     project1.addCollab(collab.email);
-    const activity = new Activity(project1.code, 50, date);
+    const activity = new ProjectActivity(project1.code, 50, date);
     const absence = new Absence(75, date, Raison.Maladie);
 
     //When
@@ -65,7 +66,7 @@ describe('Un CRA ', () => {
 
     //Then
     expect(() => {
-      cra.addAbsence(absence);
+      cra.addActivity(absence);
     }).toThrow(Error('FULL day or period'));
     expect(cra.activities).toHaveLength(1);
   });
@@ -75,8 +76,8 @@ describe('Un CRA ', () => {
     const date = LocalDate.parse('2023-09-04');
     const cra = createCra(collab, date);
     project1.addCollab(collab.email);
-    const activity = new Activity(project1.code, 50, date);
-    const activity2 = new Activity(project2.code, 25, date);
+    const activity = new ProjectActivity(project1.code, 50, date);
+    const activity2 = new ProjectActivity(project2.code, 25, date);
     const absence = new Absence(50, date, Raison.Maladie);
 
     //When
@@ -85,10 +86,44 @@ describe('Un CRA ', () => {
 
     //Then
     expect(() => {
-      cra.addAbsence(absence);
+      cra.addActivity(absence);
     }).toThrow(Error('FULL day or period'));
     expect(cra.activities).toHaveLength(2);
     expect(cra.absences.length).toBe(0);
+  });
+
+  it('peut ajouter une absence dans le futur le même mois', () => {
+    //Given
+    const dateCra = LocalDate.parse('2023-01-01');
+    const cra = createCra(collab, dateCra);
+
+    //When
+    const today = LocalDate.parse('2023-01-20');
+    DateProvider.setTodayDate(today);
+
+    const absence = new Absence(50, dateCra.plusDays(10), Raison.Maladie);
+
+    //Then
+    expect(() => {
+      cra.addActivity(absence);
+    }).not.toThrow(ForbiddenException);
+  });
+
+  it("peut ajouter une absence avant le 5 du mois suivant en passant à l'année suivante", () => {
+    //Given
+    const dateCra = LocalDate.parse('2023-12-01');
+    const cra = createCra(collab, dateCra);
+
+    //When
+    const today = LocalDate.parse('2024-01-02');
+    DateProvider.setTodayDate(today);
+
+    const absence = new Absence(50, dateCra.plusDays(10), Raison.Maladie);
+
+    //Then
+    expect(() => {
+      cra.addActivity(absence);
+    }).not.toThrow(ForbiddenException);
   });
 
   it('ne peut pas ajouter une absence apres le 5 du mois suivant', () => {
@@ -104,7 +139,7 @@ describe('Un CRA ', () => {
 
     //Then
     expect(() => {
-      cra.addAbsence(absence);
+      cra.addActivity(absence);
     }).toThrow(ForbiddenException);
   });
 
@@ -121,8 +156,44 @@ describe('Un CRA ', () => {
 
     //Then
     expect(() => {
-      cra.addAbsence(absence);
+      cra.addActivity(absence);
     }).not.toThrow(ForbiddenException);
+  });
+
+  it("peut ajouter une absence le dernier jour de l'interval du CRA", () => {
+    //Given
+    const dateCra = LocalDate.parse('2023-11-01');
+    const cra = createCra(collab, dateCra);
+
+    //When
+    const today = LocalDate.parse('2023-12-02');
+    DateProvider.setTodayDate(today);
+
+    const absenceDate = dateCra.with(TemporalAdjusters.lastDayOfMonth());
+    const absence = new Absence(50, absenceDate, Raison.Maladie);
+
+    //Then
+    expect(() => {
+      cra.addActivity(absence);
+    }).not.toThrow(ForbiddenException);
+  });
+
+  it('ne peut pas ajouter une absence un weekend', () => {
+    //Given
+    const dateCra = LocalDate.parse('2023-12-01');
+    const cra = createCra(collab, dateCra);
+
+    //When
+    const today = LocalDate.parse('2024-12-01');
+    DateProvider.setTodayDate(today);
+
+    const absenceDate = dateCra.with(TemporalAdjusters.lastDayOfMonth());
+    const absence = new Absence(50, absenceDate, Raison.Maladie);
+
+    //Then
+    expect(() => {
+      cra.addActivity(absence);
+    }).toThrow(ForbiddenException);
   });
 
   it(' peut ajouter une absence dans le futur', () => {
@@ -134,9 +205,9 @@ describe('Un CRA ', () => {
     const absence = new Absence(
       100,
       LocalDate.parse('2050-06-02'),
-      Raison.Maladie,
+      Raison.Conges,
     );
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
 
     //Then
     expect(cra.absences).toHaveLength(1);
@@ -148,7 +219,7 @@ describe('Un CRA ', () => {
     const cra = createCra(collab, date);
 
     //When
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       project1.code,
       50,
       LocalDate.parse('2050-06-02'),
@@ -164,7 +235,7 @@ describe('Un CRA ', () => {
     //given
     const today = LocalDate.parse('2023-09-04');
     const cra = createCra(collab, today);
-    cra.addAbsence(new Absence(50, today, Raison.Maladie));
+    cra.addActivity(new Absence(50, today, Raison.Maladie));
 
     expect(cra.absences.length).toBe(1);
     cra.deleteAbsence(today, Raison.Conges);
@@ -178,12 +249,12 @@ describe('Un CRA ', () => {
 
     const cra = createCra(collab, today);
     project1.addCollab(collab.email);
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       project1.code,
       50,
       LocalDate.parse('2023-09-04'),
     );
-    const activity2 = new Activity(
+    const activity2 = new ProjectActivity(
       project2.code,
       50,
       LocalDate.parse('2023-09-05'),
@@ -209,8 +280,8 @@ describe('Un CRA ', () => {
     const absence2 = new Absence(50, LocalDate.parse('2023-09-04'), Raison.RTT);
 
     //When
-    cra.addAbsence(absence);
-    cra.addAbsence(absence2);
+    cra.addActivity(absence);
+    cra.addActivity(absence2);
 
     //Then
     expect(cra.absences).toHaveLength(2);
@@ -233,8 +304,8 @@ describe('Un CRA ', () => {
     );
 
     //When
-    cra.addAbsence(absence);
-    cra.addAbsence(absence2);
+    cra.addActivity(absence);
+    cra.addActivity(absence2);
 
     //Then
     expect(cra.SubmitCra()).toBe(false);
@@ -256,10 +327,10 @@ describe('Un CRA ', () => {
       currentDate.isBefore(endDate) || currentDate.equals(endDate);
       currentDate = currentDate.plusDays(1)
     ) {
-      if (!cra.isWeekend(currentDate)) {
+      if (!isWeekend(currentDate)) {
         const abs = new Absence(50, currentDate, Raison.Maladie);
-        const act = new Activity(project1.code, 50, currentDate);
-        cra.addAbsence(abs);
+        const act = new ProjectActivity(project1.code, 50, currentDate);
+        cra.addActivity(abs);
         cra.addActivity(act);
         i = i + 2;
       }
@@ -275,18 +346,18 @@ describe('Un CRA ', () => {
 
   it('peut retourner les dates vides', () => {
     // Given
-    const startDate = LocalDate.parse('2023-09-01');
+    const startDate = LocalDate.parse('2023-11-01');
 
     project1.addCollab(collab.email);
     const cra = createCra(collab, startDate);
-    const endDate = startDate.plusMonths(1);
+    const endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
 
-    const activity = new Activity(project1.code, 50, startDate);
-    const activity2 = new Activity(project2.code, 50, startDate);
+    const activity = new ProjectActivity(project1.code, 50, startDate);
+    const activity2 = new ProjectActivity(project2.code, 50, startDate);
     const absence = new Absence(100, endDate, Raison.Maladie);
     cra.addActivity(activity);
     cra.addActivity(activity2);
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
 
     // When
     const emptyDates = cra.getAvailableDatesOfCra();
@@ -298,9 +369,9 @@ describe('Un CRA ', () => {
       currentDate = currentDate.plusDays(1)
     ) {
       if (
-        cra.isWeekend(currentDate) ||
-        cra.checkDateIsHoliday(currentDate) ||
-        cra.checkDayIsFull(currentDate)
+        isWeekend(currentDate) ||
+        cra.isHoliday(currentDate) ||
+        cra.isDayFull(currentDate)
       ) {
         expect(emptyDates).not.toContainEqual(currentDate);
       } else {
@@ -317,12 +388,12 @@ describe('Un CRA ', () => {
     DateProvider.setTodayDate(date);
 
     cra.holidays = [new Holiday(LocalDate.parse('2023-07-14'), '14 juillet')];
-    const absence = new Absence(50, LocalDate.now(), Raison.Maladie);
+    const absence = new Absence(50, LocalDate.now(), Raison.Conges);
     const absence2 = new Absence(50, LocalDate.now(), Raison.Conges);
 
     //When
-    cra.addAbsence(absence);
-    cra.addAbsence(absence2);
+    cra.addActivity(absence);
+    cra.addActivity(absence2);
 
     // When
     const emptyDates = cra.getAvailableDatesOfCra();
@@ -348,12 +419,12 @@ describe('Un CRA ', () => {
     const date = LocalDate.parse('2023-09-01');
     const cra = createCra(collab, date);
 
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       project1.code,
       50,
       LocalDate.parse('2023-09-05'),
     );
-    const activity2 = new Activity(
+    const activity2 = new ProjectActivity(
       project1.code,
       50,
       LocalDate.parse('2023-09-05'),
@@ -381,8 +452,8 @@ describe('Un CRA ', () => {
     const date = LocalDate.parse('2023-09-01');
     const cra = createCra(collab, date, Status.Closed);
     //When
-    const absence = new Absence(100, LocalDate.now(), Raison.Maladie);
-    cra.addAbsence(absence);
+    const absence = new Absence(100, date.plusDays(10), Raison.Maladie);
+    cra.addActivity(absence);
     //Then
     expect(cra.history).toHaveLength(1);
     expect(cra.history[0].target).toBe(absence);
@@ -396,7 +467,7 @@ describe('Un CRA ', () => {
 
     //When
     const absence = new Absence(100, date, Raison.Maladie);
-    cra.addAbsence(absence);
+    cra.addActivity(absence);
     cra.status = Status.Closed;
     cra.deleteAbsence(date, Raison.Maladie);
     //Then
@@ -405,18 +476,34 @@ describe('Un CRA ', () => {
     expect(cra.history[0].action).toBe(Action.Delete);
   });
 
-  it('cree une regul en cas dajout dune activite apres sa cloture ', () => {
+  it('ne peut pas cree une regul en cas dajout dune activite apres sa cloture lors dun weekend ', () => {
     // Given
     project1.addCollab(collab.email);
 
     const date = LocalDate.parse('2023-09-30');
     const cra = createCra(collab, date, Status.Closed);
     //When
-    const activity = new Activity(
+    const activity = new ProjectActivity(
       project1.code,
       100,
       LocalDate.parse('2023-09-30'),
     );
+    DateProvider.setTodayDate(date);
+
+    //Then
+    expect(() => {
+      cra.addActivity(activity);
+    }).toThrow(ForbiddenException);
+  });
+
+  it('cree une regul en cas dajout dune activite apres sa cloture ', () => {
+    // Given
+    project1.addCollab(collab.email);
+
+    const date = LocalDate.parse('2023-09-29');
+    const cra = createCra(collab, date, Status.Closed);
+    //When
+    const activity = new ProjectActivity(project1.code, 100, date);
     DateProvider.setTodayDate(date);
     cra.addActivity(activity);
     //Then
@@ -434,7 +521,7 @@ describe('Un CRA ', () => {
 
     DateProvider.setTodayDate(date);
     //When
-    const activity = new Activity(project1.code, 100, date);
+    const activity = new ProjectActivity(project1.code, 100, date);
     cra.addActivity(activity);
     cra.status = Status.Closed;
     cra.deleteActivity(date, project1.code);
@@ -449,20 +536,20 @@ describe('Un CRA ', () => {
     const date = LocalDate.parse('2023-09-01');
     const cra = createCra(collab, date);
 
-    const activity1 = new Activity(
+    const activity1 = new ProjectActivity(
       project1.code,
       50,
-      LocalDate.parse('2023-09-01'),
+      LocalDate.parse('2023-09-04'),
     );
-    const activity2 = new Activity(
+    const activity2 = new ProjectActivity(
       project2.code,
       50,
-      LocalDate.parse('2023-09-02'),
+      LocalDate.parse('2023-09-05'),
     );
-    const activity3 = new Activity(
+    const activity3 = new ProjectActivity(
       project1.code,
       50,
-      LocalDate.parse('2023-09-03'),
+      LocalDate.parse('2023-09-06'),
     );
 
     cra.addActivity(activity1);
@@ -503,8 +590,8 @@ describe('Un CRA ', () => {
 
     const cra = createCra(collab, date);
 
-    const activity1 = new Activity(projet1.code, 50, LocalDate.now());
-    const activity2 = new Activity(projet2.code, 50, LocalDate.now());
+    const activity1 = new ProjectActivity(projet1.code, 50, LocalDate.now());
+    const activity2 = new ProjectActivity(projet2.code, 50, LocalDate.now());
     cra.addActivity(activity1);
     cra.addActivity(activity2);
 
@@ -546,7 +633,7 @@ describe('Un CRA ', () => {
     const date = LocalDate.parse('2023-09-15');
 
     const cra = createCra(collab, date);
-    cra.addActivity(new Activity(new ProjectCode('P001'), 100, date));
+    cra.addActivity(new ProjectActivity(new ProjectCode('P001'), 100, date));
 
     const result = cra.getAvailableTime(date);
 
@@ -592,12 +679,12 @@ describe('Un CRA ', () => {
     //then
     expect(cra.calculateEmptyDays()).toBe(expectedEmptyDays);
     //when
-    const activity1 = new Activity(
+    const activity1 = new ProjectActivity(
       projet1.code,
       75,
       LocalDate.parse('2023-09-04'),
     );
-    const activity2 = new Activity(
+    const activity2 = new ProjectActivity(
       projet2.code,
       25,
       LocalDate.parse('2023-09-04'),
