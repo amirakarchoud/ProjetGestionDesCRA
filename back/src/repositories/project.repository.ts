@@ -63,6 +63,7 @@ export class ProjectRepository implements IRepoProject {
     return docs.map(this.mapProject);
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   findLikeById(id: ProjectCode): Promise<Project[]> {
     throw new Error('Operation not implemented');
   }

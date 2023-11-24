@@ -3,6 +3,7 @@ import { Collab } from '@app/domain/model/Collab';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Role } from '@app/domain/model/Role';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class CollabRepoMock implements IRepoCollab {
   findAll(): Promise<Collab[]> {
     return Promise.resolve([]);

@@ -1,0 +1,45 @@
+.nexus_auth:
+  before_script:
+    - echo "deleting npmrc file if exists" && rm -rf .npmrc .yarnrc
+    - echo "creating fresh npmrc config, please consider not sharing npmrc in the repo"
+    - echo "always-auth=true" >> ~/.npmrc
+    - echo "registry=https://repos.proxym-group.net/repository/npm-group/" >> ~/.npmrc
+    - npm config set "//repos.proxym-group.net/repository/npm-group/:_authToken" "${NPMTOKEN}"
+
+.dockerise:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    GIT_STRATEGY: none
+  before_script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor --context $CI_PROJECT_DIR/back --single-snapshot --dockerfile $CI_PROJECT_DIR/${DOCKER_FILE_PATH} --destination $CI_REGISTRY_IMAGE/${IMAGE_NAME}:${TAG}
+
+# k8s deployment
+.k8s_deploy:
+  image: gitlab-registry.proxym-group.net/docker/helm:3
+  before_script:
+    - kubectl config set-cluster k8s --server="${K8S_SERVER}"
+    - kubectl config set clusters.k8s.certificate-authority-data ${K8S_CA_DATA}
+    - kubectl config set-credentials gitlab --token="${K8S_USER_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab --namespace=${K8S_NAMESPACE}
+    - kubectl config use-context default
+  script:
+    #    - helm repo add ${HELM_REPO} ${HELM_REPO_URL} --username ${HELM_USERNAME} --password ${HELM_PASSWORD}
+    - helm upgrade --install pxf-cra-$ENV ci_configs/k8s
+
+.rules: &rules
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_COMMIT_BRANCH =~ /^(fix|hotfix|release)\/.*/i
+      when: manual
+    - when: never
+
+.confirm:
+  allow_failure: false
+  script:
+    - echo 'Confirm !'
+  <<: *rules

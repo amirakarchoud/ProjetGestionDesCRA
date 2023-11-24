@@ -1,10 +1,20 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ActivityReportDto } from '@app/controllers/v2/dto/activity-report.dto';
 import { CraApplication } from '@app/domain/application/cra.application';
 import { Month } from '@js-joda/core';
-import { ACTIVITY_MONTH_DESC, ACTIVITY_YEAR_DESC, MonthActivityDto } from '@app/controllers/v2/dto/month-activity.dto';
+import {
+  ACTIVITY_MONTH_DESC,
+  ACTIVITY_YEAR_DESC,
+  MonthActivityDto,
+} from '@app/controllers/v2/dto/month-activity.dto';
 import { mapMonthActivityToCraDto } from '@app/controllers/v2/mappers/month-activity.mapper';
 
 export const ACTIVITY_REPORT_URI = '/v2/private/activity-report';

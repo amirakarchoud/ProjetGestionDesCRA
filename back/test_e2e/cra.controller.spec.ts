@@ -51,9 +51,9 @@ describe('CRA Controller', () => {
   const collabEmail = new CollabEmail('aleksandar.kirilov@proxym.fr');
 
   it('Can post cra activities in bulk', async () => {
-    const date = LocalDate.parse('2023-09-02');
+    const date = LocalDate.parse('2023-09-04');
     const nextDate = date.plusDays(1);
-    DateProvider.setTodayDate(LocalDate.parse('2023-09-02'));
+    DateProvider.setTodayDate(date);
 
     const activities: ProjectActivitiesDto[] = prepareActivities(
       date,
@@ -115,6 +115,7 @@ describe('CRA Controller', () => {
       .post(`/cra/user/${collabEmail.value}/2023/9`)
       .use(superdebug(console.info))
       .set('Content-Type', 'application/json')
+      .query({ replace: true })
       .send(activities);
 
     expect(response.status).toBe(HttpStatus.CREATED);

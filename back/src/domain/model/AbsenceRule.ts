@@ -6,7 +6,6 @@ import { Activity } from './Activity';
 import { Absence } from './Absence';
 
 export class AbsenceRule implements ActivityRule {
-
   /**
    * Validates that :
    * - if the activity reason is a sickness then
@@ -18,7 +17,12 @@ export class AbsenceRule implements ActivityRule {
    * @param craInterval the interval of a CRA. ([firstDayOfMonth, lastDayOfMonth])
    * @param closureInterval the closure interval of a CRA. ([firstDateOfMonth, closureDayOfNextMonth])
    */
-  validateRule(activity: Activity, craInterval: Interval, closureInterval: Interval): boolean {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  validateRule(
+    activity: Activity,
+    craInterval: Interval,
+    closureInterval: Interval,
+  ): boolean {
     if (!(activity instanceof Absence)) {
       return false;
     }

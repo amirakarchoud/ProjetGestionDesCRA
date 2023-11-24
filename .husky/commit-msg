@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+if [ ! -d "node_modules" ];
+then
+  npm ci
+fi
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+npx --no -- commitlint --edit ${1}
+npx lint-staged

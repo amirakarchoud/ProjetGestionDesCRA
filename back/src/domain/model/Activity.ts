@@ -55,6 +55,8 @@ export abstract class Activity {
     craInterval: Interval,
     closureInterval: Interval,
   ): boolean {
-    return this._rules.every((activityRule) => activityRule.validateRule(activity, craInterval, closureInterval));
+    return this._rules.every((activityRule) =>
+      activityRule.validateRule(activity, craInterval, closureInterval),
+    );
   }
 }

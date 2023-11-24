@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, ParseArrayPipe, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseArrayPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraDto } from '@app/dtos/cra.dto';
@@ -23,6 +31,7 @@ export class CraController {
     @Param('user') collabEmail: string,
     @Param('year') year: number,
     @Param('month') month: number,
+    @Query('replace') replace = false,
     @Body(new ParseArrayPipe({ items: ProjectActivitiesDto }))
     activities: ProjectActivitiesDto[],
   ) {
@@ -31,6 +40,7 @@ export class CraController {
       month,
       year,
       activities,
+      replace,
     );
   }
 

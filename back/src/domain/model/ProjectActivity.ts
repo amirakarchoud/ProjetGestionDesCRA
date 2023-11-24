@@ -26,7 +26,7 @@ export class ProjectActivity extends Activity {
     }
 
     return new ProjectActivity(
-      new ProjectCode(json._project.value),
+      new ProjectCode(json._project._code),
       json._percentage as Percentage,
       LocalDate.parse(json._date),
     );

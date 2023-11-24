@@ -23,7 +23,7 @@ export class HolidaysSyncService implements OnApplicationBootstrap {
     console.log('fetching holidays');
     await this.holidayRepository.deleteAll();
     if (!year) {
-      year = new Date().getFullYear();
+      year = LocalDate.now().year();
     }
     const url = `${environment.apiUrl}${year}.json`;
 

@@ -192,12 +192,11 @@ export class CRA {
   }
 
   isExistingProjectActivity(activity: ProjectActivity): boolean {
-    const projectActivities = this._activites
-      .filter(
-        (existingActivity) =>
-          existingActivity.date.equals(activity.date) &&
-          existingActivity.project === activity.project,
-      );
+    const projectActivities = this._activites.filter(
+      (existingActivity) =>
+        existingActivity.date.equals(activity.date) &&
+        existingActivity.project === activity.project,
+    );
     return projectActivities.length > 0;
   }
 

@@ -5,6 +5,7 @@ import { Raison } from '@app/domain/model/Raison';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { LocalDate, Month } from '@js-joda/core';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class MockRepoCra implements IRepoCra {
   save(cra: CRA): Promise<void> {
     throw new Error('Not implemented');
