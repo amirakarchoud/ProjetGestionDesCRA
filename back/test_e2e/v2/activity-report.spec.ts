@@ -6,7 +6,7 @@ import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { CraApplication } from '../../src/domain/application/cra.application';
 import { CollabEmail } from '../../src/domain/model/collab.email';
-import { ActivityReportDto } from '../../src/controllers/v2/dto/activity-report.dto';
+import { ActivityReportDto } from '../../src/dtos/v2/activity-report.dto';
 import { prepareActivities } from '../cra.controller.spec';
 import { LocalDate, Month } from '@js-joda/core';
 import { createCra } from '../../test/utils';

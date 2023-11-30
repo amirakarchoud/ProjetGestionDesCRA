@@ -235,7 +235,7 @@ export class CraApplication {
 
   async desactivateProject(code: ProjectCode) {
     const project = await this.projectRepository.findById(code);
-    project.desctivateProject();
+    project.inactiveProject();
     await this.projectRepository.save(project);
   }
 

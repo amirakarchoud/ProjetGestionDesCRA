@@ -1,4 +1,4 @@
-import { Role } from '@app/domain/model/Role';
+import { Role } from '../../domain/model/Role';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 

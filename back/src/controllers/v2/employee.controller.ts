@@ -9,10 +9,10 @@ import {
 } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { CraApplication } from '@app/domain/application/cra.application';
-import { CreateEmployeeDto } from '@app/controllers/v2/dto/create-employee.dto';
+import { CreateEmployeeDto } from '@app/dtos/v2/create-employee.dto';
 import { ProjectCode } from '@app/domain/model/project.code';
-import { EmployeeDto } from '@app/controllers/v2/dto/employee.dto';
-import { mapEmployee } from '@app/controllers/v2/mappers/employee.mapper';
+import { EmployeeDto } from '@app/dtos/v2/employee.dto';
+import { mapEmployee } from '@app/mappers/v2/employee.mapper';
 
 export const EMPLOYEE_URI = '/v2/private/employees';
 

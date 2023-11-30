@@ -4,7 +4,7 @@ import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { Project } from '@app/domain/model/Project';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { Absence } from '@app/domain/model/Absence';
 import { Raison } from '@app/domain/model/Raison';
 import { Holiday } from '@app/domain/model/Holiday';
@@ -24,7 +24,7 @@ describe('Cra DTO Mapper', () => {
       'name 1',
       'fnac',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     ),
   ];
   const collab = new Collab(
@@ -74,7 +74,7 @@ describe('Cra DTO Mapper', () => {
           code: 'proj1',
           name: 'name 1',
           client: 'fnac',
-          status: ProjetStatus.Active,
+          status: ProjectStatus.Active,
         }),
       }),
     ]);

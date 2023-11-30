@@ -8,7 +8,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
 import { Status } from '@app/domain/model/Status';
 import { Action } from '@app/domain/model/action.enum';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { DateProvider } from '@app/domain/model/date-provider';
@@ -24,7 +24,7 @@ const createProject = (code: ProjectCode, collab?: CollabEmail) => {
     '',
     '',
     LocalDate.now(),
-    ProjetStatus.Active,
+    ProjectStatus.Active,
   );
 };
 
@@ -575,7 +575,7 @@ describe('Un CRA ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     const projet2 = new Project(
       new ProjectCode('P002'),
@@ -583,7 +583,7 @@ describe('Un CRA ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     projet1.addCollab(collab.email);
     projet2.addCollab(collab.email);
@@ -662,7 +662,7 @@ describe('Un CRA ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     const projet2 = new Project(
       new ProjectCode('P002'),
@@ -670,7 +670,7 @@ describe('Un CRA ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
 
     DateProvider.setTodayDate(date);

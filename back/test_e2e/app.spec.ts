@@ -13,6 +13,7 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { CraApplication } from '@app/domain/application/cra.application';
 import { LocalDate } from '@js-joda/core';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 describe('APP', () => {
   const app = prepareApp('app');
@@ -93,6 +94,7 @@ describe('APP', () => {
 
   it(`create regul for absence creation`, async () => {
     const date = LocalDate.now().plusDays(1);
+    DateProvider.setTodayDate(date);
     const repo: CraRepository = app().get('IRepoCra');
     await prepareActivity(app(), date, clientId);
     const cra = await repo.findByMonthYearCollab(
@@ -114,6 +116,7 @@ describe('APP', () => {
 
   it(`create regul pour creation activite`, async () => {
     const date = LocalDate.now().plusDays(1);
+    DateProvider.setTodayDate(date);
 
     const repo: CraRepository = app().get('IRepoCra');
     await prepareAbsence(app(), date, clientId);

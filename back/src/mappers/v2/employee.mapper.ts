@@ -1,5 +1,5 @@
-import { Collab } from '@app/domain/model/Collab';
-import { EmployeeDto } from '../dto/employee.dto';
+import { Collab } from '../../domain/model/Collab';
+import { EmployeeDto } from '../../dtos/v2/employee.dto';
 
 export const mapEmployee = (collab: Collab) => {
   const employeeDto = new EmployeeDto();

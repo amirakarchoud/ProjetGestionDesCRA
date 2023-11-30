@@ -1,4 +1,4 @@
-import { ProjetStatus } from './projetStatus.enum';
+import { ProjectStatus } from './projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { Transform } from 'class-transformer';
@@ -19,7 +19,7 @@ export class Project {
     name: string,
     client: string,
     date: LocalDate,
-    status: ProjetStatus,
+    status: ProjectStatus,
   ) {
     if (!(code && collabs)) {
       throw new Error('cannot have a null attribut');
@@ -32,9 +32,9 @@ export class Project {
     this._status = status;
   }
 
-  private _status: ProjetStatus = ProjetStatus.Active;
+  private _status: ProjectStatus = ProjectStatus.Active;
 
-  public get status(): ProjetStatus {
+  public get status(): ProjectStatus {
     return this._status;
   }
 
@@ -63,7 +63,7 @@ export class Project {
     this._collabs.push(collab);
   }
 
-  public desctivateProject() {
-    this._status = ProjetStatus.Desactive;
+  public inactiveProject() {
+    this._status = ProjectStatus.Inactive;
   }
 }

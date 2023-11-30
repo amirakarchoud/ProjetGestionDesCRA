@@ -1,13 +1,26 @@
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '../domain/model/projetStatus.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProjectSimpleDto {
   @ApiProperty()
   code: string;
-  @ApiProperty()
+
+  @ApiProperty({
+    description: 'The name of this project.',
+    required: false,
+  })
   name?: string;
-  @ApiProperty()
+
+  @ApiProperty({
+    description: 'The client this project is for.',
+    required: false,
+  })
   client?: string;
-  @ApiProperty()
-  status?: ProjetStatus;
+
+  @ApiProperty({
+    description: 'The status of this project.',
+    enum: ProjectStatus,
+    required: false,
+  })
+  status?: ProjectStatus;
 }

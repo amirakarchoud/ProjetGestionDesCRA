@@ -1,5 +1,5 @@
 import { Project } from '@app/domain/model/Project';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { createCra } from './utils';
@@ -19,7 +19,7 @@ describe('Une activite ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
   });
 

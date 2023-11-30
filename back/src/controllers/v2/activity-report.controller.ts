@@ -7,15 +7,15 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CollabEmail } from '@app/domain/model/collab.email';
-import { ActivityReportDto } from '@app/controllers/v2/dto/activity-report.dto';
+import { ActivityReportDto } from '@app/dtos/v2/activity-report.dto';
 import { CraApplication } from '@app/domain/application/cra.application';
 import { Month } from '@js-joda/core';
 import {
   ACTIVITY_MONTH_DESC,
   ACTIVITY_YEAR_DESC,
   MonthActivityDto,
-} from '@app/controllers/v2/dto/month-activity.dto';
-import { mapMonthActivityToCraDto } from '@app/controllers/v2/mappers/month-activity.mapper';
+} from '@app/dtos/v2/month-activity.dto';
+import { mapMonthActivityToCraDto } from '@app/mappers/v2/month-activity.mapper';
 
 export const ACTIVITY_REPORT_URI = '/v2/private/activity-report';
 

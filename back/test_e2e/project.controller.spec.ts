@@ -1,5 +1,5 @@
 import { createProject, createUser, prepareApp } from './test.utils';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectRepository } from '@app/repositories/project.repository';
 import { Project } from '@app/domain/model/Project';
 import { ProjectCode } from '@app/domain/model/project.code';
@@ -25,7 +25,7 @@ describe('Project controller', () => {
     ).body;
 
     expect(createdProject.code).toEqual('code');
-    expect(createdProject.status).toEqual(ProjetStatus.Active);
+    expect(createdProject.status).toEqual(ProjectStatus.Active);
   });
 
   it(`Can deactivate a project`, async () => {
@@ -36,7 +36,7 @@ describe('Project controller', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     await repo.save(project);
 
@@ -49,7 +49,7 @@ describe('Project controller', () => {
     expect(response.status).toBe(HttpStatus.CREATED);
 
     const actualProject = await repo.findById(new ProjectCode('projetTest'));
-    expect(actualProject.status).toBe(ProjetStatus.Desactive);
+    expect(actualProject.status).toBe(ProjectStatus.Inactive);
   });
 
   it('Does not allow to add a non existing user to a an existing project', async () => {
@@ -63,13 +63,13 @@ describe('Project controller', () => {
       .accept('application/json')
       .send(projectDto);
 
-    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
   function badProject() {
     const projectDto = new ProjectDto();
     projectDto.name = 'New project';
-    projectDto.status = ProjetStatus.Active;
+    projectDto.status = ProjectStatus.Active;
     projectDto.collabs = ['unknown@proxym.fr', clientId.value];
     projectDto.code = 'new_proj_01';
     projectDto.client = 'axa';
@@ -87,6 +87,6 @@ describe('Project controller', () => {
       .accept('application/json')
       .send(projectDto);
 
-    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 });

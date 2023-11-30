@@ -1,7 +1,7 @@
 import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { LocalDate } from '@js-joda/core';
@@ -17,7 +17,8 @@ describe('Un projet ', () => {
 
   it('ne peut pas avoir des attributs null', () => {
     expect(
-      () => new Project(null, [], '', '', LocalDate.now(), ProjetStatus.Active),
+      () =>
+        new Project(null, [], '', '', LocalDate.now(), ProjectStatus.Active),
     ).toThrowError('cannot have a null attribut');
 
     expect(
@@ -28,7 +29,7 @@ describe('Un projet ', () => {
           '',
           '',
           LocalDate.now(),
-          ProjetStatus.Active,
+          ProjectStatus.Active,
         ),
     ).toThrowError('cannot have a null attribut');
   });
@@ -40,7 +41,7 @@ describe('Un projet ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     expect(projet).toBeDefined();
   });
@@ -53,13 +54,13 @@ describe('Un projet ', () => {
       'name of project',
       'client 112',
       date,
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     expect(projet.code.value).toBe('123');
     expect(projet.name).toBe('name of project');
     expect(projet.client).toBe('client 112');
     expect(projet.date).toBe(date);
-    expect(projet.status).toBe(ProjetStatus.Active);
+    expect(projet.status).toBe(ProjectStatus.Active);
   });
 
   it('peut contenir des collaborateurs', () => {
@@ -70,7 +71,7 @@ describe('Un projet ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     //when
     projet.addCollab(collab.email);
@@ -87,7 +88,7 @@ describe('Un projet ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
 
     //then
@@ -102,12 +103,12 @@ describe('Un projet ', () => {
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
     //when
-    projet.desctivateProject();
+    projet.inactiveProject();
 
     //then
-    expect(projet.status).toBe(ProjetStatus.Desactive);
+    expect(projet.status).toBe(ProjectStatus.Inactive);
   });
 });

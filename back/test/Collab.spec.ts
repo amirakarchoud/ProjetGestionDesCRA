@@ -1,7 +1,7 @@
 import { Collab } from '@app/domain/model/Collab';
 import { Project } from '@app/domain/model/Project';
 import { Role } from '@app/domain/model/Role';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { LocalDate } from '@js-joda/core';
@@ -14,7 +14,7 @@ describe('Collaborateur ', () => {
     '',
     '',
     LocalDate.now(),
-    ProjetStatus.Active,
+    ProjectStatus.Active,
   );
 
   const collabAdmin = new Collab(

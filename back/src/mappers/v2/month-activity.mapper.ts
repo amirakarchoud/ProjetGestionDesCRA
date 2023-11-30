@@ -1,13 +1,13 @@
-import { MonthActivityDto } from '@app/controllers/v2/dto/month-activity.dto';
-import { Project } from '@app/domain/model/Project';
-import { CRA } from '@app/domain/model/CRA';
+import { MonthActivityDto } from '../../dtos/v2/month-activity.dto';
+import { Project } from '../../domain/model/Project';
+import { CRA } from '../../domain/model/CRA';
 
 import {
   mapAbsencesDto,
   mapActivitiesDto,
   mapAvailableDates,
   mapHolidaysDto,
-} from '@app/mappers/cra-dto.mapper';
+} from '../cra-dto.mapper';
 
 export const mapMonthActivityToCraDto = (
   cra: CRA,

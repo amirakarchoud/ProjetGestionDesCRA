@@ -1,7 +1,7 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { CreateActivityDto } from '@app/dtos/CreateActivityDto';
 import { Project } from '@app/domain/model/Project';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { CreateAbsenceDto } from '@app/dtos/CreateAbsenceDto';
 import { Raison } from '@app/domain/model/Raison';
 import { CollabRepository } from '@app/repositories/collab.repository';
@@ -95,7 +95,7 @@ export async function createProject(
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
   } else {
     project = new Project(
@@ -104,7 +104,7 @@ export async function createProject(
       '',
       '',
       LocalDate.now(),
-      ProjetStatus.Active,
+      ProjectStatus.Active,
     );
   }
   await repo.save(project);

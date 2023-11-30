@@ -1,6 +1,6 @@
 import { prepareApp } from '../test.utils';
 import * as request from 'supertest';
-import { CreateEmployeeDto } from '../../src/controllers/v2/dto/create-employee.dto';
+import { CreateEmployeeDto } from '../../src/dtos/v2/create-employee.dto';
 import { HttpStatus } from '@nestjs/common';
 import { EMPLOYEE_URI } from '../../src/controllers/v2/employee.controller';
 import { Role } from '../../src/domain/model/Role';

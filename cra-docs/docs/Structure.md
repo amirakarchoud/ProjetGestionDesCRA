@@ -28,7 +28,7 @@ proxym-compte-rendu-activite/
 │   │   │   ├── collab.controller.ts
 │   │   │   ├── cra.controller.ts
 │   │   │   ├── holiday.controller.ts
-│   │   │   ├── project.controller.ts
+│   │   │   ├── project-v2.controller.ts
 │   │   │   ├── auth.controller.ts
 │   │   │
 │   │   ├── decorators/

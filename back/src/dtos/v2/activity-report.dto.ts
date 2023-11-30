@@ -1,4 +1,4 @@
-import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { ProjectActivitiesDto } from '../activity.dto';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';

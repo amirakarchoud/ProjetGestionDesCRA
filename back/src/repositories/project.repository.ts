@@ -2,7 +2,7 @@ import { IRepoProject } from '@app/domain/IRepository/IRepoProject';
 import { Inject, Injectable } from '@nestjs/common';
 import { Project } from '@app/domain/model/Project';
 import { MongoClientWrapper } from '@app/mongo/mongo.client.wrapper';
-import { ProjetStatus } from '@app/domain/model/projetStatus.enum';
+import { ProjectStatus } from '@app/domain/model/projetStatus.enum';
 import { EnhancedOmit, InferIdType } from 'mongodb';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { CollabEmail } from '@app/domain/model/collab.email';
@@ -141,7 +141,7 @@ export class ProjectRepository implements IRepoProject {
       projectDoc['_name'],
       projectDoc['_client'],
       projectDoc['_date'] ? projectDoc['_date'].$date : undefined,
-      ProjetStatus[projectDoc['_status']],
+      ProjectStatus[projectDoc['_status']],
     );
   }
 }

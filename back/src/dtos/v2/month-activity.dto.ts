@@ -1,7 +1,7 @@
-import { ActivityDto } from '@app/dtos/activity.dto';
-import { AvailableDateDto } from '@app/dtos/available.date.dto';
-import { Etat } from '@app/domain/model/etat.enum';
-import { Status } from '@app/domain/model/Status';
+import { ActivityDto } from '../activity.dto';
+import { AvailableDateDto } from '../available.date.dto';
+import { Etat } from '../../domain/model/etat.enum';
+import { Status } from '../../domain/model/Status';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { LocalDate } from '@js-joda/core';

@@ -22,6 +22,7 @@ import { ExportController } from '@app/controllers/export.controller';
 import { CraApplication } from '@app/domain/application/cra.application';
 import { ActivityReportController } from '@app/controllers/v2/activity-report.controller';
 import { EmployeeController } from '@app/controllers/v2/employee.controller';
+import { ProjectV2Controller } from '@app/controllers/v2/project-v2.controller';
 
 let dotEnvPath = '.env';
 
@@ -51,6 +52,7 @@ console.log('env is ', dotEnvPath);
     ExportController,
     ActivityReportController,
     EmployeeController,
+    ProjectV2Controller,
   ],
   providers: [
     CraApplication,
