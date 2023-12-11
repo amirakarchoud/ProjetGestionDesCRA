@@ -19,6 +19,7 @@ import { Activity } from '@app/domain/model/Activity';
 import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { LocalDate, Month } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
+import { ApplicationError } from '@app/domain/application/errors/application.error';
 
 @Injectable()
 export class CraApplication {
@@ -221,7 +222,9 @@ export class CraApplication {
     const cras = await this.craRepository.findByMonthYear(month, year);
     const crasUnsubmitted = cras.filter((cra) => cra.etat == Etat.unsubmitted);
     if (crasUnsubmitted.length > 0) {
-      throw new Error('cannot close month: there is an unsubmitted cra');
+      throw new ApplicationError(
+        'cannot close month: there is an un-submitted activity report',
+      );
     }
     cras.forEach((cra) => {
       cra.closeCra();
@@ -243,8 +246,8 @@ export class CraApplication {
     const collabPromise = await this.collabRepository.findById(user);
 
     if (collabPromise === undefined) {
-      throw new Error(
-        `Cannot create new CRA for an unknown collab ${user.value}`,
+      throw new ApplicationError(
+        `Cannot create new CRA for an unknown employee ${user.value}`,
       );
     }
 
