@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsISO8601, IsOptional, IsString } from 'class-validator';
+import {IsArray, IsISO8601, IsOptional, IsString} from 'class-validator';
 import { ProjectSimpleDto } from './project.simple.dto';
 
 export class ProjectDto extends ProjectSimpleDto {
@@ -7,10 +7,11 @@ export class ProjectDto extends ProjectSimpleDto {
     description: 'List of collabs emails that this project is related to.',
     example: ['john.doe@proxym.fr'],
   })
-  @IsString({
-    each: true,
-  })
-  collabs: string[];
+  // @IsString({
+  //   each: true,
+  // })
+  @IsArray()
+  employees: string[];
 
   @ApiProperty({
     description: 'The date this project is related to.',
@@ -22,6 +23,6 @@ export class ProjectDto extends ProjectSimpleDto {
 
   constructor() {
     super();
-    this.collabs = [];
+    this.employees = [];
   }
 }
