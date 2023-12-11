@@ -36,22 +36,39 @@ export class ActivityReport {
   groupByProject() {
     const map = new Map();
     this.activities.forEach((activity) => {
-      if (!map.get(activity.project)) {
-        map.set(activity.project, []);
+      if (!map.get(activity.name)) {
+        map.set(activity.name, []);
       }
-      map.get(activity.project).push(activity);
+      map.get(activity.name).push(activity);
     });
     return map;
   }
 
-  getByProjectAndDate(project, date) {
-    return this.activities.filter(
-      (activity) => activity.project === project && activity.date.equals(date),
-    )?.[0];
-  }
 
   getByDate(date) {
     return this.activities.filter((activity) => activity.date.equals(date));
+  }
+
+  getByActivityNameAndDate(name, date) {
+    return this.activities.filter(
+      (activity) => activity.name === name && activity.date.equals(date),
+    )?.[0];
+  }
+
+
+  addActivity(type, name, date, percent) {
+    let existing = this.getByActivityNameAndDate(name, date);
+    if (existing) {
+      existing.percent = percent;
+    } else {
+      this.activities.push({ type, name, date, percent });
+    }
+  }
+
+  getSumActivityForGivenDay(givenDay) {
+    return this.getByDate(givenDay)
+      .map((activity) => activity.percent)
+      .reduce((acc, cur) => acc + cur, 0);
   }
 
   getMonday() {
@@ -66,20 +83,5 @@ export class ActivityReport {
 
   previousWeek() {
     this.localDate = this.getMonday().minusWeeks(1);
-  }
-
-  addActivity(project, day, percent) {
-    let existing = this.getByProjectAndDate(project, day);
-    if (existing) {
-      existing.percent = percent;
-    } else {
-      this.activities.push({ project: project, date: day, percent: percent });
-    }
-  }
-
-  getSumActivityForGivenDay(givenDay) {
-    return this.getByDate(givenDay)
-      .map((activity) => activity.percent)
-      .reduce((acc, cur) => acc + cur, 0);
   }
 }

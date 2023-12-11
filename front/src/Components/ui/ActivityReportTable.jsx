@@ -1,78 +1,70 @@
-import TableBanner from './TableBanner';
 import Stack from '@mui/material/Stack';
 import styles from './styles/ActivityReportTable.module.css';
-import TableSelection from './TableSelection';
 import { ActivityReport } from '../models/ActivityReport';
 import { LocalDate } from '@js-joda/core';
-import { useState } from 'react';
-import { Button } from '@mui/material';
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import { useEffect, useState } from 'react';
+import TableActions from './ActivityReportTable/TableActions';
+import TableValidation from './ActivityReportTable/TableValidation';
+import TableAbsences from './ActivityReportTable/TableAbsences';
+import TableProjects from './ActivityReportTable/TableProjects';
 function ActivityReportTable() {
-  const [reportTable, setReportTable] = useState(
+  const [activityReport, setActivityReport] = useState(
     new ActivityReport(LocalDate.now()),
   );
 
-  const onActivity = (project, date, percentage) => {
+  useEffect(() => {
+    fetch('https://run.mocky.io/v3/e5e79e53-a7aa-4981-81f0-bee7f016f829')
+      .then(res => res.json())
+      .then((result) => {
+        console.log(result);
+        let resultActivities = [];
+
+        for (const project of result.activities) {
+          for (const activity of project.activities) {
+            resultActivities.push({
+              project: project.projectCode,
+              date: LocalDate.parse(activity.date),
+              percent: activity.percentage,
+              type: activity.type,
+            });
+          }
+        }
+        const filteredActivities = {
+          projects: resultActivities.filter(ra => ra.type === 'Project'),
+          absences: resultActivities.filter(ra => ra.type === 'Absence')
+        };
+
+        console.log(filteredActivities);
+
+      });
+  }, []);
+
+  const addActivity = (project, date, percentage) => {
     // modify report table
-    reportTable.addActivity(project, date, percentage);
+    activityReport.addActivity(project, date, percentage);
   };
 
   const previousWeek = () => {
-    reportTable.previousWeek();
-    setReportTable(
-      Object.assign(new ActivityReport(reportTable.localDate), reportTable),
+    activityReport.previousWeek();
+    setActivityReport(
+      Object.assign(new ActivityReport(activityReport.localDate), activityReport),
     );
   };
   const nextWeek = () => {
-    reportTable.nextWeek();
-    setReportTable(
-      Object.assign(new ActivityReport(reportTable.localDate), reportTable),
+    activityReport.nextWeek();
+    setActivityReport(
+      Object.assign(new ActivityReport(activityReport.localDate), activityReport),
     );
   };
 
   return (
     <>
-      <Stack direction="row">
-        <Button
-          color="primary"
-          variant="outlined"
-          startIcon={<ArrowCircleLeftIcon />}
-          onClick={previousWeek}
-        ></Button>
-        <Button
-          color="primary"
-          variant="outlined"
-          endIcon={<ArrowCircleRightIcon />}
-          onClick={nextWeek}
-        ></Button>
-        <Button color="primary" variant="outlined">
-          Submit
-        </Button>
-      </Stack>
+      <TableActions previousWeek={previousWeek} nextWeek={nextWeek} />
       <Stack direction="column" className={styles.table}>
-        <TableBanner list={reportTable.week()} title={'Project'} />
-        <TableSelection
-          isProject={true}
-          projectName={'PROXYM 30467890'}
-          onActivity={onActivity}
-          week={reportTable.week()}
-        ></TableSelection>
-        <TableBanner title={'Absence'} />
-        <TableSelection
-          isAbsence={true}
-          week={reportTable.week()}
-          onActivity={onActivity}
-        ></TableSelection>
-        <TableSelection
-          isAbsence={true}
-          week={reportTable.week()}
-          onActivity={onActivity}
-        ></TableSelection>
+        <TableProjects reportTable={activityReport} addActivity={addActivity}/>
+        <TableAbsences reportTable={activityReport} addActivity={addActivity}/>
       </Stack>
-      <Button color="primary" variant="contained">
-        Validate week
-      </Button>
+      <TableValidation />
     </>
   );
 }

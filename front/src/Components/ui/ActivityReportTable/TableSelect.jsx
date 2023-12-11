@@ -1,4 +1,4 @@
-import styles from './styles/ActivityReportTable.module.css';
+import styles from '../styles/ActivityReportTable.module.css';
 import { MenuItem, Select } from '@mui/material';
 
 export default function TableSelect({ projectName, week, onActivity }) {

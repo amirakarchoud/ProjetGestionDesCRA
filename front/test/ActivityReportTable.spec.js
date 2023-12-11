@@ -1,7 +1,7 @@
 import { ActivityReport } from '../src/Components/models/ActivityReport';
 import { LocalDate } from '@js-joda/core';
 
-describe('Activity Report Table', () => {
+describe('Activity Report ActivityReportTable', () => {
   it('Get the Monday of the week for a given date', () => {
     // Given
     let localDate = LocalDate.of(2023, 11, 1);
@@ -64,10 +64,10 @@ describe('Activity Report Table', () => {
     const report = new ActivityReport(LocalDate.now());
     // When
     expect(report.addActivity).toBeDefined();
-    report.addActivity('project 123', localDate, 25);
-    report.addActivity('project 123', localDate.plusDays(1), 75);
-    report.addActivity('project 456', localDate.plusDays(2), 100);
-    report.addActivity('cp', localDate.plusDays(4), 50);
+    report.addActivity('Project','project 123', localDate, 25);
+    report.addActivity('Project','project 123', localDate.plusDays(1), 75);
+    report.addActivity('Project','project 456', localDate.plusDays(2), 100);
+    report.addActivity('Absence','cp', localDate.plusDays(4), 50);
     // Then
     expect(report.activities).toBeDefined();
     let map = report.groupByProject();
@@ -80,12 +80,12 @@ describe('Activity Report Table', () => {
     const report = new ActivityReport(LocalDate.now());
     // When
     expect(report.addActivity).toBeDefined();
-    report.addActivity('project A', localDate, 25);
-    report.addActivity('project A', localDate, 75);
-    report.addActivity('project A', localDate, 50);
+    report.addActivity('Project', 'project A', localDate, 25);
+    report.addActivity('Project', 'project A', localDate, 75);
+    report.addActivity('Project', 'project A', localDate, 50);
     // Then
     expect(report.activities).toBeDefined();
-    let activity = report.getByProjectAndDate('project A', localDate);
+    let activity = report.getByActivityNameAndDate('project A', localDate);
     expect(activity.percent).toEqual(50);
   });
 
@@ -95,12 +95,12 @@ describe('Activity Report Table', () => {
     const report = new ActivityReport(LocalDate.now());
     // When
     expect(report.addActivity).toBeDefined();
-    report.addActivity('project 123', localDate, 25);
-    report.addActivity('project 123', localDate.plusDays(1), 100);
-    report.addActivity('project 456', localDate.plusDays(1), 0);
-    report.addActivity('cp', localDate, 75);
-    report.addActivity('project 456', localDate.plusDays(2), 50);
-    report.addActivity('cp', localDate.plusDays(2), 50);
+    report.addActivity('Project', 'project 123', localDate, 25);
+    report.addActivity('Project', 'project 123', localDate.plusDays(1), 100);
+    report.addActivity('Project', 'project 456', localDate.plusDays(1), 0);
+    report.addActivity('Absence', 'cp', localDate, 75);
+    report.addActivity('Project', 'project 456', localDate.plusDays(2), 50);
+    report.addActivity('Absence', 'cp', localDate.plusDays(2), 50);
     // Then
     expect(report.getSumActivityForGivenDay).toBeDefined();
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
@@ -120,8 +120,8 @@ describe('Activity Report Table', () => {
     const report = new ActivityReport(LocalDate.now());
     // When
     expect(report.addActivity).toBeDefined();
-    report.addActivity('project 123', localDate, 25);
-    report.addActivity('project 12', localDate, 75);
+    report.addActivity('Project', 'project 123', localDate, 25);
+    report.addActivity('Project', 'project 12', localDate, 75);
     // Then
     expect(report.getSumActivityForGivenDay).toBeDefined();
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
@@ -133,8 +133,8 @@ describe('Activity Report Table', () => {
     const report = new ActivityReport(LocalDate.now());
     // When
     expect(report.addActivity).toBeDefined();
-    report.addActivity('project 123', localDate, 25);
-    report.addActivity('project 12', localDate, 75);
+    report.addActivity('Project', 'project 123', localDate, 25);
+    report.addActivity('Project', 'project 12', localDate, 75);
     // Then
     expect(report.getSumActivityForGivenDay).toBeDefined();
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
@@ -151,9 +151,17 @@ describe('Activity Report Table', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(localDate);
 
-    report.addActivity('project 123', localDate, 25);
-    report.addActivity('project 12', localDate.plusDays(10), 75);
+    report.addActivity('Project', 'project 123', localDate, 25);
+    report.addActivity('Project', 'project 12', localDate.plusDays(10), 75);
 
     expect(report.weekActivities()).toHaveLength(1);
+  });
+
+  it('should return projects for the week', () => {
+
+  });
+
+  it('should return absences for the week', () => {
+
   });
 });

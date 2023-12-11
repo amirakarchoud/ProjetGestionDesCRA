@@ -1,4 +1,4 @@
-import styles from './styles/ActivityReportTable.module.css';
+import styles from '../styles/ActivityReportTable.module.css';
 import Stack from '@mui/material/Stack';
 import TableSelect from './TableSelect';
 import TableItem from './TableItem';
