@@ -91,7 +91,9 @@ export class ProjectRepository implements IRepoProject {
       .toArray();
 
     if (foundCollabs.length !== project.collabs.length) {
-      throw new ProjectError('Trying to insert a user that is not present');
+      throw new ProjectError(
+        'Trying to assign a user that is not registered in the system',
+      );
     }
 
     const count = await collection.countDocuments({

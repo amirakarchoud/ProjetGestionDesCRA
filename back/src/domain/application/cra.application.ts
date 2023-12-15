@@ -20,6 +20,7 @@ import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { LocalDate, Month } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { ApplicationError } from '@app/domain/application/errors/application.error';
+import { ActivityReportError } from '@app/domain/model/errors/activity-report.error';
 
 @Injectable()
 export class CraApplication {
@@ -151,12 +152,22 @@ export class CraApplication {
     replace = false,
   ) {
     const toAdd = new Array<Activity | Absence>();
+    const projects = await this.getProjectsByUser(idUser);
 
     for (const projectActivity of activities) {
       for (const activityDto of projectActivity.activities) {
         const date = LocalDate.parse(activityDto.date);
 
         if (activityDto.type === ActivityDtoType.project) {
+          const existingProject = projects.find(
+            (proj) => proj.code.value === projectActivity.projectCode,
+          );
+
+          if (!existingProject) {
+            throw new ActivityReportError(
+              `Cannot report activity, Project "${projectActivity.projectCode}" is not assigned to user ${idUser}`,
+            );
+          }
           toAdd.push(
             new ProjectActivity(
               new ProjectCode(projectActivity.projectCode),
