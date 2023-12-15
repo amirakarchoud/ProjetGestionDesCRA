@@ -4,8 +4,18 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import Stack from '@mui/material/Stack';
 import styles from '../styles/ActivityReportTable.module.css';
 
-function TableActions({previousWeek, nextWeek}) {
+/**
+ * @callback weekCallback
+ */
 
+/**
+ *
+ * @param previousWeek {weekCallback}
+ * @param nextWeek {weekCallback}
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function TableActions({ previousWeek, nextWeek }) {
   return (
     <>
       <div className={styles.actionsContainer}>
@@ -15,19 +25,22 @@ function TableActions({previousWeek, nextWeek}) {
             variant="outlined"
             startIcon={<ArrowCircleLeftIcon />}
             onClick={previousWeek}
-          >Previous Week</Button>
+          >
+            Previous Week
+          </Button>
           <Button
             color="primary"
             variant="outlined"
             endIcon={<ArrowCircleRightIcon />}
             onClick={nextWeek}
-          >Next Week</Button>
+          >
+            Next Week
+          </Button>
         </Stack>
         <Button color="primary" variant="contained">
           Submit my Activity Report
         </Button>
       </div>
-
     </>
   );
 }

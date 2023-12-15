@@ -66,10 +66,9 @@ describe('Cra DTO Mapper', () => {
 
     expect(craDto.activites).toEqual([
       expect.objectContaining({
-        title: 'proj1',
+        name: 'proj1',
         percentage: 75,
         date: date.toString(),
-        type: 'Project',
         project: expect.objectContaining({
           code: 'proj1',
           name: 'name 1',
@@ -92,11 +91,10 @@ describe('Cra DTO Mapper', () => {
 
     expect(craDto.absences).toEqual([
       expect.objectContaining({
-        title: 'Maladie',
+        name: 'maladie',
         percentage: 25,
-        type: 'Absence',
         date: LocalDate.parse('2023-09-20').toString(),
-        reason: 'Maladie',
+        reason: 'maladie',
       }),
     ]);
   });
@@ -110,9 +108,8 @@ describe('Cra DTO Mapper', () => {
 
     expect(craDto.holidays).toEqual([
       expect.objectContaining({
-        title: 'New Years',
+        name: 'New Years',
         percentage: 100,
-        type: 'Holiday',
         date: today.toString(),
       }),
     ]);

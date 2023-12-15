@@ -82,9 +82,9 @@ export class ExportService {
         Maladie: 0,
       };
       item.absences.forEach((absence) => {
-        if (absence.raison === Raison.Conges) absenceCounts.Conges++;
+        if (absence.raison === Raison.CongesPayes) absenceCounts.Conges++;
         else if (absence.raison === Raison.RTT) absenceCounts.RTT++;
-        else if (absence.raison === Raison.Exceptionnelle)
+        else if (absence.raison === Raison.CongesExceptionels)
           absenceCounts.Exceptionnelle++;
         else if (absence.raison === Raison.Formation) absenceCounts.Formation++;
         else if (absence.raison === Raison.Maladie) absenceCounts.Maladie++;
@@ -150,13 +150,13 @@ export class ExportService {
         SansSolde: 0,
       };
       item.absences.forEach((absence) => {
-        if (absence.raison === Raison.Conges) absenceCounts.Conges++;
+        if (absence.raison === Raison.CongesPayes) absenceCounts.Conges++;
         else if (absence.raison === Raison.RTT) absenceCounts.RTT++;
-        else if (absence.raison === Raison.Exceptionnelle)
+        else if (absence.raison === Raison.CongesExceptionels)
           absenceCounts.Exceptionnelle++;
         else if (absence.raison === Raison.Formation) absenceCounts.Formation++;
         else if (absence.raison === Raison.Maladie) absenceCounts.Maladie++;
-        else if (absence.raison === Raison.Conges_sans_solde)
+        else if (absence.raison === Raison.CongeSansSolde)
           absenceCounts.SansSolde++;
       });
 

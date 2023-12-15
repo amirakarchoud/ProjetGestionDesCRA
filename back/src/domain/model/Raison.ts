@@ -1,8 +1,8 @@
 export enum Raison {
-  RTT = 'RTT',
-  Conges = 'Conges',
-  Maladie = 'Maladie',
-  Exceptionnelle = 'Exceptionnelle',
-  Formation = 'Formation',
-  Conges_sans_solde = 'Conges sans solde',
+  CongesExceptionels = 'congesExceptionels',
+  CongesPayes = 'congesPayes',
+  CongeSansSolde = 'congeSansSolde',
+  Formation = 'formation',
+  Maladie = 'maladie',
+  RTT = 'rtt',
 }

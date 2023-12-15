@@ -205,7 +205,7 @@ describe('Un CRA ', () => {
     const absence = new Absence(
       100,
       LocalDate.parse('2050-06-02'),
-      Raison.Conges,
+      Raison.CongesPayes,
     );
     cra.addActivity(absence);
 
@@ -238,7 +238,7 @@ describe('Un CRA ', () => {
     cra.addActivity(new Absence(50, today, Raison.Maladie));
 
     expect(cra.absences.length).toBe(1);
-    cra.deleteAbsence(today, Raison.Conges);
+    cra.deleteAbsence(today, Raison.CongesPayes);
 
     expect(cra.absences.length).toBe(1);
   });
@@ -388,8 +388,8 @@ describe('Un CRA ', () => {
     DateProvider.setTodayDate(date);
 
     cra.holidays = [new Holiday(LocalDate.parse('2023-07-14'), '14 juillet')];
-    const absence = new Absence(50, LocalDate.now(), Raison.Conges);
-    const absence2 = new Absence(50, LocalDate.now(), Raison.Conges);
+    const absence = new Absence(50, LocalDate.now(), Raison.CongesPayes);
+    const absence2 = new Absence(50, LocalDate.now(), Raison.CongesPayes);
 
     //When
     cra.addActivity(absence);

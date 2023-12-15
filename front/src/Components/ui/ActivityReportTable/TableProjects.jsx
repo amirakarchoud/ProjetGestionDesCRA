@@ -1,22 +1,48 @@
 import TableBanner from './TableBanner';
 import TableSelection from './TableSelection';
 
-function TableProjects({reportTable, addActivity}) {
+/**
+ * @callback addActivityCallback
+ * @param date {LocalDate}
+ * @param name {string}
+ * @param percentage {number}
+ * @param type {('project'|'absence')}
+ */
+
+/**
+ *
+ * @param activityReport {ActivityReport}
+ * @param addActivity {addActivityCallback}
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function TableProjects({ activityReport, addActivity }) {
+  const projects = activityReport.weekProjects();
+  const projectsSelections = [];
+  for (const project in projects) {
+    projectsSelections.push(
+      <TableSelection
+        key={project}
+        activities={projects[project]}
+        activityReport={activityReport}
+        addActivity={addActivity}
+        name={project}
+        week={activityReport.week()}
+        type={'project'}
+      />,
+    );
+  }
 
   return (
     <>
-      <TableBanner mode={'week'} week={reportTable.week()} text={'Project(s)'} />
+      <TableBanner
+        mode={'week'}
+        text={'Project(s)'}
+        week={activityReport.week()}
+      />
+      {projectsSelections}
     </>
   );
 }
 
 export default TableProjects;
-
-/**
- * <TableSelection
- *         isProject={true}
- *         projectName={'PROXYM 30467890'}
- *         onActivity={addActivity}
- *         week={reportTable.week()}
- *       />
- */

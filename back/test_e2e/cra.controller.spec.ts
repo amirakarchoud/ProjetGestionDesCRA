@@ -99,15 +99,15 @@ describe('CRA Controller', () => {
     const activities: ProjectActivitiesDto[] = [
       {
         projectCode: 'proj1',
-        activities: [
+        absences: [
           {
             date: date.toString(),
-            type: ActivityDtoType.absence,
             percentage: 50,
-            title: Raison.Maladie,
+            name: Raison.Maladie,
             reason: Raison.Maladie,
           },
         ],
+        projects: [],
       },
     ];
 

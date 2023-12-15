@@ -28,7 +28,7 @@ export const mapCraToCraDto = (cra: CRA, projects: Project[]): CraDto => {
 export function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
   return holidays.map((holiday) => {
     return {
-      title: holiday.name,
+      name: holiday.name,
       percentage: 100,
       date: holiday.date.toString(),
       type: ActivityDtoType.holiday,
@@ -39,7 +39,7 @@ export function mapHolidaysDto(holidays: Holiday[]): ActivityDto[] {
 export function mapAbsencesDto(absences: Absence[]): ActivityDto[] {
   return absences.map((abs) => {
     return {
-      title: abs.raison,
+      name: abs.raison,
       percentage: abs.percentage,
       type: ActivityDtoType.absence,
       date: abs.date.toString(),
@@ -75,7 +75,7 @@ export const mapActivitiesDto = (
 
     return {
       date: act.date.toString(),
-      title: act.project.value,
+      name: act.project.value,
       percentage: act.percentage,
       project: projectDto,
       type: ActivityDtoType.project,

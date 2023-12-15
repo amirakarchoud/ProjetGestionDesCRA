@@ -7,6 +7,12 @@ export class ActivityReport {
   availableDates;
   activities;
 
+  /**
+   *
+   * @param localDate {LocalDate}
+   * @param activities {Array<any>}
+   * @param availableDates {{availableTime: number; date: string;}[]}
+   */
   constructor(localDate, activities = [], availableDates = []) {
     this.localDate = localDate;
     this.month = localDate.month();
@@ -15,6 +21,10 @@ export class ActivityReport {
     this.availableDates = availableDates;
   }
 
+  /**
+   *
+   * @returns {LocalDate[]}
+   */
   week() {
     return [
       this.getMonday(),
@@ -33,6 +43,20 @@ export class ActivityReport {
     );
   }
 
+  weekProjects() {
+    return this.groupByKey(
+      this.groupByKey(this.weekActivities() ?? [], 'type').project ?? [],
+      'name',
+    );
+  }
+
+  weekAbsences() {
+    return this.groupByKey(
+      this.groupByKey(this.weekActivities() ?? [], 'type').absence ?? [],
+      'name',
+    );
+  }
+
   groupByProject() {
     const map = new Map();
     this.activities.forEach((activity) => {
@@ -44,33 +68,72 @@ export class ActivityReport {
     return map;
   }
 
-
+  /**
+   *
+   * @param date {LocalDate}
+   * @returns {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+   */
   getByDate(date) {
     return this.activities.filter((activity) => activity.date.equals(date));
   }
 
+  /**
+   *
+   * @param name {string}
+   * @param date {LocalDate}
+   * @returns {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}}
+   */
   getByActivityNameAndDate(name, date) {
     return this.activities.filter(
       (activity) => activity.name === name && activity.date.equals(date),
     )?.[0];
   }
 
+  /**
+   *
+   * @param activities {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+   * @param key {string}
+   * @returns {*}
+   */
+  groupByKey(activities, key) {
+    return activities.reduce((group, activity) => {
+      group[activity[key]] = group[activity[key]] ?? [];
+      group[activity[key]].push(activity);
+      return group;
+    }, {});
+  }
 
-  addActivity(type, name, date, percent) {
+  /**
+   *
+   * @param date {LocalDate}
+   * @param name {string}
+   * @param percentage {number}
+   * @param type {('project'|'absence')}
+   */
+  addActivity(date, name, percentage, type) {
     let existing = this.getByActivityNameAndDate(name, date);
     if (existing) {
-      existing.percent = percent;
+      existing.percentage = percentage;
     } else {
-      this.activities.push({ type, name, date, percent });
+      this.activities.push({ name, date, percentage, type });
     }
   }
 
+  /**
+   *
+   * @param givenDay {LocalDate}
+   * @returns {number}
+   */
   getSumActivityForGivenDay(givenDay) {
     return this.getByDate(givenDay)
-      .map((activity) => activity.percent)
+      .map((activity) => activity.percentage)
       .reduce((acc, cur) => acc + cur, 0);
   }
 
+  /**
+   *
+   * @returns {LocalDate}
+   */
   getMonday() {
     return this.localDate.with(
       TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY),

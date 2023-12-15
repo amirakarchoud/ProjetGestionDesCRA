@@ -17,7 +17,7 @@ export const mapMonthActivityToCraDto = (
     id: cra.id,
     holidays: mapHolidaysDto(cra.holidays),
     absences: mapAbsencesDto(cra.absences),
-    activities: mapActivitiesDto(cra.activities, projects),
+    projects: mapActivitiesDto(cra.activities, projects),
     availableDates: mapAvailableDates(cra.getAvailableDatesOfCra(), cra),
     month: cra.month.value(),
     year: cra.year,

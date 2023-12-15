@@ -23,3 +23,11 @@ Feature: Gestion des cra
         Given tous les cra du moi sont soumis
         When le gerant cloture le mois
         Then tous les cras deviennent fermés
+
+    Rules: Le CRA du mois précédent (M-1) devient non modifiable après les 5 du mois (M) en cours.
+    Rules: Entre la date de clôture (25 du mois en cours (M)) et le 5 du mois suivant (M+1), chaque modification est une régul.
+    Clôture le 25 -> facturation client
+    Si modification après clôture -> régul -> modification sur la facture du mois suivant
+    Rules: Afficher tous les projets pour le CRA en cours
+    Pour la semaine active on affiche tous les projets assignés à l'utilisateur même s'il n'y a aucune activité associée
+    Pour les CRA non modifiable (avant le 5 du mois précédent), tout est désactivé, et seul les projects ayant reçu une activé de l'utilisateur sont montrés

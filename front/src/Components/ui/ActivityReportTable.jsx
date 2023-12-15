@@ -12,48 +12,59 @@ function ActivityReportTable() {
     new ActivityReport(LocalDate.now()),
   );
 
+  const apiUrl = process.env.REACT_APP_API_URL;
   useEffect(() => {
-    fetch('https://run.mocky.io/v3/e5e79e53-a7aa-4981-81f0-bee7f016f829')
-      .then(res => res.json())
-      .then((result) => {
-        console.log(result);
-        let resultActivities = [];
-
-        for (const project of result.activities) {
-          for (const activity of project.activities) {
-            resultActivities.push({
-              project: project.projectCode,
-              date: LocalDate.parse(activity.date),
-              percent: activity.percentage,
-              type: activity.type,
-            });
-          }
-        }
-        const filteredActivities = {
-          projects: resultActivities.filter(ra => ra.type === 'Project'),
-          absences: resultActivities.filter(ra => ra.type === 'Absence')
-        };
-
-        console.log(filteredActivities);
-
+    fetch(
+      `${apiUrl}/v2/private/activity-report/aleksandar.kirilov@proxym.fr/2023/12`,
+    )
+      .then((res) => res.json())
+      .then((res) => {
+        const { absences, projects } = res;
+        const activities = [...absences, ...projects];
+        activities.map((activity) => {
+          activity.date = LocalDate.parse(activity.date);
+          return activity;
+        });
+        setActivityReport(
+          Object.assign(new ActivityReport(LocalDate.now(), activities)),
+        );
       });
-  }, []);
+  }, [apiUrl]);
 
-  const addActivity = (project, date, percentage) => {
-    // modify report table
-    activityReport.addActivity(project, date, percentage);
+  /**
+   *
+   * @param date {LocalDate}
+   * @param name {string}
+   * @param percentage {number}
+   * @param type {('project'|'absence')}
+   */
+  const addActivity = (date, name, percentage, type) => {
+    activityReport.addActivity(date, name, percentage, type);
+    setActivityReport(
+      Object.assign(
+        new ActivityReport(activityReport.localDate, activityReport.activities),
+        activityReport,
+      ),
+    );
   };
 
   const previousWeek = () => {
     activityReport.previousWeek();
     setActivityReport(
-      Object.assign(new ActivityReport(activityReport.localDate), activityReport),
+      Object.assign(
+        new ActivityReport(activityReport.localDate),
+        activityReport,
+      ),
     );
   };
+
   const nextWeek = () => {
     activityReport.nextWeek();
     setActivityReport(
-      Object.assign(new ActivityReport(activityReport.localDate), activityReport),
+      Object.assign(
+        new ActivityReport(activityReport.localDate),
+        activityReport,
+      ),
     );
   };
 
@@ -61,8 +72,14 @@ function ActivityReportTable() {
     <>
       <TableActions previousWeek={previousWeek} nextWeek={nextWeek} />
       <Stack direction="column" className={styles.table}>
-        <TableProjects reportTable={activityReport} addActivity={addActivity}/>
-        <TableAbsences reportTable={activityReport} addActivity={addActivity}/>
+        <TableProjects
+          activityReport={activityReport}
+          addActivity={addActivity}
+        />
+        <TableAbsences
+          activityReport={activityReport}
+          addActivity={addActivity}
+        />
       </Stack>
       <TableValidation />
     </>

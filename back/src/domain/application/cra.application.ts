@@ -16,7 +16,7 @@ import { CRA } from '@app/domain/model/CRA';
 import { Etat } from '@app/domain/model/etat.enum';
 import { Status } from '@app/domain/model/Status';
 import { Activity } from '@app/domain/model/Activity';
-import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { LocalDate, Month } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { ApplicationError } from '@app/domain/application/errors/application.error';
@@ -154,32 +154,30 @@ export class CraApplication {
     const toAdd = new Array<Activity | Absence>();
     const projects = await this.getProjectsByUser(idUser);
 
-    for (const projectActivity of activities) {
-      for (const activityDto of projectActivity.activities) {
+    for (const activity of activities) {
+      for (const activityDto of activity.projects) {
         const date = LocalDate.parse(activityDto.date);
+        const existingProject = projects.find(
+          (proj) => proj.code.value === activityDto.project.code,
+        );
 
-        if (activityDto.type === ActivityDtoType.project) {
-          const existingProject = projects.find(
-            (proj) => proj.code.value === projectActivity.projectCode,
-          );
-
-          if (!existingProject) {
-            throw new ActivityReportError(
-              `Cannot report activity, Project "${projectActivity.projectCode}" is not assigned to user ${idUser}`,
-            );
-          }
-          toAdd.push(
-            new ProjectActivity(
-              new ProjectCode(projectActivity.projectCode),
-              activityDto.percentage,
-              date,
-            ),
-          );
-        } else if (activityDto.type === ActivityDtoType.absence) {
-          toAdd.push(
-            new Absence(activityDto.percentage, date, activityDto.reason),
+        if (!existingProject) {
+          throw new ActivityReportError(
+            `Cannot report activity, Project "${activityDto.project.code}" is not assigned to user ${idUser.value}`,
           );
         }
+        toAdd.push(
+          new ProjectActivity(
+            new ProjectCode(activityDto.project.code),
+            activityDto.percentage,
+            date,
+          ),
+        );
+      }
+
+      for (const absenceDto of activity.absences) {
+        const date = LocalDate.parse(absenceDto.date);
+        toAdd.push(new Absence(absenceDto.percentage, date, absenceDto.reason));
       }
     }
 

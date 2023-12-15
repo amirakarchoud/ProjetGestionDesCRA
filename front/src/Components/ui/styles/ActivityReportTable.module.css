@@ -26,8 +26,11 @@
   background-color: #edf0f0;
 }
 .title {
-  width: 250px;
   font-size: 1.2rem;
+  font-weight: bold;
+}
+.subtitle {
+  font-size: 1rem;
   font-weight: bold;
 }
 .list {
@@ -51,7 +54,7 @@
   width: 100px;
 }
 .absenceSelect {
-  width: inherit;
+  width: 250px;
 }
 
 /**
@@ -60,5 +63,5 @@
 
 .validationContainer {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }

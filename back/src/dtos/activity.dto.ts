@@ -8,10 +8,10 @@ import { LocalDate } from '@js-joda/core';
 import { Absence } from '@app/domain/model/Absence';
 
 export enum ActivityDtoType {
-  project = 'Project',
-  holiday = 'Holiday',
-  absence = 'Absence',
-  blank = 'Available',
+  project = 'project',
+  holiday = 'holiday',
+  absence = 'absence',
+  blank = 'available',
 }
 
 export class ActivityDto {
@@ -21,7 +21,7 @@ export class ActivityDto {
     enum: Raison,
     required: false,
   })
-  title?: string; // raison ou project ou available
+  name?: string; // raison ou project ou available
 
   @ApiProperty({
     description: 'The percentage of the day this activity occupies.',
@@ -30,12 +30,6 @@ export class ActivityDto {
     examples: [0, 25, 50, 75, 100],
   })
   percentage: Percentage;
-
-  @ApiProperty({
-    description: 'What type of activity this is.',
-    enum: ActivityDtoType,
-  })
-  type: ActivityDtoType;
 
   @ApiProperty({
     description: 'The date this activity is related to.',
@@ -68,5 +62,9 @@ export class ProjectActivitiesDto {
   })
   @Type(() => ActivityDto)
   @ValidateNested({ each: true })
-  activities: ActivityDto[];
+  projects: ActivityDto[];
+
+  @Type(() => ActivityDto)
+  @ValidateNested({ each: true })
+  absences: ActivityDto[];
 }

@@ -35,7 +35,7 @@ export class MonthActivityDto {
     description: `List of reported project activities for this month and user.`,
     type: [ActivityDto],
   })
-  activities: ActivityDto[];
+  projects: ActivityDto[];
 
   @ApiProperty({
     description:

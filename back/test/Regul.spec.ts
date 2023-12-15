@@ -8,7 +8,7 @@ describe('Regul ', () => {
   it('est creee correctement ', () => {
     //Given
     const date = LocalDate.now();
-    const absence = new Absence(100, date, Raison.Conges);
+    const absence = new Absence(100, date, Raison.CongesPayes);
     const regul = new Regul(date, Action.Add, absence);
 
     //Then
