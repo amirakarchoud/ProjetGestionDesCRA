@@ -59,6 +59,10 @@ export class Collab {
   }
 
   static fromJson(json: any): Collab {
+    if (!json) {
+      return undefined;
+    }
+
     return new Collab(
       new CollabEmail(json._id),
       json._name,

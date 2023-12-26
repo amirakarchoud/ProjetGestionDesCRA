@@ -35,10 +35,6 @@ export class CollabRepository implements IRepoCollab {
       _id: id.value,
     });
 
-    if (!foundUser) {
-      throw new Error(`User "${id.value}" not found`);
-    }
-
     return Collab.fromJson(foundUser);
   }
 

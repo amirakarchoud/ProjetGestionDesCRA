@@ -7,6 +7,7 @@ import TableActions from './ActivityReportTable/TableActions';
 import TableValidation from './ActivityReportTable/TableValidation';
 import TableAbsences from './ActivityReportTable/TableAbsences';
 import TableProjects from './ActivityReportTable/TableProjects';
+
 function ActivityReportTable() {
   const [activityReport, setActivityReport] = useState(
     new ActivityReport(LocalDate.now()),

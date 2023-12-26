@@ -21,6 +21,7 @@ import { LocalDate, Month } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { ApplicationError } from '@app/domain/application/errors/application.error';
 import { ActivityReportError } from '@app/domain/model/errors/activity-report.error';
+import { UserError } from '@app/domain/model/errors/user.error';
 
 @Injectable()
 export class CraApplication {
@@ -141,6 +142,10 @@ export class CraApplication {
     month: Month,
     year: number,
   ) {
+    const collabPromise = await this.collabRepository.findById(idUser);
+    if (!collabPromise) {
+      throw new UserError(`No user found with id ${JSON.stringify(idUser)}`);
+    }
     return await this.craRepository.findByMonthYearCollab(month, year, idUser);
   }
 

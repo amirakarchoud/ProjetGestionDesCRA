@@ -29,13 +29,13 @@ export class MonthActivityDto {
     description: `List of absences for this month and user.`,
     type: [ActivityDto],
   })
-  absences: ActivityDto[];
+  absences: ActivityDto[] = [];
 
   @ApiProperty({
     description: `List of reported project activities for this month and user.`,
     type: [ActivityDto],
   })
-  projects: ActivityDto[];
+  projects: ActivityDto[] = [];
 
   @ApiProperty({
     description:
