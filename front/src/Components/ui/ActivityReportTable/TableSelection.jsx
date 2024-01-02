@@ -1,7 +1,6 @@
 import styles from '../styles/ActivityReportTable.module.css';
 import { MenuItem, Select } from '@mui/material';
 import Stack from '@mui/material/Stack';
-import { useState } from 'react';
 import { DateTimeFormatter } from '@js-joda/core';
 
 /**
@@ -13,6 +12,18 @@ import { DateTimeFormatter } from '@js-joda/core';
  */
 
 /**
+ * @callback deleteActivityCallback
+ * @param name {string}
+ */
+
+/**
+ * @callback updateActivityCallback
+ * @param previousName {string}
+ * @param newName {string}
+ * @param type {('project'|'absence')}
+ */
+
+/**
  * @callback handleActivityNameSelectionCallback
  * @param text {string}
  */
@@ -20,11 +31,11 @@ import { DateTimeFormatter } from '@js-joda/core';
 /**
  *
  * @param activityName {string}
- * @param handleActivityNameSelection {handleActivityNameSelectionCallback}
  * @param type {('project' | 'absence')}
+ * @param updateActivity {updateActivityCallback}
  * @returns {JSX.Element}
  */
-function ActivityName({ name = '', handleActivityNameSelection, type }) {
+function ActivityName({ name = '', type, updateActivity }) {
   if (type === 'project') {
     return <div className={styles.subtitle}>{name}</div>;
   }
@@ -54,7 +65,7 @@ function ActivityName({ name = '', handleActivityNameSelection, type }) {
           value={name}
           defaultValue={''}
           className={styles.absenceSelect}
-          onChange={(event) => handleActivityNameSelection(event.target.value)}
+          onChange={(event) => updateActivity(name, event?.target?.value, type)}
         >
           {absenceOptions}
         </Select>
@@ -71,18 +82,10 @@ function ActivityName({ name = '', handleActivityNameSelection, type }) {
  * @param addActivity {addActivityCallback}
  * @param name {string}
  * @param type {('project' | 'absence')}
- * @param week {LocalDate[]}
  * @returns {JSX.Element[]}
  * @constructor
  */
-function Selects({
-  activities,
-  activityReport,
-  addActivity,
-  name,
-  type,
-  week,
-}) {
+function Selects({ activities, activityReport, addActivity, name, type }) {
   const percentages = [0, 25, 50, 75, 100];
   const percentsSelections = [];
   for (const percentage of percentages) {
@@ -95,9 +98,8 @@ function Selects({
 
   const selects = [];
   const dataByDate = activityReport.groupByKey(activities, 'date');
-  for (const date of week) {
-    const value =
-      dataByDate[date.format(DateTimeFormatter.ofPattern('yyyy-MM-dd'))];
+  for (const date of activityReport.week()) {
+    const value = dataByDate[date.format(DateTimeFormatter.ISO_LOCAL_DATE)];
     selects.push(
       <div
         key={date.format(DateTimeFormatter.ISO_LOCAL_DATE)}
@@ -122,47 +124,61 @@ function Selects({
 }
 
 /**
+ * @param deleteActivity {deleteActivityCallback}
+ * @param name {string}
+ * @param type {('project' | 'absence')}
+ * @returns {JSX.Element}
+ * @constructor
+ */
+function ActivityAction({ deleteActivity, name, type }) {
+  if (type === 'absence') {
+    return (
+      <>
+        <p
+          className={styles.activityAction}
+          onClick={() => deleteActivity(name)}
+        >
+          Delete this absence
+        </p>
+      </>
+    );
+  }
+}
+
+/**
  * @param activities {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
+ * @param deleteActivity {deleteActivityCallback}
  * @param name {string}
  * @param type {('project' | 'absence')}
- * @param week {LocalDate[]}
+ * @param updateActivity {updateActivityCallback}
  * @returns {JSX.Element}
  */
 function TableSelection({
   activities,
   activityReport,
   addActivity,
+  deleteActivity,
   name,
   type,
-  week,
+  updateActivity,
 }) {
-  const [activityNameSelection, setActivityNameSelection] = useState(name);
-
-  const handleActivityNameSelection = (value) => {
-    setActivityNameSelection(value);
-  };
-
   return (
     <>
       <Stack direction="row" className={styles.block}>
-        <ActivityName
-          name={activityNameSelection}
-          handleActivityNameSelection={handleActivityNameSelection}
-          type={type}
-        />
+        <ActivityName name={name} type={type} updateActivity={updateActivity} />
         <div className={styles.list}>
           <Selects
             activities={activities}
             activityReport={activityReport}
             addActivity={addActivity}
-            name={activityNameSelection}
+            name={name}
             type={type}
-            week={week}
           />
         </div>
       </Stack>
+      <ActivityAction deleteActivity={deleteActivity} name={name} type={type} />
     </>
   );
 }

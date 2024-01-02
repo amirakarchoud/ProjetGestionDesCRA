@@ -13,6 +13,15 @@ function ActivityReportTable() {
     new ActivityReport(LocalDate.now()),
   );
 
+  const updateView = () => {
+    setActivityReport(
+      Object.assign(
+        new ActivityReport(activityReport.localDate, activityReport.activities),
+        activityReport,
+      ),
+    );
+  };
+
   const apiUrl = process.env.REACT_APP_API_URL;
   useEffect(() => {
     fetch(
@@ -41,12 +50,34 @@ function ActivityReportTable() {
    */
   const addActivity = (date, name, percentage, type) => {
     activityReport.addActivity(date, name, percentage, type);
-    setActivityReport(
-      Object.assign(
-        new ActivityReport(activityReport.localDate, activityReport.activities),
-        activityReport,
-      ),
-    );
+    updateView();
+  };
+
+  const addWeekActivity = (name, percentage, type) => {
+    activityReport.week().forEach((date) => {
+      activityReport.addActivity(date, name, percentage, type);
+    });
+    updateView();
+  };
+
+  /**
+   *
+   * @param previousName {string}
+   * @param newName {string}
+   * @param type {('project'|'absence')}
+   */
+  const updateActivity = (previousName, newName, type) => {
+    activityReport.updateActivity(previousName, newName, type);
+    updateView();
+  };
+
+  /**
+   *
+   * @param name {string}
+   */
+  const deleteActivity = (name) => {
+    activityReport.deleteActivity(name);
+    updateView();
   };
 
   const previousWeek = () => {
@@ -80,6 +111,9 @@ function ActivityReportTable() {
         <TableAbsences
           activityReport={activityReport}
           addActivity={addActivity}
+          addWeekActivity={addWeekActivity}
+          deleteActivity={deleteActivity}
+          updateActivity={updateActivity}
         />
       </Stack>
       <TableValidation />

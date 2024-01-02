@@ -54,9 +54,6 @@ export class ActivityDto {
 }
 
 export class ProjectActivitiesDto {
-  @ApiProperty()
-  projectCode: string;
-
   @ApiProperty({
     type: [ActivityDto],
   })

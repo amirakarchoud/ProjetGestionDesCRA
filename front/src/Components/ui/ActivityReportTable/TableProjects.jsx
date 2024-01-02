@@ -27,7 +27,6 @@ function TableProjects({ activityReport, addActivity }) {
         activityReport={activityReport}
         addActivity={addActivity}
         name={project}
-        week={activityReport.week()}
         type={'project'}
       />,
     );

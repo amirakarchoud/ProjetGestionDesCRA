@@ -19,7 +19,7 @@
   align-items: center;
   justify-content: space-between;
   color: #4f5252;
-  height: 86px;
+  height: 66px;
   padding: 0 16px;
 }
 .grey {
@@ -55,6 +55,22 @@
 }
 .absenceSelect {
   width: 250px;
+}
+
+/**
+ * ActivityAction
+ */
+
+.activityAction {
+  margin: 0;
+  padding: 0 16px 16px;
+  color: #562ad5;
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    filter: brightness(150%);
+  }
 }
 
 /**

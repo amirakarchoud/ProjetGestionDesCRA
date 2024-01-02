@@ -10,13 +10,41 @@ import TableSelection from './TableSelection';
  */
 
 /**
+ * @callback addWeekActivityCallback
+ * @param name {string}
+ * @param percentage {number}
+ * @param type {('project'|'absence')}
+ */
+
+/**
+ * @callback deleteActivityCallback
+ * @param name {string}
+ */
+
+/**
+ * @callback updateActivityCallback
+ * @param previousName {string}
+ * @param newName {string}
+ * @param type {('project'|'absence')}
+ */
+
+/**
  *
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
+ * @param addWeekActivity {addWeekActivityCallback}
+ * @param deleteActivity {deleteActivityCallback}
+ * @param updateActivity {updateActivityCallback}
  * @returns {JSX.Element}
  * @constructor
  */
-function TableAbsences({ activityReport, addActivity }) {
+function TableAbsences({
+  activityReport,
+  addActivity,
+  addWeekActivity,
+  deleteActivity,
+  updateActivity,
+}) {
   const absences = activityReport.weekAbsences();
   const absencesSelections = [];
   for (const absence in absences) {
@@ -26,9 +54,10 @@ function TableAbsences({ activityReport, addActivity }) {
         activities={absences[absence]}
         activityReport={activityReport}
         addActivity={addActivity}
+        deleteActivity={deleteActivity}
         name={absence}
         type={'absence'}
-        week={activityReport.week()}
+        updateActivity={updateActivity}
       />,
     );
   }
@@ -37,7 +66,11 @@ function TableAbsences({ activityReport, addActivity }) {
     <>
       <TableBanner mode={'text'} text={'Absence(s)'} />
       {absencesSelections}
-      <TableBanner mode={'button'} text={'Add an absence'} />
+      <TableBanner
+        mode={'button'}
+        text={'Add an absence'}
+        addWeekActivity={addWeekActivity}
+      />
     </>
   );
 }

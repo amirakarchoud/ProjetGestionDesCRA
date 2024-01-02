@@ -1,4 +1,5 @@
-import { DayOfWeek, TemporalAdjusters } from '@js-joda/core';
+import { DateTimeFormatter, DayOfWeek, TemporalAdjusters } from '@js-joda/core';
+import { toast } from 'react-toastify';
 
 export class ActivityReport {
   localDate;
@@ -57,17 +58,6 @@ export class ActivityReport {
     );
   }
 
-  groupByProject() {
-    const map = new Map();
-    this.activities.forEach((activity) => {
-      if (!map.get(activity.name)) {
-        map.set(activity.name, []);
-      }
-      map.get(activity.name).push(activity);
-    });
-    return map;
-  }
-
   /**
    *
    * @param date {LocalDate}
@@ -115,8 +105,60 @@ export class ActivityReport {
     if (existing) {
       existing.percentage = percentage;
     } else {
-      this.activities.push({ name, date, percentage, type });
+      this.activities.push({ date, name, percentage, type });
     }
+  }
+
+  /**
+   *
+   * @param previousName {string}
+   * @param newName {string}
+   * @param type {('project'|'absence')}
+   */
+  updateActivity(previousName, newName, type) {
+    let keys;
+    if (type === 'absence') keys = Object.keys(this.weekAbsences());
+    if (type === 'project') keys = Object.keys(this.weekProjects());
+    if (!keys.includes(newName)) {
+      const isoWeek = this.week().map((date) =>
+        date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+      );
+      this.activities.forEach((activity) => {
+        if (
+          activity.name === previousName &&
+          isoWeek.includes(
+            activity.date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+          )
+        ) {
+          activity.name = newName;
+          activity.reason = newName;
+        }
+      });
+    } else {
+      toast.error(`${newName} is already used !`);
+    }
+  }
+
+  /**
+   *
+   * @param name {string}
+   */
+  deleteActivity(name) {
+    const isoWeek = this.week().map((date) =>
+      date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+    );
+    const oldActivities = [...this.activities];
+    this.activities = [
+      ...oldActivities.filter(
+        (activity) =>
+          !(
+            activity.name === name &&
+            isoWeek.includes(
+              activity.date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+            )
+          ),
+      ),
+    ];
   }
 
   /**
