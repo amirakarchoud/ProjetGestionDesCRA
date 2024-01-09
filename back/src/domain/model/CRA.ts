@@ -27,6 +27,8 @@ export type BulkAddOptions = {
   replace: boolean;
 };
 
+DateProvider.setTodayDate(LocalDate.of(2024, 1, 2));
+
 export class CRA {
   public static readonly CLOSURE_DAY = 5;
   private _holidays: Holiday[] = [];

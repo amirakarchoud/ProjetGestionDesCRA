@@ -7,7 +7,7 @@ import {
 } from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { HttpStatus } from '@nestjs/common';
-import { ActivityDtoType, ProjectActivitiesDto } from '@app/dtos/activity.dto';
+import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
 import { Raison } from '@app/domain/model/Raison';
 import { ProjectCode } from '@app/domain/model/project.code';
 import { DateProvider } from '@app/domain/model/date-provider';
@@ -135,41 +135,40 @@ describe('CRA Controller', () => {
 export const prepareActivities = (
   date: LocalDate,
   nextDate: LocalDate,
-): any[] => {
+): ProjectActivitiesDto[] => {
   return [
     {
       projectCode: 'proj1',
-      activities: [
+      projects: [
         {
-          date: date,
-          type: ActivityDtoType.absence,
+          date: date.toString(),
+          name: 'Fnac',
           percentage: 50,
-          title: Raison.Maladie,
-          reason: Raison.Maladie,
+          project: {
+            code: 'proj1',
+          },
         },
         {
-          date: date,
-          type: ActivityDtoType.project,
-          title: 'Fnac',
+          date: nextDate.toString(),
+          name: 'Darty',
           percentage: 50,
+          project: {
+            code: 'proj2',
+          },
         },
       ],
-    },
-    {
-      projectCode: 'proj2',
-      activities: [
+      absences: [
         {
-          date: nextDate,
-          type: ActivityDtoType.absence,
+          date: date.toString(),
           percentage: 50,
-          title: Raison.RTT,
+          name: Raison.Maladie,
           reason: Raison.Maladie,
         },
         {
-          date: nextDate,
-          type: ActivityDtoType.project,
-          title: 'Darty',
+          date: nextDate.toString(),
           percentage: 50,
+          name: Raison.RTT,
+          reason: Raison.Maladie,
         },
       ],
     },

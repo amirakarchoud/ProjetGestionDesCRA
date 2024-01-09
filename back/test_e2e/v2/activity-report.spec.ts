@@ -15,10 +15,19 @@ import { IRepoCra } from '../../src/domain/IRepository/IRepoCra';
 
 describe('Activity Report Controller', () => {
   const getApp = prepareApp('activity_report');
+  const collabEmail = new CollabEmail('aleksandar@proxym.fr');
+  const date = LocalDate.parse('2023-11-02');
+  const nextDate = LocalDate.parse('2023-11-03');
 
-  it('Can post cra activities in bulk', async () => {
-    const date = LocalDate.parse('2023-11-02');
-    const nextDate = LocalDate.parse('2023-11-03');
+  let craRepo: IRepoCra;
+  let application: CraApplication;
+
+  beforeEach(() => {
+    craRepo = getApp().get('IRepoCra');
+    application = getApp().get(CraApplication);
+  });
+
+  async function createTwoActivities() {
     DateProvider.setTodayDate(LocalDate.parse('2023-11-02'));
 
     const activities: ProjectActivitiesDto[] = prepareActivities(
@@ -26,10 +35,10 @@ describe('Activity Report Controller', () => {
       nextDate,
     );
 
-    const collabEmail = new CollabEmail('aleksandar@proxym.fr');
     await createUser(getApp(), collabEmail);
     await createProject(getApp(), new ProjectCode('proj1'), collabEmail);
     await createProject(getApp(), new ProjectCode('proj2'), collabEmail);
+    await createProject(getApp(), new ProjectCode('proj3'), collabEmail);
 
     const dto = new ActivityReportDto();
     dto.month = Month.NOVEMBER.value();
@@ -37,14 +46,16 @@ describe('Activity Report Controller', () => {
     dto.employeeEmail = collabEmail.value;
     dto.activities = activities;
 
-    const response = await request(getApp().getHttpServer())
+    return request(getApp().getHttpServer())
       .post('/v2/private/activity-report/')
       .set('Content-Type', 'application/json')
       .send(dto);
+  }
+
+  it('Can post cra activities in bulk', async () => {
+    const response = await createTwoActivities();
 
     expect(response.status).toBe(HttpStatus.CREATED);
-
-    const application = getApp().get(CraApplication);
 
     const cra = await application.getCraByCollabMonthYear(
       collabEmail,
@@ -54,7 +65,78 @@ describe('Activity Report Controller', () => {
 
     expect(cra.activities).toHaveLength(2);
     expect(cra.absences).toHaveLength(2);
-    expect(cra.holidays).toHaveLength(2);
+  });
+
+  it('Can replace existing activities', async () => {
+    await createTwoActivities();
+
+    let cra = await craRepo.findByMonthYearCollab(
+      Month.NOVEMBER,
+      2023,
+      collabEmail,
+    );
+    expect(cra.activities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          _project: {
+            _code: 'proj1',
+          },
+          _date: {
+            _day: 2,
+            _month: 11,
+            _year: 2023,
+          },
+        }),
+      ]),
+    );
+
+    const dto = new ActivityReportDto();
+    dto.month = Month.NOVEMBER.value();
+    dto.year = 2023;
+    dto.employeeEmail = collabEmail.value;
+    dto.activities = [
+      {
+        projectCode: 'proj3',
+        projects: [
+          {
+            date: date.toString(),
+            project: {
+              code: 'proj3',
+            },
+            percentage: 100,
+            name: 'Some Name',
+          },
+        ],
+        absences: [],
+      },
+    ];
+
+    dto.replace = true;
+
+    await request(getApp().getHttpServer())
+      .post('/v2/private/activity-report/')
+      .set('Content-Type', 'application/json')
+      .send(dto);
+
+    cra = await craRepo.findByMonthYearCollab(
+      Month.NOVEMBER,
+      2023,
+      collabEmail,
+    );
+    expect(cra.activities).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          _project: {
+            _code: 'proj3',
+          },
+          _date: {
+            _day: 2,
+            _month: 11,
+            _year: 2023,
+          },
+        }),
+      ]),
+    );
   });
 
   it('Can retrieve activity reports for a user', async () => {

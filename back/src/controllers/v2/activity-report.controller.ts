@@ -39,6 +39,7 @@ export class ActivityReportController {
       activityReport.month,
       activityReport.year,
       activityReport.activities,
+      activityReport.replace,
     );
 
     return {

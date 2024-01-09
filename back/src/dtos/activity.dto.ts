@@ -62,9 +62,9 @@ export class ProjectActivitiesDto {
   })
   @Type(() => ActivityDto)
   @ValidateNested({ each: true })
-  projects: ActivityDto[];
+  projects: ActivityDto[] = [];
 
   @Type(() => ActivityDto)
   @ValidateNested({ each: true })
-  absences: ActivityDto[];
+  absences: ActivityDto[] = [];
 }

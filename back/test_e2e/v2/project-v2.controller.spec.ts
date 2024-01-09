@@ -136,7 +136,7 @@ describe('Project Controller', () => {
       .accept('application/json')
       .send(projectDto);
 
-    expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
   });
 
   it('should not allow to add a none existing user to an existing project', async () => {
@@ -157,6 +157,6 @@ describe('Project Controller', () => {
       .accept('application/json')
       .send(projectDto);
 
-    expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
   });
 });
