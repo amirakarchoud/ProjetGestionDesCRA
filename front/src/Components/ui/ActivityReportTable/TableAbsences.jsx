@@ -1,31 +1,34 @@
 import TableBanner from './TableBanner';
 import TableSelection from './TableSelection';
+import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
 
 /**
  * @callback addActivityCallback
+ * @param code {string}
  * @param date {LocalDate}
  * @param name {string}
  * @param percentage {number}
- * @param type {('project'|'absence')}
+ * @param type {('absence'|'project')}
  */
 
 /**
  * @callback addWeekActivityCallback
+ * @param code {string}
  * @param name {string}
  * @param percentage {number}
- * @param type {('project'|'absence')}
+ * @param type {('absence'|'project')}
  */
 
 /**
- * @callback deleteActivityCallback
- * @param name {string}
+ * @callback deleteWeekActivityCallback
+ * @param code {string}
  */
 
 /**
- * @callback updateActivityCallback
- * @param previousName {string}
- * @param newName {string}
- * @param type {('project'|'absence')}
+ * @callback updateActivityCodeCallback
+ * @param previousCode {string}
+ * @param newCode {string}
+ * @param type {('absence'|'project')}
  */
 
 /**
@@ -33,8 +36,8 @@ import TableSelection from './TableSelection';
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
  * @param addWeekActivity {addWeekActivityCallback}
- * @param deleteActivity {deleteActivityCallback}
- * @param updateActivity {updateActivityCallback}
+ * @param deleteWeekActivity {deleteWeekActivityCallback}
+ * @param updateActivityCode {updateActivityCodeCallback}
  * @returns {JSX.Element}
  * @constructor
  */
@@ -42,8 +45,8 @@ function TableAbsences({
   activityReport,
   addActivity,
   addWeekActivity,
-  deleteActivity,
-  updateActivity,
+  deleteWeekActivity,
+  updateActivityCode,
 }) {
   const absences = activityReport.weekAbsences();
   const absencesSelections = [];
@@ -54,20 +57,19 @@ function TableAbsences({
         activities={absences[absence]}
         activityReport={activityReport}
         addActivity={addActivity}
-        deleteActivity={deleteActivity}
-        name={absence}
-        type={'absence'}
-        updateActivity={updateActivity}
+        deleteWeekActivity={deleteWeekActivity}
+        type={ActivityTypes.Absence}
+        updateActivityCode={updateActivityCode}
       />,
     );
   }
 
   return (
     <>
-      <TableBanner mode={'text'} text={'Absence(s)'} />
+      <TableBanner mode={BannerMode.Text} text={'Absence(s)'} />
       {absencesSelections}
       <TableBanner
-        mode={'button'}
+        mode={BannerMode.Button}
         text={'Add an absence'}
         addWeekActivity={addWeekActivity}
       />

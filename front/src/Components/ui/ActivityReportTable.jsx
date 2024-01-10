@@ -7,97 +7,105 @@ import TableActions from './ActivityReportTable/TableActions';
 import TableValidation from './ActivityReportTable/TableValidation';
 import TableAbsences from './ActivityReportTable/TableAbsences';
 import TableProjects from './ActivityReportTable/TableProjects';
+import ActivityReportApi from '../../Services/ActivityReport.api';
 
 function ActivityReportTable() {
   const [activityReport, setActivityReport] = useState(
-    new ActivityReport(LocalDate.now()),
+    new ActivityReport(LocalDate.now(), [], [], [], ActivityReportApi),
   );
+
+  useEffect(() => {
+    activityReport.activityReportApi
+      .fetchActivities(
+        'aleksandar.kirilov@proxym.fr',
+        activityReport.month.value(),
+        activityReport.year,
+      )
+      .then((data) => {
+        setActivityReport(
+          Object.assign(
+            new ActivityReport(
+              LocalDate.now(),
+              data.activities,
+              data.availableDates,
+              data.holidays,
+              ActivityReportApi,
+            ),
+          ),
+        );
+      });
+  }, [ActivityReportApi]);
 
   const updateView = () => {
     setActivityReport(
       Object.assign(
-        new ActivityReport(activityReport.localDate, activityReport.activities),
-        activityReport,
+        new ActivityReport(
+          activityReport.localDate,
+          activityReport.activities,
+          activityReport.availableDates,
+          activityReport.holidays,
+          ActivityReportApi,
+        ),
       ),
     );
   };
 
-  const apiUrl = process.env.REACT_APP_API_URL;
-  useEffect(() => {
-    fetch(
-      `${apiUrl}/v2/private/activity-report/aleksandar.kirilov@proxym.fr/2023/12`,
-    )
-      .then((res) => res.json())
-      .then((res) => {
-        const { absences, projects } = res;
-        const activities = [...absences, ...projects];
-        activities.map((activity) => {
-          activity.date = LocalDate.parse(activity.date);
-          return activity;
-        });
-        setActivityReport(
-          Object.assign(new ActivityReport(LocalDate.now(), activities)),
-        );
-      });
-  }, [apiUrl]);
-
   /**
-   *
+   * @param code {string}
    * @param date {LocalDate}
    * @param name {string}
    * @param percentage {number}
-   * @param type {('project'|'absence')}
+   * @param type {('absence'|'project')}
    */
-  const addActivity = (date, name, percentage, type) => {
-    activityReport.addActivity(date, name, percentage, type);
+  const addActivity = (code, date, name, percentage, type) => {
+    activityReport.addActivity(code, date, name, percentage, type);
     updateView();
   };
 
-  const addWeekActivity = (name, percentage, type) => {
+  /**
+   * @param code {string}
+   * @param name {string}
+   * @param percentage {number}
+   * @param type {('absence'|'project')}
+   */
+  const addWeekActivity = (code, name, percentage, type) => {
     activityReport.week().forEach((date) => {
-      activityReport.addActivity(date, name, percentage, type);
+      activityReport.addActivity(code, date, name, percentage, type);
     });
     updateView();
   };
 
   /**
-   *
-   * @param previousName {string}
-   * @param newName {string}
-   * @param type {('project'|'absence')}
+   * @param previousCode {string}
+   * @param newCode {string}
+   * @param type {('absence'|'project')}
    */
-  const updateActivity = (previousName, newName, type) => {
-    activityReport.updateActivity(previousName, newName, type);
+  const updateActivityCode = (previousCode, newCode, type) => {
+    activityReport.updateActivityCode(previousCode, newCode, type);
     updateView();
   };
 
   /**
-   *
-   * @param name {string}
+   * @param code {string}
    */
-  const deleteActivity = (name) => {
-    activityReport.deleteActivity(name);
+  const deleteWeekActivity = (code) => {
+    activityReport.deleteWeekActivity(code);
     updateView();
   };
 
   const previousWeek = () => {
     activityReport.previousWeek();
-    setActivityReport(
-      Object.assign(
-        new ActivityReport(activityReport.localDate),
-        activityReport,
-      ),
-    );
+    updateView();
   };
 
   const nextWeek = () => {
     activityReport.nextWeek();
-    setActivityReport(
-      Object.assign(
-        new ActivityReport(activityReport.localDate),
-        activityReport,
-      ),
-    );
+    updateView();
+  };
+
+  const validateWeek = () => {
+    activityReport.validateWeek();
+    updateView();
   };
 
   return (
@@ -112,11 +120,14 @@ function ActivityReportTable() {
           activityReport={activityReport}
           addActivity={addActivity}
           addWeekActivity={addWeekActivity}
-          deleteActivity={deleteActivity}
-          updateActivity={updateActivity}
+          deleteWeekActivity={deleteWeekActivity}
+          updateActivityCode={updateActivityCode}
         />
       </Stack>
-      <TableValidation />
+      <TableValidation
+        activityReport={activityReport}
+        validateWeek={validateWeek}
+      />
     </>
   );
 }

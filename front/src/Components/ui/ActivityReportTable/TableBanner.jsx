@@ -2,12 +2,14 @@ import styles from '../styles/ActivityReportTable.module.css';
 import Stack from '@mui/material/Stack';
 import { DateTimeFormatter } from '@js-joda/core';
 import { Button } from '@mui/material';
+import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
 
 /**
  * @callback addWeekActivityCallback
+ * @param code {string}
  * @param name {string}
  * @param percentage {number}
- * @param type {('project'|'absence')}
+ * @param type {('absence'|'project')}
  */
 
 /**
@@ -19,7 +21,7 @@ import { Button } from '@mui/material';
  * @constructor
  */
 function Banner({ addWeekActivity, mode, text = '', week = [] }) {
-  if (mode === 'week') {
+  if (mode === BannerMode.Week) {
     return (
       <>
         <div className={styles.title}>{text}</div>
@@ -36,16 +38,16 @@ function Banner({ addWeekActivity, mode, text = '', week = [] }) {
       </>
     );
   }
-  if (mode === 'text') {
+  if (mode === BannerMode.Text) {
     return <div className={styles.title}>{text}</div>;
   }
-  if (mode === 'button') {
+  if (mode === BannerMode.Button) {
     return (
       <div>
         <Button
           color="primary"
           variant="contained"
-          onClick={() => addWeekActivity('', 0, 'absence')}
+          onClick={() => addWeekActivity('', '', 0, ActivityTypes.Absence)}
         >
           {text}
         </Button>
@@ -67,7 +69,9 @@ function TableBanner({ addWeekActivity, mode, text, week }) {
   return (
     <Stack
       direction="row"
-      className={`${styles.block} ${mode === 'button' ? '' : styles.grey}`}
+      className={`${styles.block} ${
+        mode === BannerMode.Button ? '' : styles.grey
+      }`}
     >
       <Banner
         mode={mode}

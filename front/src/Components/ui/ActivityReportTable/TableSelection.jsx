@@ -2,25 +2,31 @@ import styles from '../styles/ActivityReportTable.module.css';
 import { MenuItem, Select } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { DateTimeFormatter } from '@js-joda/core';
+import {
+  Absences,
+  ActivityTypes,
+  Percentages,
+} from '../../const/ActivityReport.constant';
 
 /**
  * @callback addActivityCallback
+ * @param code {string}
  * @param date {LocalDate}
  * @param name {string}
  * @param percentage {number}
- * @param type {('project'|'absence')}
+ * @param type {('absence'|'project')}
  */
 
 /**
- * @callback deleteActivityCallback
- * @param name {string}
+ * @callback deleteWeekActivityCallback
+ * @param code {string}
  */
 
 /**
- * @callback updateActivityCallback
- * @param previousName {string}
- * @param newName {string}
- * @param type {('project'|'absence')}
+ * @callback updateActivityCodeCallback
+ * @param previousCode {string}
+ * @param newCode {string}
+ * @param type {('absence'|'project')}
  */
 
 /**
@@ -29,31 +35,22 @@ import { DateTimeFormatter } from '@js-joda/core';
  */
 
 /**
- *
- * @param activityName {string}
- * @param type {('project' | 'absence')}
- * @param updateActivity {updateActivityCallback}
+ * @param code {string}
+ * @param name {string}
+ * @param type {('absence'|'project')}
+ * @param updateActivityCode {updateActivityCodeCallback}
  * @returns {JSX.Element}
  */
-function ActivityName({ name = '', type, updateActivity }) {
-  if (type === 'project') {
+function ActivityName({ code, name = '', type, updateActivityCode }) {
+  if (type === ActivityTypes.Project) {
     return <div className={styles.subtitle}>{name}</div>;
   }
-  if (type === 'absence') {
-    const absences = [
-      { value: 'congesExceptionels', text: 'Congés exceptionnels' },
-      { value: 'congesPayes', text: 'Congés payés' },
-      { value: 'congeSansSolde', text: 'Congé sans solde' },
-      { value: 'formation', text: 'En formation' },
-      { value: 'maladie', text: 'Maladie' },
-      { value: 'rtt', text: 'RTT' },
-    ];
-
+  if (type === ActivityTypes.Absence) {
     const absenceOptions = [];
-    absences.forEach((absence) => {
+    Object.keys(Absences).forEach((absence) => {
       absenceOptions.push(
-        <MenuItem key={absence.value} value={absence.value}>
-          {absence.text}
+        <MenuItem key={absence} value={absence}>
+          {Absences[absence]}
         </MenuItem>,
       );
     });
@@ -62,10 +59,12 @@ function ActivityName({ name = '', type, updateActivity }) {
       <>
         <Select
           name="select-absence"
-          value={name}
+          value={code}
           defaultValue={''}
           className={styles.absenceSelect}
-          onChange={(event) => updateActivity(name, event?.target?.value, type)}
+          onChange={(event) =>
+            updateActivityCode(code, event?.target?.value, type)
+          }
         >
           {absenceOptions}
         </Select>
@@ -77,27 +76,37 @@ function ActivityName({ name = '', type, updateActivity }) {
 
 /**
  *
- * @param activities {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+ * @param activities {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
+ * @param code {string}
  * @param name {string}
- * @param type {('project' | 'absence')}
+ * @param type {('absence'|'project')}
  * @returns {JSX.Element[]}
  * @constructor
  */
-function Selects({ activities, activityReport, addActivity, name, type }) {
-  const percentages = [0, 25, 50, 75, 100];
+function Selects({
+  activities,
+  activityReport,
+  addActivity,
+  code,
+  name,
+  type,
+}) {
   const percentsSelections = [];
-  for (const percentage of percentages) {
+  for (const percentage of Object.keys(Percentages)) {
     percentsSelections.push(
       <MenuItem key={percentage} value={percentage}>
-        {percentage}%
+        {Percentages[percentage]}%
       </MenuItem>,
     );
   }
 
   const selects = [];
   const dataByDate = activityReport.groupByKey(activities, 'date');
+  const isoHolidayDates = [...activityReport.holidays].map((holiday) => {
+    return holiday.date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+  });
   for (const date of activityReport.week()) {
     const value = dataByDate[date.format(DateTimeFormatter.ISO_LOCAL_DATE)];
     selects.push(
@@ -110,9 +119,14 @@ function Selects({ activities, activityReport, addActivity, name, type }) {
           value={value ? value[0].percentage : 0}
           defaultValue={0}
           className={styles.select}
-          disabled={!name}
+          disabled={
+            !code ||
+            isoHolidayDates.includes(
+              date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+            )
+          }
           onChange={(event) =>
-            addActivity(date, name, event.target.value, type)
+            addActivity(code, date, name, +event.target.value, type)
           }
         >
           {percentsSelections}
@@ -124,19 +138,19 @@ function Selects({ activities, activityReport, addActivity, name, type }) {
 }
 
 /**
- * @param deleteActivity {deleteActivityCallback}
- * @param name {string}
- * @param type {('project' | 'absence')}
+ * @param code {string}
+ * @param deleteWeekActivity {deleteWeekActivityCallback}
+ * @param type {('absence'|'project')}
  * @returns {JSX.Element}
  * @constructor
  */
-function ActivityAction({ deleteActivity, name, type }) {
-  if (type === 'absence') {
+function ActivityAction({ code, deleteWeekActivity, type }) {
+  if (type === ActivityTypes.Absence) {
     return (
       <>
         <p
           className={styles.activityAction}
-          onClick={() => deleteActivity(name)}
+          onClick={() => deleteWeekActivity(code)}
         >
           Delete this absence
         </p>
@@ -146,39 +160,49 @@ function ActivityAction({ deleteActivity, name, type }) {
 }
 
 /**
- * @param activities {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+ * @param activities {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
- * @param deleteActivity {deleteActivityCallback}
- * @param name {string}
- * @param type {('project' | 'absence')}
- * @param updateActivity {updateActivityCallback}
+ * @param deleteWeekActivity {deleteWeekActivityCallback}
+ * @param type {('absence' | 'project')}
+ * @param updateActivityCode {updateActivityCodeCallback}
  * @returns {JSX.Element}
  */
 function TableSelection({
   activities,
   activityReport,
   addActivity,
-  deleteActivity,
-  name,
+  deleteWeekActivity,
   type,
-  updateActivity,
+  updateActivityCode,
 }) {
+  const code = [...new Set(activities.map((activity) => activity.code))][0];
+  const name = [...new Set(activities.map((activity) => activity.name))][0];
   return (
     <>
       <Stack direction="row" className={styles.block}>
-        <ActivityName name={name} type={type} updateActivity={updateActivity} />
+        <ActivityName
+          code={code}
+          name={name}
+          type={type}
+          updateActivityCode={updateActivityCode}
+        />
         <div className={styles.list}>
           <Selects
             activities={activities}
             activityReport={activityReport}
             addActivity={addActivity}
+            code={code}
             name={name}
             type={type}
           />
         </div>
       </Stack>
-      <ActivityAction deleteActivity={deleteActivity} name={name} type={type} />
+      <ActivityAction
+        code={code}
+        deleteWeekActivity={deleteWeekActivity}
+        type={type}
+      />
     </>
   );
 }

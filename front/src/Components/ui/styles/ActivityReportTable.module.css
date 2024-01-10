@@ -79,5 +79,11 @@
 
 .validationContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.holidaysDisplay {
+  color: red;
+  margin: 0 auto;
 }

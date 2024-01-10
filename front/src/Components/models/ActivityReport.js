@@ -1,25 +1,43 @@
-import { DateTimeFormatter, DayOfWeek, TemporalAdjusters } from '@js-joda/core';
+import {
+  DateTimeFormatter,
+  DayOfWeek,
+  LocalDate,
+  TemporalAdjusters,
+} from '@js-joda/core';
 import { toast } from 'react-toastify';
+import { Absences, ActivityTypes } from '../const/ActivityReport.constant';
+import { postActivitiesMapper } from '../../Services/Mappers/postActivities.mapper';
 
 export class ActivityReport {
+  activities;
+  activityReportApi;
+  availableDates;
+  holidays;
   localDate;
   month;
   year;
-  availableDates;
-  activities;
 
   /**
    *
    * @param localDate {LocalDate}
-   * @param activities {Array<any>}
-   * @param availableDates {{availableTime: number; date: string;}[]}
+   * @param activities {Array<{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}>}
+   * @param availableDates {{availableTime: number; date: LocalDate;}[]}
+   * @param holidays {{date: LocalDate; name: string; percentage: number; type: ActivityTypes.Holiday}[]}
    */
-  constructor(localDate, activities = [], availableDates = []) {
+  constructor(
+    localDate,
+    activities = [],
+    availableDates = [],
+    holidays = [],
+    activityReportApi,
+  ) {
     this.localDate = localDate;
     this.month = localDate.month();
     this.year = localDate.year();
     this.activities = activities;
     this.availableDates = availableDates;
+    this.holidays = holidays;
+    this.activityReportApi = activityReportApi;
   }
 
   /**
@@ -36,6 +54,28 @@ export class ActivityReport {
     ];
   }
 
+  /**
+   *
+   * @return {string[]}
+   */
+  isoWeek() {
+    return this.week().map((d) => d.format(DateTimeFormatter.ISO_LOCAL_DATE));
+  }
+
+  /**
+   *
+   * @return {string[]}
+   */
+  isoHolidaysDates() {
+    return [...this.holidays].map((h) =>
+      h.date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+    );
+  }
+
+  /**
+   *
+   * @returns {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
+   */
   weekActivities() {
     return this.activities.filter(
       (activity) =>
@@ -47,21 +87,21 @@ export class ActivityReport {
   weekProjects() {
     return this.groupByKey(
       this.groupByKey(this.weekActivities() ?? [], 'type').project ?? [],
-      'name',
+      'code',
     );
   }
 
   weekAbsences() {
     return this.groupByKey(
       this.groupByKey(this.weekActivities() ?? [], 'type').absence ?? [],
-      'name',
+      'code',
     );
   }
 
   /**
    *
    * @param date {LocalDate}
-   * @returns {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+   * @returns {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
    */
   getByDate(date) {
     return this.activities.filter((activity) => activity.date.equals(date));
@@ -69,19 +109,19 @@ export class ActivityReport {
 
   /**
    *
-   * @param name {string}
+   * @param code {string}
    * @param date {LocalDate}
-   * @returns {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}}
+   * @returns {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}}
    */
-  getByActivityNameAndDate(name, date) {
+  getByActivityNameAndDate(code, date) {
     return this.activities.filter(
-      (activity) => activity.name === name && activity.date.equals(date),
+      (activity) => activity.code === code && activity.date.equals(date),
     )?.[0];
   }
 
   /**
    *
-   * @param activities {{date: LocalDate; name: string; percentage: number; projects: {client: string; code: string; name: string; status: string;}; type: string;}[]}
+   * @param activities {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
    * @param key {string}
    * @returns {*}
    */
@@ -94,71 +134,121 @@ export class ActivityReport {
   }
 
   /**
-   *
+   * @param code {string}
    * @param date {LocalDate}
    * @param name {string}
    * @param percentage {number}
-   * @param type {('project'|'absence')}
+   * @param type {('absence'|'project')}
    */
-  addActivity(date, name, percentage, type) {
-    let existing = this.getByActivityNameAndDate(name, date);
+  addActivity(code, date, name, percentage, type) {
+    let existing = this.getByActivityNameAndDate(code, date);
     if (existing) {
       existing.percentage = percentage;
     } else {
-      this.activities.push({ date, name, percentage, type });
+      this.activities.push({ code, date, name, percentage, type });
     }
   }
 
   /**
-   *
-   * @param previousName {string}
-   * @param newName {string}
-   * @param type {('project'|'absence')}
+   * @param previousCode {string}
+   * @param newCode {string}
+   * @param type {('absence'|'project')}
    */
-  updateActivity(previousName, newName, type) {
+  updateActivityCode(previousCode, newCode, type) {
     let keys;
-    if (type === 'absence') keys = Object.keys(this.weekAbsences());
-    if (type === 'project') keys = Object.keys(this.weekProjects());
-    if (!keys.includes(newName)) {
-      const isoWeek = this.week().map((date) =>
-        date.format(DateTimeFormatter.ISO_LOCAL_DATE),
-      );
+    if (type === ActivityTypes.Absence) keys = Object.keys(this.weekAbsences());
+    if (type === ActivityTypes.Project) keys = Object.keys(this.weekProjects());
+    if (!keys.includes(newCode)) {
       this.activities.forEach((activity) => {
         if (
-          activity.name === previousName &&
-          isoWeek.includes(
+          activity.code === previousCode &&
+          this.isoWeek().includes(
             activity.date.format(DateTimeFormatter.ISO_LOCAL_DATE),
           )
         ) {
-          activity.name = newName;
-          activity.reason = newName;
+          activity.code = newCode;
+          activity.name = Absences[newCode];
         }
       });
+      toast.success(`Absence modification succeed.`);
     } else {
-      toast.error(`${newName} is already used !`);
+      toast.error(`${Absences[newCode]} is already used !`);
     }
   }
 
   /**
-   *
-   * @param name {string}
+   * @param code {string}
    */
-  deleteActivity(name) {
-    const isoWeek = this.week().map((date) =>
-      date.format(DateTimeFormatter.ISO_LOCAL_DATE),
-    );
+  deleteWeekActivity(code) {
     const oldActivities = [...this.activities];
     this.activities = [
       ...oldActivities.filter(
         (activity) =>
           !(
-            activity.name === name &&
-            isoWeek.includes(
+            activity.code === code &&
+            this.isoWeek().includes(
               activity.date.format(DateTimeFormatter.ISO_LOCAL_DATE),
             )
           ),
       ),
     ];
+  }
+
+  cleanWeekActivity() {
+    this.weekActivities().forEach((activity) => {
+      if (activity.percentage === 0) {
+        this.deleteActivity(activity);
+      }
+    });
+  }
+
+  /**
+   *
+   * @param activity {{code: string; date: LocalDate; name: string; percentage: number; type: ('absence'|'project')}}
+   */
+  deleteActivity(activity) {
+    const oldActivities = [...this.activities];
+    this.activities = [
+      ...oldActivities.filter(
+        (a) =>
+          !(
+            a.code === activity.code &&
+            a.date.equals(activity.date) &&
+            a.type === activity.type
+          ),
+      ),
+    ];
+  }
+
+  validateWeek() {
+    this.cleanWeekActivity();
+    const toBeValidatedDates = [...this.week()].filter(
+      (date) =>
+        !this.isoHolidaysDates().includes(
+          date.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        ),
+    );
+    if (
+      toBeValidatedDates.every(
+        (date) => this.getSumActivityForGivenDay(date) === 100,
+      ) &&
+      this.weekActivities().length !== 0
+    ) {
+      this.activityReportApi
+        .postActivities(
+          postActivitiesMapper(
+            this.weekActivities(),
+            'aleksandar.kirilov@proxym.fr',
+            this.month.value(),
+            this.year,
+          ),
+        )
+        .then();
+      toast.success('Validation succeed.');
+    } else {
+      toast.error('Invalid week !');
+      //throw new Error("This week is incorrect!");
+    }
   }
 
   /**

@@ -13,7 +13,7 @@ describe('Holidays', () => {
     await holidaysSyncService.fetchAndStoreHolidays();
 
     const allHolidays = await holidayRepo.findAll();
-    expect(allHolidays).toHaveLength(11);
+    expect(allHolidays).toHaveLength(33);
   });
 
   it('Can be queries by date', async () => {

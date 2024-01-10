@@ -1,12 +1,14 @@
 import TableBanner from './TableBanner';
 import TableSelection from './TableSelection';
+import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
 
 /**
  * @callback addActivityCallback
+ * @param code {string}
  * @param date {LocalDate}
  * @param name {string}
  * @param percentage {number}
- * @param type {('project'|'absence')}
+ * @param type {('absence'|'project')}
  */
 
 /**
@@ -26,8 +28,7 @@ function TableProjects({ activityReport, addActivity }) {
         activities={projects[project]}
         activityReport={activityReport}
         addActivity={addActivity}
-        name={project}
-        type={'project'}
+        type={ActivityTypes.Project}
       />,
     );
   }
@@ -35,7 +36,7 @@ function TableProjects({ activityReport, addActivity }) {
   return (
     <>
       <TableBanner
-        mode={'week'}
+        mode={BannerMode.Week}
         text={'Project(s)'}
         week={activityReport.week()}
       />

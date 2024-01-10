@@ -1,5 +1,6 @@
 import { ActivityReport } from '../src/Components/models/ActivityReport';
-import { LocalDate } from '@js-joda/core';
+import { DateTimeFormatter, LocalDate } from '@js-joda/core';
+import { ActivityTypes } from '../src/Components/const/ActivityReport.constant';
 
 describe('Activity Report ActivityReportTable', () => {
   it('Get the Monday of the week for a given date', () => {
@@ -19,6 +20,35 @@ describe('Activity Report ActivityReportTable', () => {
     let week = report.week();
     // Then
     expect(week).toHaveLength(5);
+  });
+
+  it('should return the week as iso string date', () => {
+    // Given
+    const report = new ActivityReport(LocalDate.now());
+    // When
+    let week = report.week();
+    // Then
+    expect(report.isoWeek()).toHaveLength(5);
+    expect(report.isoWeek()[0]).toEqual(
+      week[0].format(DateTimeFormatter.ISO_LOCAL_DATE),
+    );
+  });
+
+  it('should return holidays as iso string date', () => {
+    // Given
+    const holidays = [
+      {
+        name: '1er janvier',
+        percentage: 100,
+        date: LocalDate.parse('2024-01-01'),
+        type: ActivityTypes.Holiday,
+      },
+    ];
+    const report = new ActivityReport(LocalDate.now(), [], [], holidays);
+    // When
+    let isoHolidaysDates = report.isoHolidaysDates();
+    // Then
+    expect(isoHolidaysDates[0]).toEqual('2024-01-01');
   });
 
   it('Should return Friday for the current report', () => {
@@ -56,10 +86,34 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'project 123', 25, 'project');
-    report.addActivity(localDate.plusDays(1), 'project 123', 75, 'project');
-    report.addActivity(localDate.plusDays(2), 'project 456', 100, 'project');
-    report.addActivity(localDate.plusDays(4), 'rtt', 25, 'absence');
+    report.addActivity(
+      'project 123',
+      localDate,
+      'project 123',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project 123',
+      localDate.plusDays(1),
+      'project 123',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project 456',
+      localDate.plusDays(2),
+      'project 456',
+      100,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(4),
+      'rtt',
+      25,
+      ActivityTypes.Absence,
+    );
     // Then
     let weekProjects = report.weekProjects();
     expect(weekProjects['project 123']).toHaveLength(2);
@@ -70,9 +124,27 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(LocalDate.now());
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate, 'project A', 75, 'project');
-    report.addActivity(localDate, 'project A', 50, 'project');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      50,
+      ActivityTypes.Project,
+    );
     // Then
     let activity = report.getByActivityNameAndDate('project A', localDate);
     expect(activity.percentage).toEqual(50);
@@ -83,12 +155,48 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(LocalDate.now());
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(1), 'project A', 100, 'project');
-    report.addActivity(localDate.plusDays(1), 'project B', 0, 'project');
-    report.addActivity(localDate, 'rtt', 75, 'absence');
-    report.addActivity(localDate.plusDays(2), 'project B', 50, 'project');
-    report.addActivity(localDate.plusDays(2), 'rtt', 50, 'absence');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusDays(1),
+      'project A',
+      100,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(1),
+      'project B',
+      0,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      ActivityTypes.Absence,
+      localDate,
+      'rtt',
+      75,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(2),
+      'project B',
+      50,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(2),
+      'rtt',
+      50,
+      ActivityTypes.Absence,
+    );
     // Then
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
     const activityForGivenDay1 = report.getSumActivityForGivenDay(
@@ -106,8 +214,20 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(LocalDate.now());
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate, 'project B', 75, 'project');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate,
+      'project B',
+      75,
+      ActivityTypes.Project,
+    );
     // Then
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
     expect(activityForGivenDay).not.toBeGreaterThan(100);
@@ -117,8 +237,20 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(LocalDate.now());
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate, 'project B', 75, 'project');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate,
+      'project B',
+      75,
+      ActivityTypes.Project,
+    );
     // Then
     const activityForGivenDay = report.getSumActivityForGivenDay(localDate);
     expect(activityForGivenDay).not.toBeLessThan(100);
@@ -128,8 +260,20 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = LocalDate.of(2023, 11, 1);
     const report = new ActivityReport(localDate);
 
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(10), 'project A', 75, 'project');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusDays(10),
+      'project A',
+      75,
+      ActivityTypes.Project,
+    );
 
     expect(report.weekActivities()).toHaveLength(1);
   });
@@ -138,22 +282,59 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(1), 'project B', 75, 'project');
-    report.addActivity(localDate.plusWeeks(1), 'project A', 75, 'project');
-    report.addActivity(localDate.plusDays(1), 'rtt', 50, 'absence');
-    report.addActivity(localDate.plusDays(2), 'maladie', 100, 'absence');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(1),
+      'project B',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusWeeks(1),
+      'project A',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(1),
+      'rtt',
+      50,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusDays(2),
+      'maladie',
+      100,
+      ActivityTypes.Absence,
+    );
     // Then
     expect(report.weekProjects()).toEqual({
       'project A': [
-        { date: localDate, name: 'project A', percentage: 25, type: 'project' },
+        {
+          code: 'project A',
+          date: localDate,
+          name: 'project A',
+          percentage: 25,
+          type: ActivityTypes.Project,
+        },
       ],
       'project B': [
         {
+          code: 'project B',
           date: localDate.plusDays(1),
           name: 'project B',
           percentage: 75,
-          type: 'project',
+          type: ActivityTypes.Project,
         },
       ],
     });
@@ -163,28 +344,66 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(1), 'project B', 75, 'project');
-    report.addActivity(localDate.plusWeeks(1), 'project A', 75, 'project');
-    report.addActivity(localDate.plusDays(1), 'rtt', 50, 'absence');
-    report.addActivity(localDate.plusDays(2), 'maladie', 100, 'absence');
-    report.addActivity(localDate.plusWeeks(2), 'maladie', 100, 'absence');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(1),
+      'project B',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusWeeks(1),
+      'project A',
+      75,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(1),
+      'rtt',
+      50,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusDays(2),
+      'maladie',
+      100,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusWeeks(2),
+      'maladie',
+      100,
+      ActivityTypes.Absence,
+    );
     // Then
     expect(report.weekAbsences()).toEqual({
       maladie: [
         {
+          code: 'maladie',
           date: localDate.plusDays(2),
           name: 'maladie',
           percentage: 100,
-          type: 'absence',
+          type: ActivityTypes.Absence,
         },
       ],
       rtt: [
         {
+          code: 'rtt',
           date: localDate.plusDays(1),
           name: 'rtt',
           percentage: 50,
-          type: 'absence',
+          type: ActivityTypes.Absence,
         },
       ],
     });
@@ -196,16 +415,41 @@ describe('Activity Report ActivityReportTable', () => {
     const localDate = report.getMonday();
     // Then
     expect(report.addActivity).toBeDefined();
-    report.addActivity(localDate, 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(1), 'project A', 25, 'project');
-    report.addActivity(localDate.plusDays(2), 'project A', 25, 'project');
-    report.addActivity(localDate, 'project A', 75, 'project');
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusDays(1),
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate.plusDays(2),
+      'project A',
+      25,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      75,
+      ActivityTypes.Project,
+    );
     // Then
     expect(report.getByActivityNameAndDate('project A', localDate)).toEqual({
+      code: 'project A',
       date: localDate,
       name: 'project A',
       percentage: 75,
-      type: 'project',
+      type: ActivityTypes.Project,
     });
   });
 
@@ -215,27 +459,53 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'maladie', 25, 'absence');
-    report.addActivity(localDate.plusDays(1), 'maladie', 75, 'absence');
-    report.addActivity(localDate.plusDays(2), 'maladie', 100, 'absence');
-    report.addActivity(localDate.plusWeeks(1), 'maladie', 25, 'absence');
     report.addActivity(
+      'maladie',
+      localDate,
+      'maladie',
+      25,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusDays(1),
+      'maladie',
+      75,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusDays(2),
+      'maladie',
+      100,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
+      localDate.plusWeeks(1),
+      'maladie',
+      25,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'maladie',
       localDate.plusWeeks(1).plusDays(1),
       'maladie',
       25,
-      'absence',
+      ActivityTypes.Absence,
     );
     report.addActivity(
+      'maladie',
       localDate.plusWeeks(1).plusDays(2),
       'maladie',
       25,
-      'absence',
+      ActivityTypes.Absence,
     );
     // Then
     let weekAbsences = report.weekAbsences();
     expect(weekAbsences['maladie']).toHaveLength(3);
     expect(report.activities).toHaveLength(6);
-    report.deleteActivity('maladie');
+    report.deleteWeekActivity('maladie');
     weekAbsences = report.weekAbsences();
     expect(weekAbsences['maladie']).toBeUndefined();
     expect(report.activities).toHaveLength(3);
@@ -247,14 +517,26 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'maladie', 25, 'absence');
-    report.addActivity(localDate.plusDays(1), 'rtt', 75, 'absence');
+    report.addActivity(
+      'maladie',
+      localDate,
+      'maladie',
+      25,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(1),
+      'rtt',
+      75,
+      ActivityTypes.Absence,
+    );
     // Then
     let weekAbsences = report.weekAbsences();
     expect(weekAbsences['maladie']).toHaveLength(1);
     expect(weekAbsences['rtt']).toHaveLength(1);
 
-    report.updateActivity('rtt', 'congesPayes', 'absence');
+    report.updateActivityCode('rtt', 'congesPayes', ActivityTypes.Absence);
     weekAbsences = report.weekAbsences();
     expect(weekAbsences['rtt']).toBeUndefined();
     expect(weekAbsences['maladie']).toHaveLength(1);
@@ -267,17 +549,110 @@ describe('Activity Report ActivityReportTable', () => {
     const report = new ActivityReport(LocalDate.now());
     const localDate = report.getMonday();
     // When
-    report.addActivity(localDate, 'maladie', 25, 'absence');
-    report.addActivity(localDate.plusDays(1), 'rtt', 75, 'absence');
+    report.addActivity(
+      'maladie',
+      localDate,
+      'maladie',
+      25,
+      ActivityTypes.Absence,
+    );
+    report.addActivity(
+      'rtt',
+      localDate.plusDays(1),
+      'rtt',
+      75,
+      ActivityTypes.Absence,
+    );
     // Then
     let weekAbsences = report.weekAbsences();
     expect(weekAbsences['maladie']).toHaveLength(1);
     expect(weekAbsences['rtt']).toHaveLength(1);
 
     // same expectation as you can not rename for an already existing name in the week
-    report.updateActivity('maladie', 'rtt', 'absence');
+    report.updateActivityCode('maladie', 'rtt', ActivityTypes.Absence);
     weekAbsences = report.weekAbsences();
     expect(weekAbsences['maladie']).toHaveLength(1);
     expect(weekAbsences['rtt']).toHaveLength(1);
+  });
+
+  it('should delete an activity', () => {
+    const report = new ActivityReport(LocalDate.now());
+    const localDate = report.getMonday();
+
+    report.addActivity(
+      'project A',
+      localDate,
+      'project A',
+      100,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(1),
+      'project B',
+      75,
+      ActivityTypes.Project,
+    );
+
+    expect(report.weekActivities()).toHaveLength(2);
+    const activity = {
+      code: 'project B',
+      date: localDate.plusDays(1),
+      name: 'project B',
+      percentage: 75,
+      type: ActivityTypes.Project,
+    };
+    report.deleteActivity(activity);
+    expect(report.weekActivities()).toHaveLength(1);
+  });
+  const report = new ActivityReport(LocalDate.now());
+  const localDate = report.getMonday();
+  report.addActivity(
+    'project A',
+    localDate,
+    'project A',
+    100,
+    ActivityTypes.Project,
+  );
+  report.addActivity(
+    'project B',
+    localDate.plusDays(1),
+    'project B',
+    50,
+    ActivityTypes.Project,
+  );
+
+  expect(report.weekActivities()).toHaveLength(2);
+  report.deleteActivity({
+    code: 'project B',
+    date: localDate.plusDays(1),
+    name: 'project B',
+    percentage: 50,
+    type: ActivityTypes.Project,
+  });
+  expect(report.weekActivities()).toHaveLength(1);
+
+  it('should remove activities with percentage equals to 0 for the week', () => {
+    const report = new ActivityReport(LocalDate.now());
+    const localDate = report.getMonday();
+    report.addActivity('rtt', localDate, 'rtt', 75, ActivityTypes.Absence);
+    report.addActivity(
+      'project A',
+      localDate.plusDays(1),
+      'project A',
+      100,
+      ActivityTypes.Project,
+    );
+    report.addActivity(
+      'project B',
+      localDate.plusDays(2),
+      'project B',
+      0,
+      ActivityTypes.Project,
+    );
+
+    expect(report.weekActivities()).toHaveLength(3);
+    report.cleanWeekActivity();
+    expect(report.weekActivities()).toHaveLength(2);
   });
 });

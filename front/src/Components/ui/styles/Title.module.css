@@ -1,15 +1,15 @@
 .title {
-    width: fit-content;
-    margin: 25px 0 50px;
+  width: fit-content;
+  margin: 20px 0;
 }
 .text {
-    color: #562AD5;
-    font-weight: bold;
-    font-size: 2rem;
+  color: #562ad5;
+  font-weight: bold;
+  font-size: 2rem;
 }
 .underline {
-    height: 10px;
-    background-color: #FFCC29;
-    border-radius: 2px;
-    margin: -10px 0 0 0;
+  height: 10px;
+  background-color: #ffcc29;
+  border-radius: 2px;
+  margin: -10px 0 0 0;
 }
