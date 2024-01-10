@@ -1,15 +1,9 @@
 import TableBanner from './TableBanner';
 import TableSelection from './TableSelection';
-import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
-
-/**
- * @callback addActivityCallback
- * @param code {string}
- * @param date {LocalDate}
- * @param name {string}
- * @param percentage {number}
- * @param type {('absence'|'project')}
- */
+import {
+  ActivityTypeValues,
+  BannerMode,
+} from '../../const/ActivityReport.constant';
 
 /**
  *
@@ -28,7 +22,7 @@ function TableProjects({ activityReport, addActivity }) {
         activities={projects[project]}
         activityReport={activityReport}
         addActivity={addActivity}
-        type={ActivityTypes.Project}
+        type={ActivityTypeValues.Project}
       />,
     );
   }

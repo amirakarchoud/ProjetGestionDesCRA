@@ -19,7 +19,7 @@ export const mapCraToCraDto = (cra: CRA, projects: Project[]): CraDto => {
     month: cra.month.value(),
     year: cra.year,
     collab: cra.collab.value,
-    etat: cra.etat,
+    state: cra.state,
     status: cra.status,
     history: cra.history,
   };

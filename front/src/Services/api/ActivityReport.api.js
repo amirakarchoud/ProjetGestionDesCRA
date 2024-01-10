@@ -1,43 +1,97 @@
 import axios from 'axios';
 import { fetchActivitiesMapper } from '../mappers/fetchActivities.mapper';
+import { postActivitiesMapper } from '../mappers/postActivities.mapper';
+import { DateTimeFormatter, YearMonth } from '@js-joda/core';
 
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 
+/**
+ * @typedef {Readonly<Object>} ActivityReportApiType
+ * @property {function(string, number, number): Promise<{activities: ActivitiesType, availableDates: AvailableDatesType, holidays: HolidaysType}>} fetchActivities
+ * @property {function(ActivitiesType, string, number, number): Promise<axios.AxiosResponse<any>|T>} postActivities
+ */
+
+/**
+ * @type {ActivityReportApiType}
+ */
 const ActivityReportApi = Object.freeze({
   /**
    *
    * @param employeeEmail {string}
    * @param month {number}
    * @param year {number}
-   * @return {Promise<{activities: {code: (Absences|string), date: LocalDate, name: (Absences|string), percentage: number, type: ('absence'|'project')}[], availableDates: {availableTime: number, date: LocalDate}[], holidays: {date: LocalDate, name: string, percentage: number, type: ActivityTypes.Holiday}[]}>}
+   * @return {Promise<{activities: ActivitiesType, availableDates: AvailableDatesType, holidays: HolidaysType}>}
    */
   fetchActivities: async (employeeEmail, month, year) => {
-    const url = `${apiBaseUrl}/v2/private/activity-report/${employeeEmail}/${year}/${month}`;
+    const currentYearMonth = YearMonth.parse(
+      `${year}-${month}`,
+      DateTimeFormatter.ofPattern('yyyy-M'),
+    );
+    const previousYearMonth = currentYearMonth.minusMonths(1);
+    const nextYearMonth = currentYearMonth.plusMonths(1);
+
+    const getPreviousYearMonth = axios.get(
+      `${apiBaseUrl}/v2/private/activity-report/${employeeEmail}/${previousYearMonth.year()}/${previousYearMonth
+        .month()
+        .value()}`,
+    );
+    const getCurrentYearMonth = axios.get(
+      `${apiBaseUrl}/v2/private/activity-report/${employeeEmail}/${currentYearMonth.year()}/${currentYearMonth
+        .month()
+        .value()}`,
+    );
+    const getNextYearMonth = axios.get(
+      `${apiBaseUrl}/v2/private/activity-report/${employeeEmail}/${nextYearMonth.year()}/${nextYearMonth
+        .month()
+        .value()}`,
+    );
+
     return await axios
-      .get(url)
-      .then((res) => {
-        const { absences, availableDates, holidays, projects } = res.data;
+      .all([getPreviousYearMonth, getCurrentYearMonth, getNextYearMonth])
+      .then(([previousYearMonth, currentYearMonth, nextYearMonth]) => {
+        const absences = [
+          ...previousYearMonth.data.absences,
+          ...currentYearMonth.data.absences,
+          ...nextYearMonth.data.absences,
+        ];
+        const availableDates = [
+          ...previousYearMonth.data.availableDates,
+          ...currentYearMonth.data.availableDates,
+          ...nextYearMonth.data.availableDates,
+        ];
+        const holidays = [
+          ...previousYearMonth.data.holidays,
+          ...currentYearMonth.data.holidays,
+          ...nextYearMonth.data.holidays,
+        ];
+        const projects = [
+          ...previousYearMonth.data.projects,
+          ...currentYearMonth.data.projects,
+          ...nextYearMonth.data.projects,
+        ];
+
         return fetchActivitiesMapper(
           absences,
           availableDates,
           holidays,
           projects,
         );
-      })
-      .catch((err) => err);
+      });
   },
 
   /**
    *
-   * @param payload {{activities: {absences: {date: string, percentage: number, reason: Absences}[], projects: {date: string; percentage: number; project: {code: string; name: string;}}[]}[]; employeeEmail: string; month: number; year: number; replace: boolean;}}
+   * @param activities {ActivitiesType}
+   * @param employeeEmail {string}
+   * @param month {number}
+   * @param year {number}
    * @return {Promise<T>}
    */
-  postActivities: async (payload) => {
+  postActivities: async (activities, employeeEmail, month, year) => {
     const url = `${apiBaseUrl}/v2/private/activity-report`;
     return await axios
-      .post(url, payload)
-      .then((res) => res)
-      .catch((err) => err);
+      .post(url, postActivitiesMapper(activities, employeeEmail, month, year))
+      .then((res) => res);
   },
 });
 

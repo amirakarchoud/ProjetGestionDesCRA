@@ -5,17 +5,12 @@ import Stack from '@mui/material/Stack';
 import styles from '../styles/ActivityReportTable.module.css';
 
 /**
- * @callback weekCallback
- */
-
-/**
  *
- * @param previousWeek {weekCallback}
- * @param nextWeek {weekCallback}
+ * @param actions {fnActionsType}
  * @returns {JSX.Element}
  * @constructor
  */
-function TableActions({ previousWeek, nextWeek }) {
+function TableActions({ actions }) {
   return (
     <>
       <div className={styles.actionsContainer}>
@@ -24,17 +19,17 @@ function TableActions({ previousWeek, nextWeek }) {
             color="primary"
             variant="outlined"
             startIcon={<ArrowCircleLeftIcon />}
-            onClick={previousWeek}
+            onClick={actions.previousWeek}
           >
-            Previous Week
+            {actions.previousWeekText()}
           </Button>
           <Button
             color="primary"
             variant="outlined"
             endIcon={<ArrowCircleRightIcon />}
-            onClick={nextWeek}
+            onClick={actions.nextWeek}
           >
-            Next Week
+            {actions.nextWeekText()}
           </Button>
         </Stack>
         <Button color="primary" variant="contained">

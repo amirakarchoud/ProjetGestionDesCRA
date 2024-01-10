@@ -4,48 +4,22 @@ import Stack from '@mui/material/Stack';
 import { DateTimeFormatter } from '@js-joda/core';
 import {
   Absences,
-  ActivityTypes,
+  ActivityTypeValues,
   Percentages,
 } from '../../const/ActivityReport.constant';
 
 /**
- * @callback addActivityCallback
  * @param code {string}
- * @param date {LocalDate}
- * @param name {string}
- * @param percentage {number}
- * @param type {('absence'|'project')}
- */
-
-/**
- * @callback deleteWeekActivityCallback
- * @param code {string}
- */
-
-/**
- * @callback updateActivityCodeCallback
- * @param previousCode {string}
- * @param newCode {string}
- * @param type {('absence'|'project')}
- */
-
-/**
- * @callback handleActivityNameSelectionCallback
- * @param text {string}
- */
-
-/**
- * @param code {string}
- * @param name {string}
+ * @param name {Absences}
  * @param type {('absence'|'project')}
  * @param updateActivityCode {updateActivityCodeCallback}
  * @returns {JSX.Element}
  */
 function ActivityName({ code, name = '', type, updateActivityCode }) {
-  if (type === ActivityTypes.Project) {
+  if (type === ActivityTypeValues.Project) {
     return <div className={styles.subtitle}>{name}</div>;
   }
-  if (type === ActivityTypes.Absence) {
+  if (type === ActivityTypeValues.Absence) {
     const absenceOptions = [];
     Object.keys(Absences).forEach((absence) => {
       absenceOptions.push(
@@ -76,11 +50,11 @@ function ActivityName({ code, name = '', type, updateActivityCode }) {
 
 /**
  *
- * @param activities {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
+ * @param activities {ActivitiesType}
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
  * @param code {string}
- * @param name {string}
+ * @param name {Absences}
  * @param type {('absence'|'project')}
  * @returns {JSX.Element[]}
  * @constructor
@@ -104,7 +78,7 @@ function Selects({
 
   const selects = [];
   const dataByDate = activityReport.groupByKey(activities, 'date');
-  const isoHolidayDates = [...activityReport.holidays].map((holiday) => {
+  const isoHolidayDates = activityReport.holidays.map((holiday) => {
     return holiday.date.format(DateTimeFormatter.ISO_LOCAL_DATE);
   });
   for (const date of activityReport.week()) {
@@ -123,7 +97,8 @@ function Selects({
             !code ||
             isoHolidayDates.includes(
               date.format(DateTimeFormatter.ISO_LOCAL_DATE),
-            )
+            ) ||
+            date.month().value() !== activityReport.month
           }
           onChange={(event) =>
             addActivity(code, date, name, +event.target.value, type)
@@ -145,22 +120,22 @@ function Selects({
  * @constructor
  */
 function ActivityAction({ code, deleteWeekActivity, type }) {
-  if (type === ActivityTypes.Absence) {
+  if (type === ActivityTypeValues.Absence) {
     return (
       <>
-        <p
+        <div
           className={styles.activityAction}
           onClick={() => deleteWeekActivity(code)}
         >
           Delete this absence
-        </p>
+        </div>
       </>
     );
   }
 }
 
 /**
- * @param activities {{code: string; date: LocalDate; name: string; percentage: number; type: 'absence'|'project'}[]}
+ * @param activities {ActivitiesType}
  * @param activityReport {ActivityReport}
  * @param addActivity {addActivityCallback}
  * @param deleteWeekActivity {deleteWeekActivityCallback}
@@ -176,8 +151,12 @@ function TableSelection({
   type,
   updateActivityCode,
 }) {
-  const code = [...new Set(activities.map((activity) => activity.code))][0];
-  const name = [...new Set(activities.map((activity) => activity.name))][0];
+  const code = [
+    ...new Set(activities.map((activity) => activity.code)),
+  ].shift();
+  const name = [
+    ...new Set(activities.map((activity) => activity.name)),
+  ].shift();
   return (
     <>
       <Stack direction="row" className={styles.block}>

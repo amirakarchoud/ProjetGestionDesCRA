@@ -13,7 +13,7 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Absence } from '@app/domain/model/Absence';
 import { CRA } from '@app/domain/model/CRA';
-import { Etat } from '@app/domain/model/etat.enum';
+import { State } from '@app/domain/model/State.enum';
 import { Status } from '@app/domain/model/Status';
 import { Activity } from '@app/domain/model/Activity';
 import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
@@ -92,7 +92,7 @@ export class CraApplication {
 
   async deleteAbsence(idCra: string, date: LocalDate, raison: Raison) {
     const cra = await this.craRepository.findById(idCra);
-    cra.etat = Etat.unsubmitted;
+    cra.state = State.Draft;
     cra.deleteAbsence(date, raison);
     return await this.craRepository.save(cra);
   }
@@ -132,7 +132,7 @@ export class CraApplication {
 
   async deleteActivity(idCra: string, date: LocalDate, project: ProjectCode) {
     const cra = await this.craRepository.findById(idCra);
-    cra.etat = Etat.unsubmitted;
+    cra.state = State.Draft;
     cra.deleteActivity(date, project);
     return await this.craRepository.save(cra);
   }
@@ -248,7 +248,7 @@ export class CraApplication {
 
   async closeAllMonthCra(month: Month, year: number) {
     const cras = await this.craRepository.findByMonthYear(month, year);
-    const crasUnsubmitted = cras.filter((cra) => cra.etat == Etat.unsubmitted);
+    const crasUnsubmitted = cras.filter((cra) => cra.state == State.Draft);
     if (crasUnsubmitted.length > 0) {
       throw new ApplicationError(
         'cannot close month: there is an un-submitted activity report',
@@ -289,7 +289,7 @@ export class CraApplication {
       user,
       [],
       [],
-      Etat.unsubmitted,
+      State.Draft,
       Status.Open,
     );
     cra.holidays = await this.holidayRepository.find(

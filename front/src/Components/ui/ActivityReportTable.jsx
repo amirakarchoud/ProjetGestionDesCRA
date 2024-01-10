@@ -13,10 +13,11 @@ import NotificationsHandler from '../../Services/handlers/NotificationsHandler';
 function ActivityReportTable() {
   const [activityReport, setActivityReport] = useState(
     new ActivityReport(
+      [],
+      [],
+      'aleksandar.kirilov@proxym.fr',
+      [],
       LocalDate.now(),
-      [],
-      [],
-      [],
       ActivityReportApi,
       NotificationsHandler,
     ),
@@ -25,18 +26,20 @@ function ActivityReportTable() {
   useEffect(() => {
     activityReport.activityReportApi
       .fetchActivities(
-        'aleksandar.kirilov@proxym.fr',
-        activityReport.month.value(),
+        activityReport.employeeEmail,
+        activityReport.month,
         activityReport.year,
       )
       .then((data) => {
+        const { activities, availableDates, holidays } = data;
         setActivityReport(
           Object.assign(
             new ActivityReport(
-              LocalDate.now(),
-              data.activities,
-              data.availableDates,
-              data.holidays,
+              activities,
+              availableDates,
+              activityReport.employeeEmail,
+              holidays,
+              activityReport.localDate,
               ActivityReportApi,
               NotificationsHandler,
             ),
@@ -45,24 +48,37 @@ function ActivityReportTable() {
       });
   }, [
     activityReport.activityReportApi,
+    activityReport.employeeEmail,
     activityReport.month,
     activityReport.year,
   ]);
 
   const updateView = () => {
+    const { activities, availableDates, employeeEmail, holidays, localDate } =
+      activityReport;
     setActivityReport(
       Object.assign(
         new ActivityReport(
-          activityReport.localDate,
-          activityReport.activities,
-          activityReport.availableDates,
-          activityReport.holidays,
+          activities,
+          availableDates,
+          employeeEmail,
+          holidays,
+          localDate,
           ActivityReportApi,
           NotificationsHandler,
         ),
       ),
     );
   };
+
+  /**
+   * @callback addActivityCallback
+   * @param code {string}
+   * @param date {LocalDate}
+   * @param name {Absences}
+   * @param percentage {number}
+   * @param type {('absence'|'project')}
+   */
 
   /**
    * @param code {string}
@@ -75,6 +91,14 @@ function ActivityReportTable() {
     activityReport.addActivity(code, date, name, percentage, type);
     updateView();
   };
+
+  /**
+   * @callback addWeekActivityCallback
+   * @param code {string}
+   * @param name {string}
+   * @param percentage {number}
+   * @param type {('absence'|'project')}
+   */
 
   /**
    * @param code {string}
@@ -90,6 +114,13 @@ function ActivityReportTable() {
   };
 
   /**
+   * @callback updateActivityCodeCallback
+   * @param previousCode {string}
+   * @param newCode {string}
+   * @param type {('absence'|'project')}
+   */
+
+  /**
    * @param previousCode {string}
    * @param newCode {string}
    * @param type {('absence'|'project')}
@@ -100,6 +131,11 @@ function ActivityReportTable() {
   };
 
   /**
+   * @callback deleteWeekActivityCallback
+   * @param code {string}
+   */
+
+  /**
    * @param code {string}
    */
   const deleteWeekActivity = (code) => {
@@ -107,24 +143,50 @@ function ActivityReportTable() {
     updateView();
   };
 
-  const previousWeek = () => {
-    activityReport.previousWeek();
-    updateView();
-  };
-
-  const nextWeek = () => {
-    activityReport.nextWeek();
-    updateView();
-  };
+  /** @callback DefaultCallback */
 
   const validateWeek = () => {
     activityReport.validateWeek();
     updateView();
   };
 
+  /**
+   * @typedef {Readonly<{nextWeek: (function(): void), previousWeek: (function(): void), previousWeekText: (function(): string), nextWeekText: (function(): string)}>} fnActionsType
+   */
+
+  /**
+   *
+   * @type {fnActionsType}
+   */
+  const fnActions = Object.freeze({
+    nextWeek: () => {
+      activityReport.nextWeek();
+      updateView();
+    },
+    previousWeek: () => {
+      activityReport.previousWeek();
+      updateView();
+    },
+    nextWeekText: () => {
+      return activityReport.yearMonthWeek().length === 2 &&
+        activityReport.localDate.month().value() !==
+          activityReport.yearMonthWeek()[1].month().value()
+        ? 'Next Month'
+        : 'Next Week';
+    },
+    previousWeekText: () => {
+      return activityReport.yearMonthWeek().length === 2 &&
+        activityReport.localDate.isEqual(
+          activityReport.localDate.withDayOfMonth(1),
+        )
+        ? 'Previous Month'
+        : 'Previous Week';
+    },
+  });
+
   return (
     <>
-      <TableActions previousWeek={previousWeek} nextWeek={nextWeek} />
+      <TableActions actions={fnActions} />
       <Stack direction="column" className={styles.table}>
         <TableProjects
           activityReport={activityReport}

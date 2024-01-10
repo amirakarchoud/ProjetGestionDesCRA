@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { Etat } from '@app/domain/model/etat.enum';
+import { State } from '@app/domain/model/State.enum';
 import { Status } from '@app/domain/model/Status';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { ProjectCode } from '@app/domain/model/project.code';
@@ -52,7 +52,7 @@ describe('Cra DTO Mapper', () => {
         month: 9,
         year: 2023,
         collab: 'user@proxym.fr',
-        etat: Etat.unsubmitted,
+        state: State.Draft,
         status: Status.Open,
       }),
     );

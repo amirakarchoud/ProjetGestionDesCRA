@@ -22,7 +22,7 @@ export const mapMonthActivityToCraDto = (
     month: cra.month.value(),
     year: cra.year,
     employee: cra.collab.value,
-    state: cra.etat,
+    state: cra.state,
     status: cra.status,
     history: cra.history,
   };

@@ -1,6 +1,6 @@
 import { Absence } from './Absence';
 import { Activity } from './Activity';
-import { Etat } from './etat.enum';
+import { State } from './State.enum';
 import { Status } from './Status';
 import { Holiday } from './Holiday';
 import { Regul } from './Regul';
@@ -33,7 +33,7 @@ export class CRA {
   private _month: Month;
   private _year: number;
   private _collab: CollabEmail;
-  private _etat: Etat = Etat.unsubmitted;
+  private _state: State = State.Draft;
   private _status: Status = Status.Open;
   private _history: Regul[] = [];
   private _craInterval: Interval;
@@ -45,14 +45,14 @@ export class CRA {
     collab: CollabEmail,
     activities: Activity[],
     absences: Absence[],
-    etat: Etat,
+    state: State,
     status: Status,
   ) {
     this._month = month;
     this._year = year;
     this._collab = collab;
     this._holidays = [];
-    this._etat = etat;
+    this._state = state;
     this._status = status;
     const start = LocalDate.of(year, month, 1).atStartOfDay(
       ZoneId.systemDefault(),
@@ -95,12 +95,12 @@ export class CRA {
     this._status = stat;
   }
 
-  public get etat(): Etat {
-    return this._etat;
+  public get state(): State {
+    return this._state;
   }
 
-  public set etat(etat: Etat) {
-    this._etat = etat;
+  public set state(state: State) {
+    this._state = state;
   }
 
   calculateBusinessDays(year: number, month: Month): number {
@@ -365,7 +365,7 @@ export class CRA {
     if (this.getAvailableDatesOfCra().length > 0) {
       return false;
     }
-    this._etat = Etat.submitted;
+    this._state = State.Submitted;
     return true;
   }
 
@@ -395,7 +395,7 @@ export class CRA {
       _month: this._month.value(),
       _year: this._year,
       _collab: this._collab.value,
-      _etat: this._etat,
+      _etat: this._state,
       _status: this._status,
       _history: this._history,
     };

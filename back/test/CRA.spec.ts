@@ -3,7 +3,7 @@ import { Absence } from '@app/domain/model/Absence';
 import { Collab } from '@app/domain/model/Collab';
 import { Raison } from '@app/domain/model/Raison';
 import { Role } from '@app/domain/model/Role';
-import { Etat } from '@app/domain/model/etat.enum';
+import { State } from '@app/domain/model/State.enum';
 import { ForbiddenException } from '@nestjs/common';
 import { Holiday } from '@app/domain/model/Holiday';
 import { Status } from '@app/domain/model/Status';
@@ -310,7 +310,7 @@ describe('Un CRA ', () => {
 
     //Then
     expect(cra.SubmitCra()).toBe(false);
-    expect(cra.etat).toBe(Etat.unsubmitted);
+    expect(cra.state).toBe(State.Draft);
   });
 
   it('peut être soumis si tous les jours sont remplis', () => {
@@ -342,7 +342,7 @@ describe('Un CRA ', () => {
 
     // Then
     expect(result).toBe(true);
-    expect(cra.etat).toBe(Etat.submitted);
+    expect(cra.state).toBe(State.Submitted);
   });
 
   it('peut retourner les dates vides', () => {

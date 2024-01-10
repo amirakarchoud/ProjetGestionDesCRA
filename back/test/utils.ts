@@ -1,7 +1,7 @@
 import { Collab } from '@app/domain/model/Collab';
 import { Status } from '@app/domain/model/Status';
 import { CRA } from '@app/domain/model/CRA';
-import { Etat } from '@app/domain/model/etat.enum';
+import { State } from '@app/domain/model/State.enum';
 import { DateProvider } from '@app/domain/model/date-provider';
 import { LocalDate } from '@js-joda/core';
 import { mockedHolidays } from '../test_e2e/holiday.mock-data';
@@ -16,7 +16,7 @@ export function createCra(collab: Collab, date: LocalDate, status?: Status) {
     collab.email,
     [],
     [],
-    Etat.unsubmitted,
+    State.Draft,
     status ? status : Status.Open,
   );
 

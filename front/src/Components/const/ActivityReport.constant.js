@@ -7,7 +7,7 @@ export const Absences = Object.freeze({
   Rtt: 'RTT',
 });
 
-export const ActivityTypes = Object.freeze({
+export const ActivityTypeValues = Object.freeze({
   Absence: 'absence',
   Holiday: 'holiday',
   Project: 'project',

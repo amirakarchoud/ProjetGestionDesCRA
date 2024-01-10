@@ -1,35 +1,9 @@
 import TableBanner from './TableBanner';
 import TableSelection from './TableSelection';
-import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
-
-/**
- * @callback addActivityCallback
- * @param code {string}
- * @param date {LocalDate}
- * @param name {string}
- * @param percentage {number}
- * @param type {('absence'|'project')}
- */
-
-/**
- * @callback addWeekActivityCallback
- * @param code {string}
- * @param name {string}
- * @param percentage {number}
- * @param type {('absence'|'project')}
- */
-
-/**
- * @callback deleteWeekActivityCallback
- * @param code {string}
- */
-
-/**
- * @callback updateActivityCodeCallback
- * @param previousCode {string}
- * @param newCode {string}
- * @param type {('absence'|'project')}
- */
+import {
+  ActivityTypeValues,
+  BannerMode,
+} from '../../const/ActivityReport.constant';
 
 /**
  *
@@ -58,7 +32,7 @@ function TableAbsences({
         activityReport={activityReport}
         addActivity={addActivity}
         deleteWeekActivity={deleteWeekActivity}
-        type={ActivityTypes.Absence}
+        type={ActivityTypeValues.Absence}
         updateActivityCode={updateActivityCode}
       />,
     );

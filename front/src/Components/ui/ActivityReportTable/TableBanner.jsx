@@ -2,15 +2,10 @@ import styles from '../styles/ActivityReportTable.module.css';
 import Stack from '@mui/material/Stack';
 import { DateTimeFormatter } from '@js-joda/core';
 import { Button } from '@mui/material';
-import { ActivityTypes, BannerMode } from '../../const/ActivityReport.constant';
-
-/**
- * @callback addWeekActivityCallback
- * @param code {string}
- * @param name {string}
- * @param percentage {number}
- * @param type {('absence'|'project')}
- */
+import {
+  ActivityTypeValues,
+  BannerMode,
+} from '../../const/ActivityReport.constant';
 
 /**
  * @param addWeekActivity {addWeekActivityCallback}
@@ -47,7 +42,7 @@ function Banner({ addWeekActivity, mode, text = '', week = [] }) {
         <Button
           color="primary"
           variant="contained"
-          onClick={() => addWeekActivity('', '', 0, ActivityTypes.Absence)}
+          onClick={() => addWeekActivity('', '', 0, ActivityTypeValues.Absence)}
         >
           {text}
         </Button>

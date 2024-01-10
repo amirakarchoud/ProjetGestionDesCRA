@@ -1,6 +1,6 @@
 import { ActivityDto } from './activity.dto';
 import { AvailableDateDto } from './available.date.dto';
-import { Etat } from '../domain/model/etat.enum';
+import { State } from '../domain/model/State.enum';
 import { Status } from '../domain/model/Status';
 
 export class CraDto {
@@ -12,7 +12,7 @@ export class CraDto {
   month: number;
   year: number;
   collab: string;
-  etat: Etat;
+  state: State;
   status: Status;
   history: any[];
 }

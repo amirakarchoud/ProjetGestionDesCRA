@@ -95,7 +95,6 @@ export class CraController {
     @Param('id') idUser: string,
     @Param('year') year: number,
   ): Promise<CraDto[]> {
-    console.log('user cra by year');
     const cras = await this.craApp.userYearCra(new CollabEmail(idUser), year);
     const projects = await this.craApp.getAllProjects();
     return cras.map((cra) => mapCraToCraDto(cra, projects));

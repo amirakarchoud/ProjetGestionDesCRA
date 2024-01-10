@@ -3,12 +3,8 @@ import styles from '../styles/ActivityReportTable.module.css';
 import { DateTimeFormatter } from '@js-joda/core';
 
 /**
- * @callback validateWeekCallback
- */
-
-/**
  * @param activityReport {ActivityReport}
- * @param validateWeek {validateWeekCallback}
+ * @param validateWeek {DefaultCallback}
  * @returns {JSX.Element}
  * @constructor
  */
@@ -19,15 +15,23 @@ function TableValidation({ activityReport, validateWeek }) {
       .isoHolidaysDates()
       .includes(date.format(DateTimeFormatter.ISO_LOCAL_DATE)),
   );
+
   if (offDatesWeek?.length) {
-    activityReport.holidays.forEach((holiday) => {
+    offDatesWeek.forEach((d) => {
+      const offDate = activityReport.holidays
+        .filter(
+          (h) =>
+            h.date.format(DateTimeFormatter.ISO_LOCAL_DATE) ===
+            d.format(DateTimeFormatter.ISO_LOCAL_DATE),
+        )
+        .shift();
       holidaysDisplay.push(
         <p
-          key={holiday.date.format(DateTimeFormatter.ISO_LOCAL_DATE)}
+          key={offDate.date.format(DateTimeFormatter.ISO_LOCAL_DATE)}
           className={styles.holidaysDisplay}
         >
-          {holiday.date.format(DateTimeFormatter.ISO_LOCAL_DATE)} is off due to{' '}
-          {holiday.name}.
+          {offDate.date.format(DateTimeFormatter.ISO_LOCAL_DATE)} is off due to{' '}
+          {offDate.name}.
         </p>,
       );
     });

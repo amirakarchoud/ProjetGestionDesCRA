@@ -1,6 +1,6 @@
 import { ActivityDto } from '../activity.dto';
 import { AvailableDateDto } from '../available.date.dto';
-import { Etat } from '../../domain/model/etat.enum';
+import { State } from '../../domain/model/State.enum';
 import { Status } from '../../domain/model/Status';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -68,10 +68,10 @@ export class MonthActivityDto {
   @ApiProperty({
     description:
       'The current state of the month report. Submitted or un-submitted',
-    examples: [Etat.submitted, Etat.unsubmitted],
-    enum: Etat,
+    examples: [State.Submitted, State.Draft],
+    enum: State,
   })
-  state: Etat;
+  state: State;
 
   @ApiProperty()
   status: Status;

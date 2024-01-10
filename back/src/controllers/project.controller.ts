@@ -38,7 +38,6 @@ export class ProjectController {
     description: 'Récupère la liste de tous les projets enregistrés.',
   })
   async getProjects(): Promise<ProjectDto[]> {
-    console.log('getting projects back');
     return (await this.craApplication.getAllProjects()).map((proj) =>
       mapProject(proj),
     );

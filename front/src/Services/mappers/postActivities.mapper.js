@@ -1,13 +1,13 @@
-import { ActivityTypes } from '../../Components/const/ActivityReport.constant';
+import { ActivityTypeValues } from '../../Components/const/ActivityReport.constant';
 import { DateTimeFormatter } from '@js-joda/core';
 
 /**
  *
- * @param activities {{code: Absences|string; date: LocalDate; name: Absences|string; percentage: number; type: 'absence'|'project';}[]}
+ * @param activities {ActivitiesType}
  * @param employeeEmail {string}
  * @param month {number}
  * @param year {number}
- * @return {{activities: {absences: {date: string, percentage: number, reason: Absences}[], projects: {date: string; percentage: number; project: {code: string; name: string;}}[]}[]; employeeEmail: string; month: number; year: number; replace: boolean;}}
+ * @return {{activities: {absences: {date: string, percentage: number, reason: Absences}[], projects: {date: string; percentage: number; project: {code: string;}}[]}[]; employeeEmail: string; month: number; year: number; replace: boolean;}}
  */
 export const postActivitiesMapper = (
   activities,
@@ -19,10 +19,10 @@ export const postActivitiesMapper = (
     activities: [
       {
         absences: mapAbsences(
-          activities.filter((a) => a.type === ActivityTypes.Absence),
+          activities.filter((a) => a.type === ActivityTypeValues.Absence),
         ),
         projects: mapProjects(
-          activities.filter((a) => a.type === ActivityTypes.Project),
+          activities.filter((a) => a.type === ActivityTypeValues.Project),
         ),
       },
     ],
@@ -35,7 +35,7 @@ export const postActivitiesMapper = (
 
 /**
  *
- * @param absences {{code: Absences; date: LocalDate; name: Absences; percentage: number; type: 'absence';}[]}
+ * @param absences {AbsenceActivityType[]}
  * @return {{date: string; percentage: number; reason: Absences}[]}
  */
 function mapAbsences(absences) {
@@ -51,8 +51,8 @@ function mapAbsences(absences) {
 
 /**
  *
- * @param projects {code: string; date: LocalDate; name: string; percentage: number; type: 'project';}[]
- * @return {{date: string; percentage: number; project: {code: string; name: string;}}[]}
+ * @param projects {[]}
+ * @return {{date: string; percentage: number; project: {code: string;}}[]}
  */
 function mapProjects(projects) {
   return projects.map((p) => {

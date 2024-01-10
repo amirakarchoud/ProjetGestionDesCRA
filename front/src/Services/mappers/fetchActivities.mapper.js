@@ -4,9 +4,9 @@ import { LocalDate } from '@js-joda/core';
  *
  * @param absences {{date: string; name: Absences; percentage: number; reason: Absences; type: 'absence';}[]}
  * @param availableDates {{availableTime: number; date: string;}[]}
- * @param holidays {{date: string; name: string; percentage: number; type: ActivityTypes.Holiday;}[]}
+ * @param holidays {{date: string; name: string; percentage: number; type: 'holiday';}[]}
  * @param projects {{date: string; name: string; percentage: number; project: {client: string; code: string; name: string; status: string;}; type: 'project';}[]}
- * @return {{activities: {code: Absences|string; date: LocalDate; name: Absences|string; percentage: number; type: 'absence'|'project';}[]; availableDates: {availableTime: number; date: LocalDate;}[]; holidays: {date: LocalDate; name: string; percentage: number; type: ActivityTypes.Holiday;}[];}}
+ * @return {{activities: {code: Absences|string; date: LocalDate; name: Absences|string; percentage: number; type: 'absence'|'project';}[]; availableDates: {availableTime: number; date: LocalDate;}[]; holidays: {date: LocalDate; name: string; percentage: number; type: 'holiday';}[];}}
  */
 export const fetchActivitiesMapper = (
   absences,
@@ -45,13 +45,6 @@ function mapAbsences(absences) {
  * @returns {{availableTime: number; date: LocalDate;}[]}
  */
 function mapAvailableDates(availableDates) {
-  /**
-   * Temp: missing dates from back
-   */
-  availableDates.push({ date: '2024-01-02', availableTime: 100 });
-  availableDates.push({ date: '2024-01-03', availableTime: 100 });
-  availableDates.push({ date: '2024-01-04', availableTime: 100 });
-  availableDates.push({ date: '2024-01-05', availableTime: 100 });
   return availableDates.map((aD) => {
     const { availableTime, date } = aD;
     return {
@@ -63,8 +56,8 @@ function mapAvailableDates(availableDates) {
 
 /**
  *
- * @param holidays {{date: string; name: string; percentage: number; type: ActivityTypes.Holiday;}[]}
- * @returns {{date: LocalDate; name: string; percentage: number; type: ActivityTypes.Holiday;}[]}
+ * @param holidays {{date: string; name: string; percentage: number; type: 'holiday';}[]}
+ * @returns {{date: LocalDate; name: string; percentage: number; type: 'holiday';}[]}
  */
 function mapHolidays(holidays) {
   return holidays.map((h) => {
