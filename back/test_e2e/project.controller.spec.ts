@@ -87,6 +87,6 @@ describe('Project controller', () => {
       .accept('application/json')
       .send(projectDto);
 
-    expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
   });
 });

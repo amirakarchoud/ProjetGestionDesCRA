@@ -350,34 +350,34 @@ describe('Un CRA ', () => {
 
     project1.addCollab(collab.email);
     const cra = createCra(collab, startDate);
-    const endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
 
-    const activity = new ProjectActivity(project1.code, 50, startDate);
-    const activity2 = new ProjectActivity(project2.code, 50, startDate);
-    const absence = new Absence(100, endDate, Raison.Maladie);
+    const activity = new ProjectActivity(
+      project1.code,
+      50,
+      LocalDate.parse('2023-11-02'),
+    );
+    const activity2 = new ProjectActivity(
+      project2.code,
+      50,
+      LocalDate.parse('2023-11-02'),
+    );
+    const absence = new Absence(
+      100,
+      LocalDate.parse('2023-11-03'),
+      Raison.Maladie,
+    );
     cra.addActivity(activity);
     cra.addActivity(activity2);
     cra.addActivity(absence);
 
     // When
     const emptyDates = cra.getAvailableDatesOfCra();
-
-    // Then
-    for (
-      let currentDate = startDate;
-      currentDate.isBefore(endDate) || currentDate.equals(endDate);
-      currentDate = currentDate.plusDays(1)
-    ) {
-      if (
-        isWeekend(currentDate) ||
-        cra.isHoliday(currentDate) ||
-        cra.isDayFull(currentDate)
-      ) {
-        expect(emptyDates).not.toContainEqual(currentDate);
-      } else {
-        expect(emptyDates).toContainEqual(currentDate);
-      }
-    }
+    expect(emptyDates).not.toContainEqual(LocalDate.parse('2023-11-01')); // holiday
+    expect(emptyDates).not.toContainEqual(LocalDate.parse('2023-11-02')); // full act
+    expect(emptyDates).not.toContainEqual(LocalDate.parse('2023-11-03')); // full abs
+    expect(emptyDates).not.toContainEqual(LocalDate.parse('2023-11-04')); // weekend
+    expect(emptyDates).not.toContainEqual(LocalDate.parse('2023-11-05')); // weekend
+    expect(emptyDates).toContainEqual(LocalDate.parse('2023-11-06'));
   });
 
   it('un jour férié nest pas considérer comme une date vide', () => {

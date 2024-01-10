@@ -27,8 +27,6 @@ export type BulkAddOptions = {
   replace: boolean;
 };
 
-DateProvider.setTodayDate(LocalDate.of(2024, 1, 2));
-
 export class CRA {
   public static readonly CLOSURE_DAY = 5;
   private _holidays: Holiday[] = [];
@@ -345,9 +343,9 @@ export class CRA {
     let currentDate = startDate;
     while (currentDate.isBefore(endDate)) {
       const isHoliday = this.isHoliday(currentDate);
-      const isActivityOrAbsenceExists = this.isDayFull(currentDate);
+      const isDayFull = !this.isDayFull(currentDate);
 
-      if (!isWeekend(currentDate) && !isHoliday && !isActivityOrAbsenceExists) {
+      if (!isWeekend(currentDate) && !isHoliday && !isDayFull) {
         availableDates.push(currentDate);
       }
 
@@ -362,7 +360,8 @@ export class CRA {
   }
 
   isDayFull(date: LocalDate): boolean {
-    return this.getAvailableTime(date) < 100;
+    const availableTime = this.getAvailableTime(date);
+    return availableTime !== 0;
   }
 
   SubmitCra(): boolean {

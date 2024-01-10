@@ -134,6 +134,7 @@ describe('Cra DTO Mapper', () => {
 
     const craDto = mapCraToCraDto(cra, projects);
 
-    expect(craDto.availableDates.length).toEqual(18);
+    expect(craDto.availableDates.length).toEqual(19);
+    expect(craDto.availableDates[1].availableTime).toEqual(25);
   });
 });
