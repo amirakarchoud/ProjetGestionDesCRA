@@ -146,7 +146,21 @@ export class CraApplication {
     if (!collabPromise) {
       throw new UserError(`No user found with id ${JSON.stringify(idUser)}`);
     }
-    return await this.craRepository.findByMonthYearCollab(month, year, idUser);
+    let cra = await this.craRepository.findByMonthYearCollab(
+      month,
+      year,
+      idUser,
+    );
+
+    if (!cra) {
+      cra = await this.createNewCra(
+        LocalDate.of(year, month, 1),
+        idUser,
+        false,
+      );
+    }
+
+    return cra;
   }
 
   async bulkAdd(
@@ -256,7 +270,11 @@ export class CraApplication {
     await this.projectRepository.save(project);
   }
 
-  private async createNewCra(dateAct: LocalDate, user: CollabEmail) {
+  private async createNewCra(
+    dateAct: LocalDate,
+    user: CollabEmail,
+    save = true,
+  ) {
     const collabPromise = await this.collabRepository.findById(user);
 
     if (collabPromise === undefined) {
@@ -278,11 +296,16 @@ export class CraApplication {
       dateAct.month(),
       dateAct.year(),
     );
-    await this.craRepository.save(cra);
-    return await this.craRepository.findByMonthYearCollab(
-      dateAct.month(),
-      dateAct.year(),
-      user,
-    );
+
+    if (save) {
+      await this.craRepository.save(cra);
+      return await this.craRepository.findByMonthYearCollab(
+        dateAct.month(),
+        dateAct.year(),
+        user,
+      );
+    } else {
+      return cra;
+    }
   }
 }

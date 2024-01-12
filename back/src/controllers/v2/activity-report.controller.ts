@@ -75,9 +75,6 @@ export class ActivityReportController {
       year,
     );
 
-    if (!cra) {
-      return new MonthActivityDto();
-    }
     return mapMonthActivityToCraDto(cra, projects);
   }
 
