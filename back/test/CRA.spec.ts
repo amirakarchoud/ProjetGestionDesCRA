@@ -16,6 +16,7 @@ import { createCra } from './utils';
 import { LocalDate, Month, TemporalAdjusters } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { isWeekend } from '@app/domain/model/date.utils';
+import { ActivityError } from '@app/domain/model/errors/activity.error';
 
 const createProject = (code: ProjectCode, collab?: CollabEmail) => {
   return new Project(
@@ -140,7 +141,7 @@ describe('Un CRA ', () => {
     //Then
     expect(() => {
       cra.addActivity(absence);
-    }).toThrow(ForbiddenException);
+    }).toThrow(ActivityError);
   });
 
   it('peut ajouter une absence avant le 5 du mois suivant', () => {
@@ -193,7 +194,7 @@ describe('Un CRA ', () => {
     //Then
     expect(() => {
       cra.addActivity(absence);
-    }).toThrow(ForbiddenException);
+    }).toThrow(ActivityError);
   });
 
   it(' peut ajouter une absence dans le futur', () => {
@@ -228,7 +229,7 @@ describe('Un CRA ', () => {
     //Then
     expect(() => {
       cra.addActivity(activity);
-    }).toThrow(ForbiddenException);
+    }).toThrow(ActivityError);
   });
 
   it("ne peut pas supprimer une absence qui n'existe pas", () => {
@@ -493,7 +494,7 @@ describe('Un CRA ', () => {
     //Then
     expect(() => {
       cra.addActivity(activity);
-    }).toThrow(ForbiddenException);
+    }).toThrow(ActivityError);
   });
 
   it('cree une regul en cas dajout dune activite apres sa cloture ', () => {

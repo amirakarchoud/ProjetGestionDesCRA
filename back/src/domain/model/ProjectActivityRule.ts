@@ -2,6 +2,7 @@ import { ActivityRule } from './ActivityRule';
 import { Instant, ZoneId } from '@js-joda/core';
 import { Interval } from '@js-joda/extra';
 import { Activity } from './Activity';
+import { ActivityError } from '@app/domain/model/errors/activity.error';
 
 export class ProjectActivityRule implements ActivityRule {
   /**
@@ -16,8 +17,12 @@ export class ProjectActivityRule implements ActivityRule {
     activity: Activity,
     craInterval: Interval,
     closureInterval: Interval,
-  ): boolean {
+  ): void {
     const actDate = activity.date.atStartOfDay(ZoneId.systemDefault());
-    return craInterval.contains(Instant.from(actDate));
+    const instant = Instant.from(actDate);
+    const result = craInterval.contains(instant);
+    if (!result) {
+      throw new ActivityError('Activity outside of current CRA');
+    }
   }
 }

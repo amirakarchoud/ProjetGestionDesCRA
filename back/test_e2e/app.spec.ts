@@ -93,7 +93,7 @@ describe('APP', () => {
   });
 
   it(`create regul for absence creation`, async () => {
-    const date = LocalDate.now().plusDays(1);
+    const date = LocalDate.parse('2024-01-11').plusDays(1);
     DateProvider.setTodayDate(date);
     const repo: CraRepository = app().get('IRepoCra');
     await prepareActivity(app(), date, clientId);
@@ -115,7 +115,7 @@ describe('APP', () => {
   });
 
   it(`create regul pour creation activite`, async () => {
-    const date = LocalDate.now().plusDays(1);
+    const date = LocalDate.parse('2024-01-11').plusDays(1);
     DateProvider.setTodayDate(date);
 
     const repo: CraRepository = app().get('IRepoCra');

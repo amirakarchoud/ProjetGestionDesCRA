@@ -2,6 +2,7 @@ import { ActivityRule } from './ActivityRule';
 import { isWeekend } from './date.utils';
 import { Interval } from '@js-joda/extra';
 import { Activity } from './Activity';
+import { ActivityError } from '@app/domain/model/errors/activity.error';
 
 export class NotWeekendRule implements ActivityRule {
   /**
@@ -16,7 +17,9 @@ export class NotWeekendRule implements ActivityRule {
     activity: Activity,
     craInterval: Interval,
     closureInterval: Interval,
-  ): boolean {
-    return !isWeekend(activity.date);
+  ): void {
+    if (isWeekend(activity.date)) {
+      throw new ActivityError('Adding an activity during a weekend');
+    }
   }
 }

@@ -1,4 +1,3 @@
-import { ForbiddenException } from '@nestjs/common';
 import { Absence } from './Absence';
 import { Activity } from './Activity';
 import { Etat } from './etat.enum';
@@ -11,7 +10,6 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Percentage } from '@app/domain/percentage.type';
 import { dateMonthsEqual, isWeekend } from '@app/domain/model/date.utils';
-import { DateProvider } from '@app/domain/model/date-provider';
 import {
   Instant,
   LocalDate,
@@ -133,7 +131,8 @@ export class CRA {
 
   public set holidays(holidays: Holiday[]) {
     const badHoliday = holidays.find(
-      (holiday) => !dateMonthsEqual(holiday.date, DateProvider.today()),
+      (holiday) =>
+        !dateMonthsEqual(holiday.date, LocalDate.of(this.year, this.month, 1)),
     );
 
     if (badHoliday != undefined) {
@@ -171,9 +170,7 @@ export class CRA {
     }
 
     //test if you have the right to add according to the date constraint
-    if (!activity.isValid(activity, this._craInterval, this._closureInterval)) {
-      throw new ForbiddenException();
-    }
+    activity.validate(activity, this._craInterval, this._closureInterval);
 
     if (
       activity instanceof ProjectActivity &&

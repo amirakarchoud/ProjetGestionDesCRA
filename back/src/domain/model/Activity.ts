@@ -51,12 +51,12 @@ export abstract class Activity {
    *
    * @return True, if every rule are valid, False otherwise.
    */
-  public isValid(
+  public validate(
     activity: Activity,
     craInterval: Interval,
     closureInterval: Interval,
-  ): boolean {
-    return this._rules.every((activityRule) =>
+  ): void {
+    this._rules.forEach((activityRule) =>
       activityRule.validateRule(activity, craInterval, closureInterval),
     );
   }

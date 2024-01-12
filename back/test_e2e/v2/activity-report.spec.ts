@@ -96,7 +96,6 @@ describe('Activity Report Controller', () => {
     dto.employeeEmail = collabEmail.value;
     dto.activities = [
       {
-        projectCode: 'proj3',
         projects: [
           {
             date: date.toString(),

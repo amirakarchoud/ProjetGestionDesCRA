@@ -4,6 +4,8 @@ import { Interval } from '@js-joda/extra';
 import { Raison } from './Raison';
 import { Activity } from './Activity';
 import { Absence } from './Absence';
+import { AbsenceError } from '@app/domain/model/errors/absence.error';
+import { ActivityError } from '@app/domain/model/errors/activity.error';
 
 export class AbsenceRule implements ActivityRule {
   /**
@@ -22,15 +24,23 @@ export class AbsenceRule implements ActivityRule {
     activity: Activity,
     craInterval: Interval,
     closureInterval: Interval,
-  ): boolean {
+  ) {
     if (!(activity instanceof Absence)) {
-      return false;
+      throw new ActivityError('Is not an absence');
     }
     const absDate = activity.date.atStartOfDay(ZoneId.systemDefault());
     const absInstant = Instant.from(absDate);
 
-    return activity.raison !== Raison.Maladie
-      ? !absInstant.isBefore(craInterval.start())
-      : craInterval.contains(absInstant);
+    if (activity.raison === Raison.Maladie) {
+      const result = craInterval.contains(absInstant);
+      if (!result) {
+        throw new AbsenceError('Cannot add sick leave in the future');
+      }
+    } else {
+      const result = !absInstant.isBefore(craInterval.start());
+      if (!result) {
+        throw new AbsenceError('Cannot add absence before the CRA interval');
+      }
+    }
   }
 }

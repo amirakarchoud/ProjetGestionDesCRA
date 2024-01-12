@@ -1,10 +1,4 @@
-import {
-  createProject,
-  createUser,
-  prepareAbsence,
-  prepareActivity,
-  prepareApp,
-} from './test.utils';
+import { createProject, createUser, prepareAbsence, prepareActivity, prepareApp } from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { HttpStatus } from '@nestjs/common';
 import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
@@ -98,7 +92,6 @@ describe('CRA Controller', () => {
 
     const activities: ProjectActivitiesDto[] = [
       {
-        projectCode: 'proj1',
         absences: [
           {
             date: date.toString(),
@@ -138,7 +131,6 @@ export const prepareActivities = (
 ): ProjectActivitiesDto[] => {
   return [
     {
-      projectCode: 'proj1',
       projects: [
         {
           date: date.toString(),

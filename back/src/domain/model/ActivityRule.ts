@@ -6,5 +6,5 @@ export interface ActivityRule {
     activity: Activity,
     craInterval: Interval,
     closureInterval: Interval,
-  ): boolean;
+  ): void;
 }
