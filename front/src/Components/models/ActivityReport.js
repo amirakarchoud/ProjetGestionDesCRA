@@ -1,12 +1,6 @@
-import {
-  DateTimeFormatter,
-  DayOfWeek,
-  LocalDate,
-  TemporalAdjusters,
-} from '@js-joda/core';
-import { toast } from 'react-toastify';
+import { DateTimeFormatter, DayOfWeek, TemporalAdjusters } from '@js-joda/core';
 import { Absences, ActivityTypes } from '../const/ActivityReport.constant';
-import { postActivitiesMapper } from '../../Services/Mappers/postActivities.mapper';
+import { postActivitiesMapper } from '../../Services/mappers/postActivities.mapper';
 
 export class ActivityReport {
   activities;
@@ -15,6 +9,7 @@ export class ActivityReport {
   holidays;
   localDate;
   month;
+  notificationsHandler;
   year;
 
   /**
@@ -30,14 +25,16 @@ export class ActivityReport {
     availableDates = [],
     holidays = [],
     activityReportApi,
+    notificationsHandler,
   ) {
-    this.localDate = localDate;
-    this.month = localDate.month();
-    this.year = localDate.year();
     this.activities = activities;
+    this.activityReportApi = activityReportApi;
     this.availableDates = availableDates;
     this.holidays = holidays;
-    this.activityReportApi = activityReportApi;
+    this.localDate = localDate;
+    this.month = localDate.month();
+    this.notificationsHandler = notificationsHandler;
+    this.year = localDate.year();
   }
 
   /**
@@ -170,9 +167,9 @@ export class ActivityReport {
           activity.name = Absences[newCode];
         }
       });
-      toast.success(`Absence modification succeed.`);
+      this.notificationsHandler.success('Modification succeed.');
     } else {
-      toast.error(`${Absences[newCode]} is already used !`);
+      this.notificationsHandler.error(`${Absences[newCode]} is already used.`);
     }
   }
 
@@ -243,11 +240,9 @@ export class ActivityReport {
             this.year,
           ),
         )
-        .then();
-      toast.success('Validation succeed.');
+        .then(() => this.notificationsHandler.success('Week validated.'));
     } else {
-      toast.error('Invalid week !');
-      //throw new Error("This week is incorrect!");
+      this.notificationsHandler.error('Invalid week.');
     }
   }
 

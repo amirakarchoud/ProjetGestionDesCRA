@@ -7,11 +7,19 @@ import TableActions from './ActivityReportTable/TableActions';
 import TableValidation from './ActivityReportTable/TableValidation';
 import TableAbsences from './ActivityReportTable/TableAbsences';
 import TableProjects from './ActivityReportTable/TableProjects';
-import ActivityReportApi from '../../Services/ActivityReport.api';
+import ActivityReportApi from '../../Services/api/ActivityReport.api';
+import NotificationsHandler from '../../Services/handlers/NotificationsHandler';
 
 function ActivityReportTable() {
   const [activityReport, setActivityReport] = useState(
-    new ActivityReport(LocalDate.now(), [], [], [], ActivityReportApi),
+    new ActivityReport(
+      LocalDate.now(),
+      [],
+      [],
+      [],
+      ActivityReportApi,
+      NotificationsHandler,
+    ),
   );
 
   useEffect(() => {
@@ -30,11 +38,16 @@ function ActivityReportTable() {
               data.availableDates,
               data.holidays,
               ActivityReportApi,
+              NotificationsHandler,
             ),
           ),
         );
       });
-  }, [ActivityReportApi]);
+  }, [
+    activityReport.activityReportApi,
+    activityReport.month,
+    activityReport.year,
+  ]);
 
   const updateView = () => {
     setActivityReport(
@@ -45,6 +58,7 @@ function ActivityReportTable() {
           activityReport.availableDates,
           activityReport.holidays,
           ActivityReportApi,
+          NotificationsHandler,
         ),
       ),
     );

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { fetchActivitiesMapper } from './Mappers/fetchActivities.mapper';
+import { fetchActivitiesMapper } from '../mappers/fetchActivities.mapper';
 
 const apiBaseUrl = process.env.REACT_APP_API_URL;
 
-const ActivityReportApi = {
+const ActivityReportApi = Object.freeze({
   /**
    *
    * @param employeeEmail {string}
@@ -39,6 +39,6 @@ const ActivityReportApi = {
       .then((res) => res)
       .catch((err) => err);
   },
-};
+});
 
 export default ActivityReportApi;
