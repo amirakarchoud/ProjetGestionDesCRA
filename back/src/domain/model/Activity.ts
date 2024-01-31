@@ -5,6 +5,7 @@ import { NotWeekendRule } from '@app/domain/model/NotWeekendRule';
 import { CRAClosureRule } from '@app/domain/model/CRAClosureRule';
 import { Interval } from '@js-joda/extra';
 import { ActivityError } from '@app/domain/model/errors/activity.error';
+import { WithinDatesRule } from '@app/domain/model/WithinDatesRule';
 
 export abstract class Activity {
   protected readonly _percentage: Percentage;
@@ -20,7 +21,11 @@ export abstract class Activity {
     }
     this._percentage = percentage;
     this._date = date;
-    this._rules = [new NotWeekendRule(), new CRAClosureRule()];
+    this._rules = [
+      new NotWeekendRule(),
+      new CRAClosureRule(),
+      new WithinDatesRule(),
+    ];
   }
 
   public get date(): LocalDate {

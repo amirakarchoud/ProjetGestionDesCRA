@@ -17,6 +17,7 @@ import { LocalDate, Month, TemporalAdjusters } from '@js-joda/core';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { isWeekend } from '@app/domain/model/date.utils';
 import { ActivityError } from '@app/domain/model/errors/activity.error';
+import { CRA } from '@app/domain/model/CRA';
 
 const createProject = (code: ProjectCode, collab?: CollabEmail) => {
   return new Project(
@@ -197,7 +198,33 @@ describe('Un CRA ', () => {
     }).toThrow(ActivityError);
   });
 
-  it(' peut ajouter une absence dans le futur', () => {
+  it('When created in the past it is automatically closed', () => {
+    const date = LocalDate.parse('2023-01-01');
+
+    DateProvider.setTodayDate(date.plusMonths(2));
+
+    const cra = new CRA(
+      date.month(),
+      date.year(),
+      collab.email,
+      [],
+      [],
+      State.Draft,
+      undefined,
+    );
+
+    expect(cra.status).toBe(Status.Closed);
+  });
+
+  it('When created in the future it is automatically opened', () => {
+    const date = LocalDate.parse('2023-09-01');
+    DateProvider.setTodayDate(date.plusMonths(2));
+    const cra = createCra(collab, date);
+
+    expect(cra.status).toBe(Status.Open);
+  });
+
+  it('Ne peut ajouter une absence dans le futur', () => {
     //Given
     const date = LocalDate.parse('2023-09-04');
     const cra = createCra(collab, date);
@@ -208,10 +235,8 @@ describe('Un CRA ', () => {
       LocalDate.parse('2050-06-02'),
       Raison.CongesPayes,
     );
-    cra.addActivity(absence);
 
-    //Then
-    expect(cra.absences).toHaveLength(1);
+    expect(() => cra.addActivity(absence)).toThrow(ActivityError);
   });
 
   it('ne peut pas ajouter une activité dans le futur', () => {
@@ -389,8 +414,8 @@ describe('Un CRA ', () => {
     DateProvider.setTodayDate(date);
 
     cra.holidays = [new Holiday(LocalDate.parse('2023-07-14'), '14 juillet')];
-    const absence = new Absence(50, LocalDate.now(), Raison.CongesPayes);
-    const absence2 = new Absence(50, LocalDate.now(), Raison.CongesPayes);
+    const absence = new Absence(50, date.plusDays(3), Raison.CongesPayes);
+    const absence2 = new Absence(50, date.plusDays(3), Raison.CongesPayes);
 
     //When
     cra.addActivity(absence);

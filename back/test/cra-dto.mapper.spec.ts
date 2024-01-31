@@ -91,10 +91,10 @@ describe('Cra DTO Mapper', () => {
 
     expect(craDto.absences).toEqual([
       expect.objectContaining({
-        name: 'maladie',
+        name: 'Maladie',
         percentage: 25,
         date: LocalDate.parse('2023-09-20').toString(),
-        reason: 'maladie',
+        reason: 'Maladie',
       }),
     ]);
   });

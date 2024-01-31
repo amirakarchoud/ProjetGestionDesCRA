@@ -2,7 +2,7 @@ import { Percentage } from '../percentage.type';
 import { ProjectCode } from './project.code';
 import { LocalDate } from '@js-joda/core';
 import { Activity } from './Activity';
-import { ProjectActivityRule } from '@app/domain/model/ProjectActivityRule';
+import { WithinDatesRule } from '@app/domain/model/WithinDatesRule';
 import { ProjectError } from '@app/domain/model/errors/project.error';
 
 export class ProjectActivity extends Activity {
@@ -14,7 +14,7 @@ export class ProjectActivity extends Activity {
       throw new ProjectError('cannot have a null attribute code');
     }
     this._project = project;
-    this.addActivityRule(new ProjectActivityRule());
+    this.addActivityRule(new WithinDatesRule());
   }
 
   public get project(): ProjectCode {

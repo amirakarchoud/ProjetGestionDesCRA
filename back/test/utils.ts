@@ -17,7 +17,7 @@ export function createCra(collab: Collab, date: LocalDate, status?: Status) {
     [],
     [],
     State.Draft,
-    status ? status : Status.Open,
+    status ? status : undefined,
   );
 
   const holidays: Holiday[] = [];

@@ -10,16 +10,11 @@ import { CollabEmail } from '@app/domain/model/collab.email';
 import { Raison } from '@app/domain/model/Raison';
 import { Percentage } from '@app/domain/percentage.type';
 import { dateMonthsEqual, isWeekend } from '@app/domain/model/date.utils';
-import {
-  Instant,
-  LocalDate,
-  Month,
-  TemporalAdjusters,
-  ZoneId,
-} from '@js-joda/core';
+import { Instant, LocalDate, Month, TemporalAdjusters, ZoneId } from '@js-joda/core';
 import { Interval } from '@js-joda/extra';
 import { ProjectActivity } from '@app/domain/model/ProjectActivity';
 import { ActivityReportError } from '@app/domain/model/errors/activity-report.error';
+import { DateProvider } from '@app/domain/model/date-provider';
 
 export type BulkAddOptions = {
   replace: boolean;
@@ -53,7 +48,7 @@ export class CRA {
     this._collab = collab;
     this._holidays = [];
     this._state = state;
-    this._status = status;
+
     const start = LocalDate.of(year, month, 1).atStartOfDay(
       ZoneId.systemDefault(),
     );
@@ -69,6 +64,25 @@ export class CRA {
         start.plusMonths(1).withDayOfMonth(CRA.CLOSURE_DAY).plusDays(1),
       ),
     );
+
+    if (!status) {
+      const today = DateProvider.today();
+      if (today.isAfter(this.craEndDate)) {
+        this.status = Status.Closed;
+      } else if (today.isBefore(this.craStartDate)) {
+        this.status = Status.Open;
+      }
+    } else {
+      this._status = status;
+    }
+  }
+
+  public get craEndDate(): LocalDate {
+    return LocalDate.ofInstant(this._craInterval.end());
+  }
+
+  public get craStartDate(): LocalDate {
+    return LocalDate.ofInstant(this._craInterval.start());
   }
 
   public get id(): string {

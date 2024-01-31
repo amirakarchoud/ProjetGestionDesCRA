@@ -4,7 +4,7 @@ import { Interval } from '@js-joda/extra';
 import { Activity } from './Activity';
 import { ActivityError } from '@app/domain/model/errors/activity.error';
 
-export class ProjectActivityRule implements ActivityRule {
+export class WithinDatesRule implements ActivityRule {
   /**
    * Validates that the activity date is contained in the craInterval
    *
