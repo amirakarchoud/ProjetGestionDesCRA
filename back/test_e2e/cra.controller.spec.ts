@@ -1,4 +1,10 @@
-import { createProject, createUser, prepareAbsence, prepareActivity, prepareApp } from './test.utils';
+import {
+  createProject,
+  createUser,
+  prepareAbsence,
+  prepareActivity,
+  prepareApp,
+} from './test.utils';
 import { CollabEmail } from '@app/domain/model/collab.email';
 import { HttpStatus } from '@nestjs/common';
 import { ProjectActivitiesDto } from '@app/dtos/activity.dto';
