@@ -25,20 +25,24 @@ export class HolidaysSyncService implements OnApplicationBootstrap {
     if (!year) {
       year = LocalDate.now().year();
     }
-    const url = `${environment.apiUrl}${year}.json`;
 
-    try {
-      const holidaysData = await this.holidayHttpService.fetchHolidaysData(url);
-      for (const [dateStr, name] of Object.entries(holidaysData)) {
-        const date = LocalDate.parse(dateStr);
+    for (const currentYear of [year - 1, year, year + 1]) {
+      const url = `${environment.apiUrl}${currentYear}.json`;
 
-        const holiday = new Holiday(date, name as string);
-        await this.holidayRepository.save(holiday);
+      try {
+        const holidaysData =
+          await this.holidayHttpService.fetchHolidaysData(url);
+        for (const [dateStr, name] of Object.entries(holidaysData)) {
+          const date = LocalDate.parse(dateStr);
+
+          const holiday = new Holiday(date, name as string);
+          await this.holidayRepository.save(holiday);
+        }
+        console.log('Done fetching holidays for', currentYear);
+      } catch (error) {
+        console.error('Error fetching holidays:', error);
+        throw error;
       }
-      console.log('Done fetching holidays');
-    } catch (error) {
-      console.error('Error fetching holidays:', error);
-      throw error;
     }
   }
 }
