@@ -2,10 +2,10 @@ import { Percentage } from '@app/domain/percentage.type';
 import { LocalDate } from '@js-joda/core';
 import { ActivityRule } from '@app/domain/model/ActivityRule';
 import { NotWeekendRule } from '@app/domain/model/NotWeekendRule';
-import { CRAClosureRule } from '@app/domain/model/CRAClosureRule';
 import { Interval } from '@js-joda/extra';
 import { ActivityError } from '@app/domain/model/errors/activity.error';
 import { WithinDatesRule } from '@app/domain/model/WithinDatesRule';
+import { CRAClosureRule } from '@app/domain/model/CRAClosureRule';
 
 export abstract class Activity {
   protected readonly _percentage: Percentage;
