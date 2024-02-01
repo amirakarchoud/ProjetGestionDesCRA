@@ -169,6 +169,42 @@ describe('Activity Report Controller', () => {
     expect(response.body).toHaveLength(2);
   });
 
+  it('Cannot add activities in the future', async () => {
+    const user = await createUser(getApp(), new CollabEmail('test@proxym.fr'));
+    await createProject(getApp(), new ProjectCode('project1'), user.email);
+    DateProvider.setTodayDate(LocalDate.parse('2024-01-02'));
+
+    const dto = new ActivityReportDto();
+    dto.month = Month.NOVEMBER.value();
+    dto.year = 2023;
+    dto.employeeEmail = user.email.value;
+    dto.activities = [
+      {
+        projects: [
+          {
+            date: DateProvider.today().plusMonths(1).toString(),
+            project: {
+              code: 'project1',
+            },
+            name: 'Project 1',
+            percentage: 100,
+          },
+        ],
+        absences: [],
+      },
+    ];
+
+    const response = await request(getApp().getHttpServer())
+      .post('/v2/private/activity-report/')
+      .set('Content-Type', 'application/json')
+      .send(dto);
+
+    expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+    expect(response.body.message).toEqual(
+      'Cannot add activity outside CRA closure dates',
+    );
+  });
+
   async function userWithTwoReports() {
     const user = await createUser(getApp(), new CollabEmail('test@proxym.fr'));
     await createProject(getApp(), new ProjectCode('project1'));
